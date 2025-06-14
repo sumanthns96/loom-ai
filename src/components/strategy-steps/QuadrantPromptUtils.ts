@@ -1,4 +1,3 @@
-
 import type { SelectedPoint } from "./StepOne";
 
 // New style for one scenario quadrant
@@ -77,8 +76,8 @@ export function makeQuadrantPrompt(
 CASE_TITLE: "${caseTitle}"
 INDUSTRY_OR_CONTEXT: "${industryContext}"
 HORIZON_YEAR: ${horizonYear}
-X_AXIS: "${xAxis.factor}" (LOW = "${xAxis.lowLabel || "Low"}", HIGH = "${xAxis.highLabel || "High"}")
-Y_AXIS: "${yAxis.factor}" (LOW = "${yAxis.lowLabel || "Low"}", HIGH = "${yAxis.highLabel || "High"}")
+X_AXIS: "${xAxis.factor}" (LOW = "Low", HIGH = "High")
+Y_AXIS: "${yAxis.factor}" (LOW = "Low", HIGH = "High")
 
 For the quadrant where Y is "${quadrant.yHigh}" and X is "${quadrant.xHigh}":
 For this scenario, write:
