@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -16,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { RefreshCw, Users, Lightbulb, BarChart2, Recycle, Podium } from "lucide-react";
+import { RefreshCw, Users, Lightbulb, BarChart2, Recycle, Landmark } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -59,7 +58,7 @@ const FACTOR_STYLES: Record<
   Political: {
     color: "text-cyan-700",
     bg: "bg-cyan-100",
-    icon: <Podium className="w-6 h-6 text-cyan-500" />,
+    icon: <Landmark className="w-6 h-6 text-cyan-500" />, // Changed to Landmark
   },
 };
 
@@ -253,31 +252,27 @@ ${pdfContent}
               {!isGenerating &&
                 analysis.length > 0 &&
                 analysis.map((item, idx) => {
-                  const style = FACTOR_STYLES[item.factor] || {};
+                  const style = FACTOR_STYLES[item.factor] ?? { color: "", bg: "", icon: null };
                   return (
                     <div
                       key={item.factor}
-                      className={`flex items-stretch border-b last:border-none`}
-                      style={{ background: style.bg || undefined }}
+                      className={`flex items-stretch border-b last:border-none ${style.bg}`}
                     >
                       {/* Sidebar letter & icon */}
                       <div
-                        className={`flex flex-col items-center justify-center w-16 min-w-[64px] ${style.bg || "bg-gray-200"
-                          }`}
+                        className={`flex flex-col items-center justify-center w-16 min-w-[64px] ${style.bg}`}
                       >
                         <span
-                          className={`text-3xl font-extrabold ${style.color || "text-black"
-                            }`}
+                          className={`text-3xl font-extrabold ${style.color}`}
                         >
                           {item.factor[0]}
                         </span>
-                        <span className="mt-2">{style.icon || null}</span>
+                        <span className="mt-2">{style.icon}</span>
                       </div>
                       {/* Main content */}
                       <div className="flex-[2] flex flex-col justify-center px-4 py-5">
                         <span
-                          className={`uppercase font-bold text-lg pb-1 tracking-wide ${style.color || "text-black"
-                            }`}
+                          className={`uppercase font-bold text-lg pb-1 tracking-wide ${style.color}`}
                         >
                           {item.factor}
                         </span>
