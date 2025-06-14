@@ -37,14 +37,15 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
           <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 z-10 pointer-events-none select-none flex items-center">
             {/* Left label */}
             <span
-              className={`absolute left-0 -translate-x-full whitespace-nowrap ${endLabelColors[0]} text-sm sm:text-base bg-white px-2 py-0.5 rounded shadow`}
+              className={`absolute left-0 -translate-x-full whitespace-nowrap ${endLabelColors[0]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
               style={{
                 top: "50%",
-                transform: "translateY(-60%) translateX(-10px)",
-                maxWidth: 120,
+                transform: "translateY(-65%) translateX(-16px)", // moved more left & up
+                maxWidth: 110,
                 textAlign: "right",
                 overflow: "hidden",
-                textOverflow: "ellipsis"
+                textOverflow: "ellipsis",
+                marginRight: 4,
               }}
               title={xContext.low}
             >
@@ -52,21 +53,22 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </span>
             {/* Main bar */}
             <div className="w-full border-t-8 border-blue-700 relative flex justify-center items-center min-w-[220px]">
-              <span className="absolute left-1/2 -translate-x-1/2 bg-white px-4 py-1 text-base sm:text-lg text-blue-900 font-extrabold uppercase tracking-wide shadow -mt-2 z-20 border-2 border-blue-700 rounded-md whitespace-nowrap">
+              <span className="absolute left-1/2 -translate-x-1/2 bg-white px-3 py-0.5 text-sm sm:text-base text-blue-900 font-extrabold uppercase tracking-wide shadow -mt-2 z-20 border-2 border-blue-700 rounded-md whitespace-nowrap">
                 {xAxis.factor}
               </span>
             </div>
             {/* Right label */}
             <span
-              className={`absolute right-0 translate-x-full whitespace-nowrap ${endLabelColors[1]} text-sm sm:text-base bg-white px-2 py-0.5 rounded shadow`}
+              className={`absolute right-0 translate-x-full whitespace-nowrap ${endLabelColors[1]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
               style={{
                 top: "50%",
                 right: 0,
-                transform: "translateY(-60%) translateX(8px)",
-                maxWidth: 120,
+                transform: "translateY(-65%) translateX(16px)", // moved more right & up
+                maxWidth: 110,
                 textAlign: "left",
                 overflow: "hidden",
-                textOverflow: "ellipsis"
+                textOverflow: "ellipsis",
+                marginLeft: 4,
               }}
               title={xContext.high}
             >
@@ -77,14 +79,15 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
           <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-10 pointer-events-none select-none flex flex-col items-center">
             {/* Top label */}
             <span
-              className={`absolute top-0 -translate-y-full whitespace-nowrap ${endLabelColors[1]} text-sm sm:text-base bg-white px-2 py-0.5 rounded shadow`}
+              className={`absolute top-0 -translate-y-full whitespace-nowrap ${endLabelColors[1]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
               style={{
                 left: "50%",
-                transform: "translateX(-50%) translateY(-10px)",
-                maxWidth: 120,
+                transform: "translateX(-50%) translateY(-15px)", // moved higher up
+                maxWidth: 110,
                 textAlign: "center",
                 overflow: "hidden",
-                textOverflow: "ellipsis"
+                textOverflow: "ellipsis",
+                marginBottom: 4,
               }}
               title={yContext.high}
             >
@@ -92,20 +95,21 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </span>
             {/* Main bar */}
             <div className="h-full border-l-8 border-blue-700 relative flex flex-col justify-center items-center min-h-[220px]">
-              <span className="absolute top-1/2 -translate-y-1/2 -left-1/2 -rotate-90 origin-center bg-white px-4 py-1 text-base sm:text-lg text-blue-900 font-extrabold uppercase tracking-wide shadow z-20 border-2 border-blue-700 rounded-md whitespace-nowrap">
+              <span className="absolute top-1/2 -translate-y-1/2 -left-1/2 -rotate-90 origin-center bg-white px-3 py-0.5 text-sm sm:text-base text-blue-900 font-extrabold uppercase tracking-wide shadow z-20 border-2 border-blue-700 rounded-md whitespace-nowrap">
                 {yAxis.factor}
               </span>
             </div>
             {/* Bottom label */}
             <span
-              className={`absolute bottom-0 translate-y-full whitespace-nowrap ${endLabelColors[0]} text-sm sm:text-base bg-white px-2 py-0.5 rounded shadow`}
+              className={`absolute bottom-0 translate-y-full whitespace-nowrap ${endLabelColors[0]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
               style={{
                 left: "50%",
-                transform: "translateX(-50%) translateY(10px)",
-                maxWidth: 120,
+                transform: "translateX(-50%) translateY(15px)", // moved lower down
+                maxWidth: 110,
                 textAlign: "center",
                 overflow: "hidden",
-                textOverflow: "ellipsis"
+                textOverflow: "ellipsis",
+                marginTop: 4,
               }}
               title={yContext.low}
             >
