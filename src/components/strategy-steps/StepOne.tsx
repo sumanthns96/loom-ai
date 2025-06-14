@@ -27,7 +27,12 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
     try {
       if (data) {
         const parsedData = JSON.parse(data);
-        setAnalysis(parsedData);
+        if (Array.isArray(parsedData)) {
+          setAnalysis(parsedData);
+        } else {
+          console.error("Parsed data is not an array:", parsedData);
+          setAnalysis([]);
+        }
       } else {
         setAnalysis([]);
       }
@@ -57,14 +62,22 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
 
       console.log('Raw response data:', responseData);
       
-      // Handle the response data structure
-      let newAnalysis: SteepEntry[];
-      if (responseData.steepAnalysis) {
-        // If the response has steepAnalysis key, use it
+      let newAnalysis: SteepEntry[] | undefined;
+      if (responseData && responseData.steepAnalysis) {
         newAnalysis = responseData.steepAnalysis;
+      } else if (responseData && responseData.STEEPAnalysis) {
+        newAnalysis = responseData.STEEPAnalysis;
       } else if (Array.isArray(responseData)) {
-        // If it's directly an array
         newAnalysis = responseData;
+      }
+
+      if (newAnalysis && Array.isArray(newAnalysis)) {
+        setAnalysis(newAnalysis);
+        onDataChange(JSON.stringify(newAnalysis));
+        toast({
+          title: "Analysis generated",
+          description: "AI has completed the STEEP analysis based on your case study.",
+        });
       } else {
         console.error('Unexpected response structure:', responseData);
         toast({
@@ -72,17 +85,7 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
           description: "Unexpected response format from AI service.",
           variant: "destructive",
         });
-        return;
       }
-
-      console.log('Processed analysis:', newAnalysis);
-      setAnalysis(newAnalysis);
-      onDataChange(JSON.stringify(newAnalysis));
-
-      toast({
-        title: "Analysis generated",
-        description: "AI has completed the STEEP analysis based on your case study.",
-      });
     } catch (error) {
       console.error('Error in generateAnalysis:', error);
       toast({
@@ -162,7 +165,7 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
                     </TableCell>
                   </TableRow>
                 )}
-                {!isGenerating && analysis.map((item, index) => (
+                {!isGenerating && analysis && analysis.map((item, index) => (
                   <TableRow key={item.factor}>
                     <TableCell className="font-medium align-top bg-muted/50 pt-4">{item.factor}</TableCell>
                     <TableCell>
