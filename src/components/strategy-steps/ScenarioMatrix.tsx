@@ -17,6 +17,15 @@ const colorStyles = [
   "text-yellow-700 font-bold"
 ];
 
+// Map each STEEP factor to direction labels [Negative/Low, Positive/High]
+const FACTOR_DIRECTIONS: Record<string, [string, string]> = {
+  Social:       ["Decrease", "Increase"],
+  Technological:["Reduces", "Advances"],
+  Economic:     ["Weakens", "Strengthens"],
+  Environmental:["Worsens", "Improves"],
+  Political:    ["Unfavours", "Favours"]
+};
+
 // Helper: trims summary to max 6 words, keeping last word if it's a direction
 function shortSummaryWithDirection(text = ""): string {
   if (!text) return "";
@@ -54,17 +63,17 @@ const cap = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes }) => {
   if (!scenarios.length || axes.length !== 2) return null;
 
-  // Y and X axes
+  // Derive factor labels for axes and their direction ends
   const [yAxis, xAxis] = axes;
-  const ySummaries = splitAxisSummary(yAxis.text);
-  const xSummaries = splitAxisSummary(xAxis.text);
 
-  // Display axes mid-bar and end labels
+  // Factor directions—for fallback, default to generic Increase/Decrease
+  const yDirs = FACTOR_DIRECTIONS[yAxis.factor] || ["Decrease", "Increase"];
+  const xDirs = FACTOR_DIRECTIONS[xAxis.factor] || ["Decrease", "Increase"];
+
   return (
     <div className="mt-12 animate-fade-in relative">
       {/* Axis overlays (absolute on grid) */}
       <div className="relative max-w-3xl mx-auto mb-7">
-        {/* Container for axis bars */}
         <div className="relative" style={{ minHeight: 400 }}>
           {/* Horizontal X axis bar */}
           <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none select-none flex items-center">
@@ -73,7 +82,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes }) => {
               className={`absolute -left-2 -translate-x-full whitespace-nowrap ${endLabelColors[0]} text-base sm:text-lg`}
               style={{ top: "50%", transform: "translateY(-50%) translateX(-8px)" }}
             >
-              {shortSummaryWithDirection(xSummaries[0])}
+              {xDirs[0]}
             </span>
             {/* Main bar */}
             <div className="w-full border-t-8 border-blue-700 relative flex justify-center items-center">
@@ -86,7 +95,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes }) => {
               className={`absolute -right-2 translate-x-full whitespace-nowrap ${endLabelColors[1]} text-base sm:text-lg`}
               style={{ top: "50%", right: 0, transform: "translateY(-50%) translateX(8px)" }}
             >
-              {shortSummaryWithDirection(xSummaries[1])}
+              {xDirs[1]}
             </span>
           </div>
           {/* Vertical Y axis bar */}
@@ -96,7 +105,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes }) => {
               className={`absolute -top-2 -translate-y-full whitespace-nowrap ${endLabelColors[1]} text-base sm:text-lg`}
               style={{ left: "50%", transform: "translateX(-50%) translateY(-8px)" }}
             >
-              {shortSummaryWithDirection(ySummaries[0])}
+              {yDirs[1]}
             </span>
             {/* Main bar */}
             <div className="h-full border-l-8 border-blue-700 relative flex flex-col justify-center items-center">
@@ -109,7 +118,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes }) => {
               className={`absolute -bottom-2 translate-y-full whitespace-nowrap ${endLabelColors[0]} text-base sm:text-lg`}
               style={{ left: "50%", bottom: 0, transform: "translateX(-50%) translateY(8px)" }}
             >
-              {shortSummaryWithDirection(ySummaries[1])}
+              {yDirs[0]}
             </span>
           </div>
           {/* Grid matrix overlayed atop bars (z-20) */}
@@ -178,7 +187,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes }) => {
         </div>
       </div>
       {/* Optional: bottom margin for layout */}
-      <div className="mb-6"/>
+      <div className="mb-6" />
     </div>
   );
 };
