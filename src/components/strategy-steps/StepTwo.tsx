@@ -1,84 +1,17 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { SelectedPoint } from "./StepOne";
-
-// Type for one scenario quadrant
-type MatrixScenario = {
-  title: string;
-  description: string;
-};
+import { QUADRANT_LABELS, QUADRANT_REQUESTS, makeQuadrantPrompt, MatrixScenario } from "./QuadrantPromptUtils";
+import ScenarioMatrix from "./ScenarioMatrix";
 
 interface StepTwoProps {
   pdfContent: string;
   data: string; // for this step (can be scenario info for export)
   onDataChange: (data: string) => void;
   selectedPoints: SelectedPoint[]; // Passed from StepOne "Continue"
-}
-
-// Helper for quadrant position
-const QUADRANT_LABELS = [
-  "Best Case (Both Factors in Favor)",
-  "Y-Axis Favor, X-Axis Against",
-  "Both Against",
-  "X-Axis Favor, Y-Axis Against"
-];
-
-type QuadrantRequest = {
-  label: string;
-  promptDesc: string;
-};
-
-const QUADRANT_REQUESTS: QuadrantRequest[] = [
-  {
-    label: QUADRANT_LABELS[0],
-    promptDesc: "both the Y-axis and X-axis factors are in favor of Invisalign"
-  },
-  {
-    label: QUADRANT_LABELS[1],
-    promptDesc: "the Y-axis factor is in favor, but the X-axis factor is against Invisalign"
-  },
-  {
-    label: QUADRANT_LABELS[2],
-    promptDesc: "both the Y-axis and X-axis factors are against Invisalign"
-  },
-  {
-    label: QUADRANT_LABELS[3],
-    promptDesc: "the X-axis factor is in favor, but the Y-axis factor is against Invisalign"
-  }
-];
-
-// Compose a per-quadrant prompt
-function makeQuadrantPrompt(
-  pdfContent: string,
-  yAxis: SelectedPoint,
-  xAxis: SelectedPoint,
-  quadrant: QuadrantRequest
-) {
-  return `
-Given the following business case context (Invisalign):
-
----
-${pdfContent}
----
-
-Here are the two key uncertainties selected for a scenario matrix:
-  Y Axis: ${yAxis.factor} - "${yAxis.text}"
-  X Axis: ${xAxis.factor} - "${xAxis.text}"
-
-Generate a scenario QUADRANT for a 2x2 scenario matrix:
-Description: ${quadrant.promptDesc}
-
-Return a single compact JSON object (no extra prose, no markdown, JSON only) with:
-{
-  "title": "<concise quadrant label (max 8 words)>",
-  "description": "<a business-oriented scenario for Invisalign if this quadrant occurs; 3-4 sentences, specific, actionable>"
-}
-REPLY WITH JSON ONLY.
-  `.trim();
 }
 
 const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProps) => {
@@ -112,38 +45,36 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
 
     try {
       const [yAxis, xAxis] = axes;
-      const quadrantPromises = QUADRANT_REQUESTS.map(async (q, idx) => {
+      // Generate each quadrant individually and in order
+      const quadrantResults: MatrixScenario[] = [];
+      for (let i = 0; i < QUADRANT_REQUESTS.length; i++) {
+        const q = QUADRANT_REQUESTS[i];
         const prompt = makeQuadrantPrompt(pdfContent, yAxis, xAxis, q);
-        // Ask the Gemini function for ONE quadrant at a time
         const { data: responseData, error } = await supabase.functions.invoke(
           "generate-steep-analysis",
           { body: { pdfContent: prompt } }
         );
         if (error) {
-          throw new Error(error.message || `Error in quadrant ${q.label}`);
+          quadrantResults.push({
+            title: q.label,
+            description: "[Scenario could not be generated; please retry or adjust your axis selection.]"
+          });
+          continue;
         }
         // Robust parse for single JSON object in responseData
         let obj: any = undefined;
-        // Try direct object
         if (responseData && typeof responseData === "object" && !Array.isArray(responseData)) {
-          // Take first suitable object property as scenario
-          if (
-            responseData.title &&
-            responseData.description
-          ) {
+          if (responseData.title && responseData.description) {
             obj = responseData;
           } else {
-            // try nested properties
             const possible = responseData.scenario || responseData.result || responseData.data;
             if (possible && possible.title && possible.description) {
               obj = possible;
             }
           }
         }
-        // Try parsing a string payload
         if (!obj && typeof responseData === "string") {
           try {
-            // Remove trailing commas, whitespace, markdown, etc.
             let cleaned = responseData
               .replace(/^`+json|`+$/gi, '')
               .replace(/,\s*(\}|\])/g, "$1")
@@ -154,19 +85,15 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
             }
           } catch { /* ignore parse error */ }
         }
-        // As last resort, fail with quadrant label
         if (!obj) {
           obj = {
             title: q.label,
             description: "[Scenario could not be generated; please retry or adjust your axis selection.]"
           };
         }
-        return obj;
-      });
+        quadrantResults.push(obj);
+      }
 
-      const quadrantResults: MatrixScenario[] = await Promise.all(quadrantPromises);
-
-      // Validate
       if (!quadrantResults || quadrantResults.length !== 4) {
         toast({
           title: "Scenario format error",
@@ -206,7 +133,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
           <h3 className="font-medium mb-4">
             Select <span className="font-bold">two</span> factors/points as key uncertainties (these become axes):
           </h3>
-          {/* Point selection: show all selected points from Step 1 */}
+          {/* Point selection UI */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {selectedPoints.map((pt, idx) => (
               <button
@@ -237,37 +164,8 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
               {isGenerating ? "Generating..." : "Generate Scenario Matrix"}
             </Button>
           </div>
-          {/* Render Matrix */}
-          {!!scenarios.length && axes.length === 2 && (
-            <div className="mt-10">
-              {/* Axes Legends */}
-              <div className="flex flex-col items-center mb-6">
-                <div className="text-lg font-semibold mb-2">
-                  {axes[0].factor} → Y Axis, {axes[1].factor} → X Axis
-                </div>
-                <div className="flex items-center">
-                  <span className="font-bold text-blue-700">{axes[0].factor}</span>
-                  <span className="mx-4 text-gray-400">as Y-axis</span>
-                  <span className="font-bold text-yellow-700">{axes[1].factor}</span>
-                  <span className="mx-4 text-gray-400">as X-axis</span>
-                </div>
-              </div>
-              {/* 2x2 Matrix */}
-              <div className="grid grid-cols-2 grid-rows-2 gap-4 max-w-3xl mx-auto">
-                {scenarios.map((sc, idx) => (
-                  <div key={idx} className="border rounded-lg bg-gray-50 shadow px-4 py-5">
-                    <div className="font-bold mb-2 text-blue-900">{sc.title}</div>
-                    <div className="text-sm text-gray-700">{sc.description}</div>
-                  </div>
-                ))}
-              </div>
-              {/* Quadrant Labels, Arrow Legends (optional) */}
-              <div className="mt-4 flex justify-between px-8 text-sm text-gray-600 font-medium">
-                <span>Y: {axes[0].text}</span>
-                <span>X: {axes[1].text}</span>
-              </div>
-            </div>
-          )}
+          {/* Render Matrix (now separated into ScenarioMatrix component) */}
+          <ScenarioMatrix scenarios={scenarios} axes={axes} />
         </CardContent>
       </Card>
     </div>
