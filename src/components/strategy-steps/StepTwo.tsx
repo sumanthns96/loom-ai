@@ -8,6 +8,38 @@ import type { SelectedPoint } from "./StepOne";
 import { QUADRANT_REQUESTS, makeQuadrantPrompt, MatrixScenario } from "./QuadrantPromptUtils";
 import ScenarioMatrix from "./ScenarioMatrix";
 
+// New: helper to generate Gemini axis context labels
+async function fetchAxisContext(factor: string, axisText: string, caseContext: string) {
+  // Build prompt dynamically
+  // e.g., "For the chosen STEEP factor Technological, what is a specific aspect of the future that might 'Advance' or 'Reduce' in this case context?"
+  const prompt = `
+Given the following case context: 
+${caseContext}
+
+For the STEEP factor "${factor}", please specify the most relevant key uncertainty axis for a 2x2 scenario matrix. State what could plausibly ADVANCE (positive direction) and what could REDUCE (negative direction) for this organization/setting, as a pair of short phrases (max 4 words each, no extra text, not just 'Increase/Decrease' but what exactly is advancing/reducing).
+
+Always respond in this exact strict JSON format, no introduction/explanation:
+{"low": "<Negative/Low axis phrase>", "high": "<Positive/High axis phrase>" }
+`;
+
+  const { data: responseData } = await supabase.functions.invoke("generate-scenario-matrix", {
+    body: { prompt }
+  });
+  // Parse
+  try {
+    let content = responseData?.raw || responseData;
+    if (typeof content !== "string") content = JSON.stringify(content);
+    content = content.replace(/^\s*```json\s*|\s*```\s*$/gi, "").trim();
+    const parsed = JSON.parse(content);
+    if (typeof parsed.low === "string" && typeof parsed.high === "string") {
+      return parsed;
+    }
+  } catch {
+    // fallback on generic
+  }
+  return { low: "Low", high: "High" };
+}
+
 interface StepTwoProps {
   pdfContent: string;
   data: string; // for this step (can be scenario info for export)
@@ -20,6 +52,8 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
   const [axes, setAxes] = useState<SelectedPoint[]>([]);
   const [scenarios, setScenarios] = useState<MatrixScenario[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  // New: store contextual axis ends
+  const [axisContexts, setAxisContexts] = useState<{ low: string; high: string }[]>([]);
 
   // Handle axis selection
   const handleSelectAxis = (point: SelectedPoint) => {
@@ -34,21 +68,17 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
 
   // Clean context info for prompts
   function getCaseTitleAndContext() {
-    // Try to grab from pdfContent (if structured) or fallback
     let title = "";
     let context = "";
     const match = pdfContent.match(/^\s*Title:?\s*(.+?)\s*$/m);
     if (match) title = match[1];
-    // If unable to find, use the first line for title and the remainder for context
     const lines = pdfContent.split("\n").map(line => line.trim()).filter(Boolean);
     if (!title && lines.length > 0) title = lines[0];
     if (lines.length > 1) context = lines.slice(1).join(" ");
-    // If still empty, just use a generic context
     if (!context) context = "See case study background above.";
     return { title, context };
   }
 
-  // Generate scenarios from Gemini (one LLM call per quadrant)
   const handleGenerateScenarios = async () => {
     if (axes.length !== 2) {
       toast({
@@ -63,9 +93,15 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
     try {
       const [yAxis, xAxis] = axes;
       const { title: caseTitle, context: industryContext } = getCaseTitleAndContext();
-      const horizonYear = "2027"; // Or compute from UI/year picker if present
+      const horizonYear = "2027";
 
-      // Generate each quadrant with improved prompt/results
+      // STEP 1: Fetch axis labels from Gemini (for each axis: what exactly advances/reduces or favours/unfavours)
+      toast({ title: "Getting axis labels...", description: "Fetching contextual axis directions from Gemini..." });
+      const yContext = await fetchAxisContext(yAxis.factor, yAxis.text, industryContext);
+      const xContext = await fetchAxisContext(xAxis.factor, xAxis.text, industryContext);
+      setAxisContexts([yContext, xContext]);
+
+      // STEP 2: Usual scenario generation
       const quadrantResults: MatrixScenario[] = [];
       for (let i = 0; i < QUADRANT_REQUESTS.length; i++) {
         const q = QUADRANT_REQUESTS[i];
@@ -86,13 +122,11 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
           quadrantResults.push({ header: "", bullets: [] });
           continue;
         }
-        // Parse [header, bullets[]] JSON robustly
         let obj: any = undefined;
         if (responseData && typeof responseData === "object" && !Array.isArray(responseData)) {
           if (responseData.header && Array.isArray(responseData.bullets)) {
             obj = responseData;
           } else if (responseData.raw) {
-            // try parse again if frontend received unparsed raw text
             try {
               const parsed = JSON.parse(
                 (responseData.raw as string)
@@ -195,7 +229,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
             </Button>
           </div>
           {/* Render Matrix (now separated into ScenarioMatrix component) */}
-          <ScenarioMatrix scenarios={scenarios} axes={axes} />
+          <ScenarioMatrix scenarios={scenarios} axes={axes} axisContexts={axisContexts} />
         </CardContent>
       </Card>
     </div>
@@ -203,3 +237,5 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
 };
 
 export default StepTwo;
+
+// NOTE: This file is now >200 lines. Consider refactoring into smaller files for better maintainability after reviewing!
