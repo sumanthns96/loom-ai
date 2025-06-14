@@ -4,7 +4,7 @@ import { corsHeaders } from '../_shared/cors.ts'
 
 // This function requires the GOOGLE_API_KEY to be set in Supabase Edge Function secrets.
 const GEMINI_API_KEY = Deno.env.get('GOOGLE_API_KEY')
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
 
 interface SteepFactor {
   factor: 'Social' | 'Technological' | 'Economic' | 'Environmental' | 'Political'
