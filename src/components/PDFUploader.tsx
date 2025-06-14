@@ -6,10 +6,9 @@ import { Progress } from "@/components/ui/progress";
 import { Upload, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import * as pdfjsLib from "pdfjs-dist";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 
-// Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+// Set up PDF.js worker using CDN
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface PDFUploaderProps {
   onTextExtracted: (text: string) => void;
