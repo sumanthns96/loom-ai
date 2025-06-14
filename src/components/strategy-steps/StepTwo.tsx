@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -44,7 +43,6 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
     });
   };
 
-  // Generate scenarios from Gemini
   const handleGenerateScenarios = async () => {
     if (axes.length !== 2) {
       toast({
@@ -90,28 +88,51 @@ ${pdfContent}
         return;
       }
 
+      // --- Robust Gemini response parsing logic ---
       let arr: any[] | undefined = undefined;
       if (responseData && Array.isArray(responseData.steepAnalysis)) {
         arr = responseData.steepAnalysis;
       } else if (Array.isArray(responseData)) {
         arr = responseData;
       } else if (typeof responseData === "object" && responseData !== null) {
-        // fallback if Gemini returns wrapped key
-        const possible = responseData.steepAnalysis || responseData.STEEPAnalysis;
+        // Try all possible properties and also handle stringified arrays
+        const possible = responseData.steepAnalysis || responseData.STEEPAnalysis || responseData.scenarioMatrix || responseData.matrix;
         if (typeof possible === "string") {
           try {
-            const parsed = JSON.parse(possible);
-            if (Array.isArray(parsed)) {
-              arr = parsed;
+            // Remove trailing commas and whitespace, if any (Gemini issue)
+            let cleaned = possible
+              .replace(/,\s*(\]|\})/g, '$1')
+              .trim();
+            // Try to parse as JSON
+            const inner = JSON.parse(cleaned);
+            if (Array.isArray(inner)) {
+              arr = inner;
             }
-          } catch { /* ignore */ }
+          } catch {
+            // ignore
+          }
+        } else if (Array.isArray(possible)) {
+          arr = possible;
+        }
+      } else if (typeof responseData === "string") {
+        // If the whole response is a stringified array
+        try {
+          let cleaned = responseData.replace(/,\s*(\]|\})/g, '$1').trim();
+          const asArr = JSON.parse(cleaned);
+          if (Array.isArray(asArr)) {
+            arr = asArr;
+          }
+        } catch {
+          // ignore
         }
       }
-      // Validate and fallback
+      // END robust parsing
+
+      // Validate scenario count for a proper 2x2 matrix
       if (!arr || arr.length !== 4) {
         toast({
           title: "Scenario format error",
-          description: "Could not parse four quadrants from AI response.",
+          description: "Could not parse four quadrants from AI response. Please try again, or try regenerating.",
           variant: "destructive"
         });
         setIsGenerating(false);
