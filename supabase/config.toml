@@ -3,3 +3,7 @@ project_id = "wztmgdevfzykdnqakwhg"
 
 [functions.generate-steep-analysis]
 verify_jwt = false
+
+[functions.generate-scenario-matrix]
+verify_jwt = false
+

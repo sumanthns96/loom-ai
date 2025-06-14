@@ -78,14 +78,12 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
           q
         );
         const { data: responseData, error } = await supabase.functions.invoke(
-          "generate-steep-analysis",
-          { body: { pdfContent: prompt } }
+          "generate-scenario-matrix",
+          { body: { prompt } }
         );
         if (error) {
-          quadrantResults.push({
-            header: "",
-            bullets: []
-          });
+          console.error("Edge function error:", error);
+          quadrantResults.push({ header: "", bullets: [] });
           continue;
         }
         // Parse [header, bullets[]] JSON robustly
@@ -93,6 +91,18 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
         if (responseData && typeof responseData === "object" && !Array.isArray(responseData)) {
           if (responseData.header && Array.isArray(responseData.bullets)) {
             obj = responseData;
+          } else if (responseData.raw) {
+            // try parse again if frontend received unparsed raw text
+            try {
+              const parsed = JSON.parse(
+                (responseData.raw as string)
+                  .replace(/^\s*```json\s*|\s*```\s*$/gi, "")
+                  .trim()
+              );
+              if (parsed.header && Array.isArray(parsed.bullets)) {
+                obj = parsed;
+              }
+            } catch (e) { console.error("Nested parse error:", e); }
           }
         }
         if (!obj && typeof responseData === "string") {
@@ -108,10 +118,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
           } catch { /* ignore parse error */ }
         }
         if (!obj) {
-          obj = {
-            header: "",
-            bullets: []
-          };
+          obj = { header: "", bullets: [] };
         }
         quadrantResults.push(obj);
       }
@@ -132,6 +139,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
         description: "Generated 2x2 scenario matrix using your selected uncertainties."
       });
     } catch (err: any) {
+      console.error("Fatal scenario gen error", err);
       toast({
         title: "Error",
         description: "Unexpected error occurred while generating scenarios.",
