@@ -1,10 +1,11 @@
+
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileText, AlertCircle } from "lucide-react";
+import { Upload, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import * as pdfjsLib from "pdfjs-dist/build/pdf.mjs";
+import * as pdfjsLib from "pdfjs-dist";
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 
 // Set up PDF.js worker
