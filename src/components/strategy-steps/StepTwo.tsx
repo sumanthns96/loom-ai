@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { SelectedPoint } from "./StepOne";
-import { QUADRANT_LABELS, QUADRANT_REQUESTS, makeQuadrantPrompt, MatrixScenario } from "./QuadrantPromptUtils";
+import { QUADRANT_REQUESTS, makeQuadrantPrompt, MatrixScenario } from "./QuadrantPromptUtils";
 import ScenarioMatrix from "./ScenarioMatrix";
 
 interface StepTwoProps {
@@ -31,6 +32,22 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
     });
   };
 
+  // Clean context info for prompts
+  function getCaseTitleAndContext() {
+    // Try to grab from pdfContent (if structured) or fallback
+    let title = "";
+    let context = "";
+    const match = pdfContent.match(/^\s*Title:?\s*(.+?)\s*$/m);
+    if (match) title = match[1];
+    // If unable to find, use the first line for title and the remainder for context
+    const lines = pdfContent.split("\n").map(line => line.trim()).filter(Boolean);
+    if (!title && lines.length > 0) title = lines[0];
+    if (lines.length > 1) context = lines.slice(1).join(" ");
+    // If still empty, just use a generic context
+    if (!context) context = "See case study background above.";
+    return { title, context };
+  }
+
   // Generate scenarios from Gemini (one LLM call per quadrant)
   const handleGenerateScenarios = async () => {
     if (axes.length !== 2) {
@@ -45,32 +62,37 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
 
     try {
       const [yAxis, xAxis] = axes;
-      // Generate each quadrant individually and in order
+      const { title: caseTitle, context: industryContext } = getCaseTitleAndContext();
+      const horizonYear = "2027"; // Or compute from UI/year picker if present
+
+      // Generate each quadrant with improved prompt/results
       const quadrantResults: MatrixScenario[] = [];
       for (let i = 0; i < QUADRANT_REQUESTS.length; i++) {
         const q = QUADRANT_REQUESTS[i];
-        const prompt = makeQuadrantPrompt(pdfContent, yAxis, xAxis, q);
+        const prompt = makeQuadrantPrompt(
+          caseTitle,
+          industryContext,
+          horizonYear,
+          yAxis,
+          xAxis,
+          q
+        );
         const { data: responseData, error } = await supabase.functions.invoke(
           "generate-steep-analysis",
           { body: { pdfContent: prompt } }
         );
         if (error) {
           quadrantResults.push({
-            title: q.label,
-            description: "[Scenario could not be generated; please retry or adjust your axis selection.]"
+            header: "",
+            bullets: []
           });
           continue;
         }
-        // Robust parse for single JSON object in responseData
+        // Parse [header, bullets[]] JSON robustly
         let obj: any = undefined;
         if (responseData && typeof responseData === "object" && !Array.isArray(responseData)) {
-          if (responseData.title && responseData.description) {
+          if (responseData.header && Array.isArray(responseData.bullets)) {
             obj = responseData;
-          } else {
-            const possible = responseData.scenario || responseData.result || responseData.data;
-            if (possible && possible.title && possible.description) {
-              obj = possible;
-            }
           }
         }
         if (!obj && typeof responseData === "string") {
@@ -80,15 +102,15 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
               .replace(/,\s*(\}|\])/g, "$1")
               .trim();
             const parsed = JSON.parse(cleaned);
-            if (parsed.title && parsed.description) {
+            if (parsed.header && Array.isArray(parsed.bullets)) {
               obj = parsed;
             }
           } catch { /* ignore parse error */ }
         }
         if (!obj) {
           obj = {
-            title: q.label,
-            description: "[Scenario could not be generated; please retry or adjust your axis selection.]"
+            header: "",
+            bullets: []
           };
         }
         quadrantResults.push(obj);
