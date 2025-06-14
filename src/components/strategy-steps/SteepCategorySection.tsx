@@ -12,6 +12,7 @@ interface SteepCategorySectionProps {
   onEdit: (idx: number, value: string) => void;
 }
 
+// Render a box for each STEEP category with three editable points and checkboxes.
 const SteepCategorySection: FC<SteepCategorySectionProps> = ({
   factor,
   style,
@@ -52,3 +53,4 @@ const SteepCategorySection: FC<SteepCategorySectionProps> = ({
 };
 
 export default SteepCategorySection;
+
