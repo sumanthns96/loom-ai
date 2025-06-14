@@ -1,33 +1,14 @@
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, FileText, Target, TrendingUp, CheckCircle } from "lucide-react";
+import { Target, FileText, TrendingUp, CheckCircle } from "lucide-react";
 import PDFUploader from "@/components/PDFUploader";
-import StrategyWizard from "@/components/StrategyWizard";
 
 const Index = () => {
-  const [pdfContent, setPdfContent] = useState<string>("");
-  const [currentStep, setCurrentStep] = useState<"upload" | "strategy">("upload");
+  const navigate = useNavigate();
 
   const handlePdfExtracted = (content: string) => {
-    setPdfContent(content);
-    setCurrentStep("strategy");
+    navigate("/strategy-wizard", { state: { pdfContent: content } });
   };
-
-  const resetToUpload = () => {
-    setPdfContent("");
-    setCurrentStep("upload");
-  };
-
-  if (currentStep === "strategy") {
-    return (
-      <StrategyWizard 
-        pdfContent={pdfContent} 
-        onReset={resetToUpload}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">

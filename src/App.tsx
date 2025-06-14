@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import StrategyPage from "./pages/StrategyPage";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -19,6 +20,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/strategy-wizard" element={<StrategyPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
