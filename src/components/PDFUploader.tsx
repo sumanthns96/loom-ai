@@ -1,14 +1,14 @@
-
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Upload, FileText, AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist/build/pdf.mjs";
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
 
 // Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 interface PDFUploaderProps {
   onTextExtracted: (text: string) => void;
