@@ -78,6 +78,7 @@ export type SelectedPoint = {
 const StepOne = ({ pdfContent, data, onDataChange, onNext }: StepOneProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [factors, setFactors] = useState<SteepFactorGroup[]>([]);
+  const [hasGenerated, setHasGenerated] = useState(false);
 
   // Parse JSON model for 3 points per factor
   useEffect(() => {
@@ -87,24 +88,15 @@ const StepOne = ({ pdfContent, data, onDataChange, onNext }: StepOneProps) => {
         const parsed: SteepFactorGroup[] = JSON.parse(data);
         if (Array.isArray(parsed) && parsed[0]?.points) {
           setFactors(parsed);
+          setHasGenerated(true);
           return;
         }
       }
-      setFactors(
-        FACTOR_ORDER.map((factor) => ({
-          factor,
-          points: [{ text: "" }, { text: "" }, { text: "" }],
-          selected: [],
-        }))
-      );
+      setFactors([]);
+      setHasGenerated(false);
     } catch {
-      setFactors(
-        FACTOR_ORDER.map((factor) => ({
-          factor,
-          points: [{ text: "" }, { text: "" }, { text: "" }],
-          selected: [],
-        }))
-      );
+      setFactors([]);
+      setHasGenerated(false);
     }
   }, [data]);
 
@@ -223,6 +215,7 @@ ${pdfContent}
         };
       });
       setFactors(ordered);
+      setHasGenerated(true);
       onDataChange(JSON.stringify(ordered));
       toast({
         title: "Analysis generated",
@@ -293,7 +286,12 @@ ${pdfContent}
               <span>Generating detailed analysis with Gemini...</span>
             </div>
           )}
-          {!isGenerating &&
+          {!isGenerating && !hasGenerated && (
+            <div className="h-60 flex items-center justify-center text-muted-foreground">
+              <span>Click "Generate with AI" to start your STEEP analysis</span>
+            </div>
+          )}
+          {!isGenerating && hasGenerated &&
             factors.map((group, factorIdx) => (
               <SteepCategorySection
                 key={group.factor}
@@ -309,7 +307,7 @@ ${pdfContent}
                 }
               />
             ))}
-          {!isGenerating && (
+          {!isGenerating && hasGenerated && (
             <div className="flex justify-end mt-8">
               <Button
                 onClick={() => onNext(selectedPoints)}
