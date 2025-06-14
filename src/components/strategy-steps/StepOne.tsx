@@ -1,10 +1,22 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RefreshCw, Lightbulb } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { RefreshCw, Users, Lightbulb, BarChart2, Recycle, Podium } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,6 +31,46 @@ interface StepOneProps {
   onDataChange: (data: string) => void;
 }
 
+// Map factor name to color and icon for display, as per the reference image
+const FACTOR_STYLES: Record<
+  string,
+  { color: string; bg: string; icon: React.ReactNode }
+> = {
+  Social: {
+    color: "text-red-600",
+    bg: "bg-red-100",
+    icon: <Users className="w-6 h-6 text-red-500" />,
+  },
+  Technological: {
+    color: "text-yellow-700",
+    bg: "bg-yellow-100",
+    icon: <Lightbulb className="w-6 h-6 text-yellow-400" />,
+  },
+  Economic: {
+    color: "text-yellow-900",
+    bg: "bg-yellow-200",
+    icon: <BarChart2 className="w-6 h-6 text-yellow-500" />,
+  },
+  Environmental: {
+    color: "text-green-700",
+    bg: "bg-green-100",
+    icon: <Recycle className="w-6 h-6 text-green-500" />,
+  },
+  Political: {
+    color: "text-cyan-700",
+    bg: "bg-cyan-100",
+    icon: <Podium className="w-6 h-6 text-cyan-500" />,
+  },
+};
+
+const FACTOR_ORDER = [
+  "Social",
+  "Technological",
+  "Economic",
+  "Environmental",
+  "Political",
+];
+
 const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [analysis, setAnalysis] = useState<SteepEntry[]>([]);
@@ -27,17 +79,24 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
     try {
       if (data) {
         const parsedData = JSON.parse(data);
+        // Accept as array, or object with STEEPAnalysis or steepAnalysis property
+        let arr: SteepEntry[] = [];
         if (Array.isArray(parsedData)) {
-          setAnalysis(parsedData);
+          arr = parsedData;
+        } else if (parsedData && Array.isArray(parsedData.steepAnalysis)) {
+          arr = parsedData.steepAnalysis;
+        } else if (parsedData && Array.isArray(parsedData.STEEPAnalysis)) {
+          arr = parsedData.STEEPAnalysis;
+        }
+        if (arr.length > 0) {
+          setAnalysis(arr);
         } else {
-          console.error("Parsed data is not an array:", parsedData);
           setAnalysis([]);
         }
       } else {
         setAnalysis([]);
       }
     } catch (error) {
-      console.error("Failed to parse initial data:", error);
       setAnalysis([]);
     }
   }, [data]);
@@ -46,12 +105,24 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
     setIsGenerating(true);
 
     try {
-      const { data: responseData, error } = await supabase.functions.invoke('generate-steep-analysis', {
-        body: { pdfContent },
-      });
+      // UPDATED prompt with strategy consultant expert context and explicit structure:
+      const detailedPrompt = `
+You are an expert strategy consultant at BCG. Based on the provided case study, provide an in-depth, up-to-date STEEP analysis for the case with references to current trends and global context.
+For each factor, analyze deeply and use the latest knowledge. Format your response as a valid JSON array of exactly 5 objects in this order: ["Social", "Technological", "Economic", "Environmental", "Political"]. Each object must have a "factor" key (with the name above) and an "analysis" key (with a detailed analysis, at least 2-3 sentences). Do NOT include markdown or extra text.
+
+Case Study:
+---
+${pdfContent}
+---`;
+
+      const { data: responseData, error } = await supabase.functions.invoke(
+        "generate-steep-analysis",
+        {
+          body: { pdfContent: detailedPrompt },
+        }
+      );
 
       if (error) {
-        console.error('Supabase function error:', error);
         toast({
           title: "Error generating analysis",
           description: error.message,
@@ -60,44 +131,70 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
         return;
       }
 
-      console.log('Raw response data:', responseData);
-      
+      // Parse result: look for array, steepAnalysis, STEEPAnalysis, or try to extract with fallback.
       let newAnalysis: SteepEntry[] | undefined;
-      if (responseData && responseData.steepAnalysis) {
+      if (
+        responseData &&
+        Array.isArray(responseData.steepAnalysis)
+      ) {
         newAnalysis = responseData.steepAnalysis;
-      } else if (responseData && responseData.STEEPAnalysis) {
+      } else if (
+        responseData &&
+        Array.isArray(responseData.STEEPAnalysis)
+      ) {
         newAnalysis = responseData.STEEPAnalysis;
       } else if (Array.isArray(responseData)) {
         newAnalysis = responseData;
+      } else if (
+        typeof responseData === "object" &&
+        responseData !== null
+      ) {
+        // Sometimes embedded as JSON string property!
+        const possible = responseData.steepAnalysis || responseData.STEEPAnalysis;
+        if (typeof possible === "string") {
+          try {
+            const parsed = JSON.parse(possible);
+            if (Array.isArray(parsed)) {
+              newAnalysis = parsed;
+            }
+          } catch { /* ignore */ }
+        }
       }
-
-      if (newAnalysis && Array.isArray(newAnalysis)) {
-        setAnalysis(newAnalysis);
-        onDataChange(JSON.stringify(newAnalysis));
-        toast({
-          title: "Analysis generated",
-          description: "AI has completed the STEEP analysis based on your case study.",
-        });
-      } else {
-        console.error('Unexpected response structure:', responseData);
+      if (!newAnalysis || !Array.isArray(newAnalysis)) {
         toast({
           title: "Error processing analysis",
           description: "Unexpected response format from AI service.",
           variant: "destructive",
         });
+        setIsGenerating(false);
+        return;
       }
+
+      // Sort so always in STEEP order
+      const ordered = FACTOR_ORDER.map((factor) =>
+        newAnalysis!.find((e) => e.factor === factor) || {
+          factor,
+          analysis: "",
+        }
+      );
+      setAnalysis(ordered);
+      onDataChange(JSON.stringify(ordered));
+      toast({
+        title: "Analysis generated",
+        description: "AI has completed the STEEP analysis based on your case study.",
+      });
     } catch (error) {
-      console.error('Error in generateAnalysis:', error);
       toast({
         title: "Error generating analysis",
-        description: "An unexpected error occurred while generating the analysis.",
+        description:
+          "An unexpected error occurred while generating the analysis.",
         variant: "destructive",
       });
     } finally {
       setIsGenerating(false);
     }
   };
-  
+
   const handleAnalysisChange = (value: string, index: number) => {
     const newAnalysis = [...analysis];
     newAnalysis[index].analysis = value;
@@ -106,15 +203,15 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-3xl mx-auto">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Lightbulb className="h-5 w-5 text-yellow-600" />
-            <span>Analyze STEEP Factors</span>
+            <span role="img" aria-label="lightbulb">💡</span>
+            <span>STEEP Analysis</span>
           </CardTitle>
           <CardDescription>
-            Use AI to generate a STEEP analysis from your case study. This table outlines the Social, Technological, Economic, Environmental, and Political factors impacting your strategy.
+            As an expert strategy consultant: AI-generated, in-depth STEEP analysis for your uploaded document, styled for presentation.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -138,49 +235,64 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
               )}
             </Button>
           </div>
-          
-          <Card className="overflow-hidden border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[150px] bg-muted/50 font-semibold">Factor</TableHead>
-                  <TableHead className="font-semibold">Analysis</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isGenerating && (
-                  <TableRow>
-                    <TableCell colSpan={2} className="h-36 text-center">
-                      <div className="flex justify-center items-center space-x-2 text-muted-foreground">
-                        <RefreshCw className="h-5 w-5 animate-spin" />
-                        <span>Generating analysis with Gemini...</span>
+
+          {/* Custom table for STEEP as per image */}
+          <div className="rounded-lg overflow-hidden shadow-md border">
+            <div>
+              {isGenerating && (
+                <div className="h-40 flex items-center justify-center text-muted-foreground gap-2">
+                  <RefreshCw className="h-5 w-5 animate-spin" />
+                  <span>Generating analysis with Gemini...</span>
+                </div>
+              )}
+              {!isGenerating && (!analysis || analysis.length === 0) && (
+                <div className="h-40 flex items-center justify-center text-muted-foreground">
+                  Click "Generate with AI" to create a STEEP analysis from your document.
+                </div>
+              )}
+              {!isGenerating &&
+                analysis.length > 0 &&
+                analysis.map((item, idx) => {
+                  const style = FACTOR_STYLES[item.factor] || {};
+                  return (
+                    <div
+                      key={item.factor}
+                      className={`flex items-stretch border-b last:border-none`}
+                      style={{ background: style.bg || undefined }}
+                    >
+                      {/* Sidebar letter & icon */}
+                      <div
+                        className={`flex flex-col items-center justify-center w-16 min-w-[64px] ${style.bg || "bg-gray-200"
+                          }`}
+                      >
+                        <span
+                          className={`text-3xl font-extrabold ${style.color || "text-black"
+                            }`}
+                        >
+                          {item.factor[0]}
+                        </span>
+                        <span className="mt-2">{style.icon || null}</span>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!isGenerating && analysis.length === 0 && (
-                   <TableRow>
-                    <TableCell colSpan={2} className="h-36 text-center text-muted-foreground">
-                      Click "Generate with AI" to create a STEEP analysis from your document.
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!isGenerating && analysis && analysis.map((item, index) => (
-                  <TableRow key={item.factor}>
-                    <TableCell className="font-medium align-top bg-muted/50 pt-4">{item.factor}</TableCell>
-                    <TableCell>
-                      <Textarea
-                        value={item.analysis}
-                        onChange={(e) => handleAnalysisChange(e.target.value, index)}
-                        className="w-full border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-2 min-h-[100px] bg-transparent resize-none"
-                        placeholder="Analysis goes here..."
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+                      {/* Main content */}
+                      <div className="flex-[2] flex flex-col justify-center px-4 py-5">
+                        <span
+                          className={`uppercase font-bold text-lg pb-1 tracking-wide ${style.color || "text-black"
+                            }`}
+                        >
+                          {item.factor}
+                        </span>
+                        <Textarea
+                          value={item.analysis}
+                          onChange={(e) => handleAnalysisChange(e.target.value, idx)}
+                          className="w-full border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 min-h-[80px] bg-transparent resize-none font-normal text-base"
+                          placeholder="Analysis goes here..."
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
