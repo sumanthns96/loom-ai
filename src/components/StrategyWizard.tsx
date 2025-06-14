@@ -26,7 +26,7 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   });
 
   const steps = [
-    { number: 1, title: "Situational Analysis", component: StepOne },
+    { number: 1, title: "Analyze STEEP Factors", component: StepOne },
     { number: 2, title: "Problem Identification", component: StepTwo },
     { number: 3, title: "Strategic Options", component: StepThree },
     { number: 4, title: "Implementation Plan", component: StepFour },

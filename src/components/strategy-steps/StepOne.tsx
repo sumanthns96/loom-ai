@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,47 +24,35 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
     
     // Simulate AI analysis - in a real app, this would call an LLM API
     setTimeout(() => {
-      const mockAnalysis = `SITUATIONAL ANALYSIS
+      const mockAnalysis = `STEEP ANALYSIS
 
-Current Market Position:
-• The company operates in a competitive market with established players
-• Market share position needs strengthening through differentiation
-• Customer segments show varied needs and preferences
+Social Factors:
+• Changing consumer lifestyles and preferences towards sustainability.
+• Increasing demand for ethical and transparent business practices.
+• Demographic shifts affecting the workforce and customer base.
 
-Competitive Landscape:
-• Multiple competitors with similar offerings
-• Opportunity for innovation and unique value proposition
-• Price competition affects margins across the industry
+Technological Factors:
+• Rapid advancements in AI and automation are disrupting industries.
+• Increased cybersecurity threats require robust defense systems.
+• Rise of e-commerce and digital marketing channels.
 
-Internal Capabilities:
-• Strong operational foundation
-• Technology infrastructure requires modernization
-• Human resources show potential for growth and development
+Economic Factors:
+• Global economic uncertainty and potential for recession.
+• Fluctuating inflation rates and interest rates impacting costs.
+• Shifting trade policies and tariffs.
 
-SWOT Analysis:
+Environmental Factors:
+• Growing regulatory pressure for environmental sustainability.
+• Climate change risks impacting supply chains and operations.
+• Consumer preference for eco-friendly products and services.
 
-Strengths:
-• Established brand recognition
-• Loyal customer base
-• Operational efficiency
-
-Weaknesses:
-• Limited digital presence
-• Aging technology systems
-• Resource constraints
-
-Opportunities:
-• Growing market demand
-• Digital transformation potential
-• New customer segments
-
-Threats:
-• Increased competition
-• Economic uncertainty
-• Technological disruption
+Political Factors:
+• Changes in government regulations and taxation policies.
+• Political instability in key markets.
+• International trade agreements and disputes.
 
 Key Insights:
-The analysis reveals a company with solid fundamentals but facing modern challenges that require strategic adaptation and investment in digital capabilities.`;
+The analysis highlights the need for adaptability in the face of technological disruption and a proactive approach to sustainability to meet consumer expectations and regulatory requirements.`;
 
       setAnalysis(mockAnalysis);
       onDataChange(mockAnalysis);
@@ -73,7 +60,7 @@ The analysis reveals a company with solid fundamentals but facing modern challen
       
       toast({
         title: "Analysis generated",
-        description: "AI has completed the situational analysis based on your case study.",
+        description: "AI has completed the STEEP analysis based on your case study.",
       });
     }, 3000);
   };
@@ -89,11 +76,11 @@ The analysis reveals a company with solid fundamentals but facing modern challen
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Lightbulb className="h-5 w-5 text-yellow-600" />
-            <span>Situational Analysis</span>
+            <span>Analyze STEEP Factors</span>
           </CardTitle>
           <CardDescription>
-            Analyze the current market position, competitive landscape, and internal capabilities 
-            based on your case study. This forms the foundation for strategic planning.
+            Analyze the Social, Technological, Economic, Environmental, and Political factors 
+            affecting your business. This forms the foundation for strategic planning.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -119,7 +106,7 @@ The analysis reveals a company with solid fundamentals but facing modern challen
           </div>
 
           <Textarea
-            placeholder="Click 'Generate Analysis' to create an AI-powered situational analysis, or write your own analysis here..."
+            placeholder="Click 'Generate Analysis' to create an AI-powered STEEP analysis, or write your own analysis here..."
             value={analysis}
             onChange={(e) => handleAnalysisChange(e.target.value)}
             className="min-h-96 font-mono text-sm"
@@ -128,11 +115,11 @@ The analysis reveals a company with solid fundamentals but facing modern challen
           <div className="bg-blue-50 p-4 rounded-lg">
             <h4 className="font-medium text-blue-900 mb-2">Analysis Framework:</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Market position and competitive landscape</li>
-              <li>• Internal capabilities and resources</li>
-              <li>• SWOT analysis (Strengths, Weaknesses, Opportunities, Threats)</li>
-              <li>• Key stakeholder analysis</li>
-              <li>• Current performance metrics</li>
+              <li>• Social: Demographics, lifestyles, cultural norms.</li>
+              <li>• Technological: Innovation, automation, R&D.</li>
+              <li>• Economic: Growth, inflation, interest rates.</li>
+              <li>• Environmental: Climate, regulations, sustainability.</li>
+              <li>• Political: Government policy, stability, trade.</li>
             </ul>
           </div>
         </CardContent>
