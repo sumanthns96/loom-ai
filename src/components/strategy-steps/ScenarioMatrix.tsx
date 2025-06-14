@@ -29,159 +29,137 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
   const [yContext, xContext] = axisContexts && axisContexts.length === 2 ? axisContexts : fallback;
 
   return (
-    <div className="mt-12 animate-fade-in relative">
-      {/* Axis overlays (absolute on grid) */}
-      <div className="relative max-w-3xl mx-auto mb-7">
-        <div className="relative" style={{ minHeight: 420 }}>
-          {/* Horizontal X axis bar */}
-          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 z-10 pointer-events-none select-none flex items-center">
-            {/* Left label */}
-            <span
-              className={`absolute left-0 -translate-x-full whitespace-nowrap ${endLabelColors[0]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
-              style={{
-                top: "50%",
-                transform: "translateY(-65%) translateX(-16px)", // moved more left & up
-                maxWidth: 110,
-                textAlign: "right",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                marginRight: 4,
-              }}
-              title={xContext.low}
-            >
-              {cap(xContext.low)}
-            </span>
-            {/* Main bar */}
-            <div className="w-full border-t-8 border-blue-700 relative flex justify-center items-center min-w-[220px]">
-              <span className="absolute left-1/2 -translate-x-1/2 bg-white px-3 py-0.5 text-sm sm:text-base text-blue-900 font-extrabold uppercase tracking-wide shadow -mt-2 z-20 border-2 border-blue-700 rounded-md whitespace-nowrap">
-                {xAxis.factor}
-              </span>
-            </div>
-            {/* Right label */}
-            <span
-              className={`absolute right-0 translate-x-full whitespace-nowrap ${endLabelColors[1]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
-              style={{
-                top: "50%",
-                right: 0,
-                transform: "translateY(-65%) translateX(16px)", // moved more right & up
-                maxWidth: 110,
-                textAlign: "left",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                marginLeft: 4,
-              }}
-              title={xContext.high}
-            >
-              {cap(xContext.high)}
-            </span>
-          </div>
-          {/* Vertical Y axis bar */}
-          <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-10 pointer-events-none select-none flex flex-col items-center">
-            {/* Top label */}
-            <span
-              className={`absolute top-0 -translate-y-full whitespace-nowrap ${endLabelColors[1]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
-              style={{
-                left: "50%",
-                transform: "translateX(-50%) translateY(-15px)", // moved higher up
-                maxWidth: 110,
-                textAlign: "center",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                marginBottom: 4,
-              }}
-              title={yContext.high}
-            >
+    <div className="mt-12 animate-fade-in">
+      {/* Container with proper padding for all labels */}
+      <div className="max-w-4xl mx-auto px-20 py-16">
+        
+        {/* Y-axis (vertical) labels - positioned outside the grid */}
+        <div className="relative">
+          {/* Y-axis top label */}
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+            <span className={`${endLabelColors[1]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
               {cap(yContext.high)}
             </span>
-            {/* Main bar */}
-            <div className="h-full border-l-8 border-blue-700 relative flex flex-col justify-center items-center min-h-[220px]">
-              <span className="absolute top-1/2 -translate-y-1/2 -left-1/2 -rotate-90 origin-center bg-white px-3 py-0.5 text-sm sm:text-base text-blue-900 font-extrabold uppercase tracking-wide shadow z-20 border-2 border-blue-700 rounded-md whitespace-nowrap">
-                {yAxis.factor}
-              </span>
-            </div>
-            {/* Bottom label */}
-            <span
-              className={`absolute bottom-0 translate-y-full whitespace-nowrap ${endLabelColors[0]} text-xs sm:text-sm bg-white px-2 py-0.5 rounded shadow`}
-              style={{
-                left: "50%",
-                transform: "translateX(-50%) translateY(15px)", // moved lower down
-                maxWidth: 110,
-                textAlign: "center",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                marginTop: 4,
-              }}
-              title={yContext.low}
-            >
+          </div>
+          
+          {/* Y-axis bottom label */}
+          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
+            <span className={`${endLabelColors[0]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
               {cap(yContext.low)}
             </span>
           </div>
-          {/* Grid overlay */}
-          <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-8 pt-8 pb-8 pl-8 pr-8">
-            {/* Top Left */}
-            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-7 min-h-[190px] flex flex-col">
-              <div className="font-bold text-blue-900 text-base mb-2 leading-tight">
-                {scenarios[0]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+          
+          {/* Main content area with axes */}
+          <div className="relative" style={{ minHeight: 480 }}>
+            
+            {/* Horizontal X axis */}
+            <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 z-10">
+              <div className="flex items-center">
+                {/* X-axis left label */}
+                <div className="absolute -left-16 top-1/2 transform -translate-y-1/2">
+                  <span className={`${endLabelColors[0]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
+                    {cap(xContext.low)}
+                  </span>
+                </div>
+                
+                {/* X-axis line and label */}
+                <div className="w-full border-t-6 border-blue-700 relative">
+                  <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2">
+                    <span className="bg-blue-700 text-white px-3 py-1 text-sm font-bold uppercase tracking-wide rounded">
+                      {xAxis.factor}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* X-axis right label */}
+                <div className="absolute -right-16 top-1/2 transform -translate-y-1/2">
+                  <span className={`${endLabelColors[1]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
+                    {cap(xContext.high)}
+                  </span>
+                </div>
               </div>
-              {Array.isArray(scenarios[0]?.bullets) && scenarios[0]?.bullets.length > 0 ? (
-                <ul className="pl-5 list-disc space-y-1 text-gray-800 text-base">
-                  {scenarios[0].bullets.map((pt, i) => (
-                    <li key={i}>{pt}</li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500 text-sm">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-              )}
             </div>
-            {/* Top Right */}
-            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-7 min-h-[190px] flex flex-col">
-              <div className="font-bold text-blue-900 text-base mb-2 leading-tight">
-                {scenarios[1]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+            
+            {/* Vertical Y axis */}
+            <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 z-10">
+              <div className="h-full border-l-6 border-blue-700 relative">
+                <div className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90">
+                  <span className="bg-blue-700 text-white px-3 py-1 text-sm font-bold uppercase tracking-wide rounded whitespace-nowrap">
+                    {yAxis.factor}
+                  </span>
+                </div>
               </div>
-              {Array.isArray(scenarios[1]?.bullets) && scenarios[1]?.bullets.length > 0 ? (
-                <ul className="pl-5 list-disc space-y-1 text-gray-800 text-base">
-                  {scenarios[1].bullets.map((pt, i) => (
-                    <li key={i}>{pt}</li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500 text-sm">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-              )}
             </div>
-            {/* Bottom Left */}
-            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-7 min-h-[190px] flex flex-col">
-              <div className="font-bold text-blue-900 text-base mb-2 leading-tight">
-                {scenarios[2]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+            
+            {/* Scenario grid - positioned above the axes */}
+            <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-6 p-8">
+              {/* Top Left */}
+              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
+                  {scenarios[0]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+                </div>
+                {Array.isArray(scenarios[0]?.bullets) && scenarios[0]?.bullets.length > 0 ? (
+                  <ul className="pl-4 list-disc space-y-1 text-gray-800 text-sm">
+                    {scenarios[0].bullets.map((pt, i) => (
+                      <li key={i}>{pt}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-gray-500 text-xs">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                )}
               </div>
-              {Array.isArray(scenarios[2]?.bullets) && scenarios[2]?.bullets.length > 0 ? (
-                <ul className="pl-5 list-disc space-y-1 text-gray-800 text-base">
-                  {scenarios[2].bullets.map((pt, i) => (
-                    <li key={i}>{pt}</li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500 text-sm">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-              )}
-            </div>
-            {/* Bottom Right */}
-            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-7 min-h-[190px] flex flex-col">
-              <div className="font-bold text-blue-900 text-base mb-2 leading-tight">
-                {scenarios[3]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+              
+              {/* Top Right */}
+              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
+                  {scenarios[1]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+                </div>
+                {Array.isArray(scenarios[1]?.bullets) && scenarios[1]?.bullets.length > 0 ? (
+                  <ul className="pl-4 list-disc space-y-1 text-gray-800 text-sm">
+                    {scenarios[1].bullets.map((pt, i) => (
+                      <li key={i}>{pt}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-gray-500 text-xs">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                )}
               </div>
-              {Array.isArray(scenarios[3]?.bullets) && scenarios[3]?.bullets.length > 0 ? (
-                <ul className="pl-5 list-disc space-y-1 text-gray-800 text-base">
-                  {scenarios[3].bullets.map((pt, i) => (
-                    <li key={i}>{pt}</li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="text-gray-500 text-sm">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-              )}
+              
+              {/* Bottom Left */}
+              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
+                  {scenarios[2]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+                </div>
+                {Array.isArray(scenarios[2]?.bullets) && scenarios[2]?.bullets.length > 0 ? (
+                  <ul className="pl-4 list-disc space-y-1 text-gray-800 text-sm">
+                    {scenarios[2].bullets.map((pt, i) => (
+                      <li key={i}>{pt}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-gray-500 text-xs">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                )}
+              </div>
+              
+              {/* Bottom Right */}
+              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
+                  {scenarios[3]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+                </div>
+                {Array.isArray(scenarios[3]?.bullets) && scenarios[3]?.bullets.length > 0 ? (
+                  <ul className="pl-4 list-disc space-y-1 text-gray-800 text-sm">
+                    {scenarios[3].bullets.map((pt, i) => (
+                      <li key={i}>{pt}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-gray-500 text-xs">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="mb-6" />
     </div>
   );
 };
