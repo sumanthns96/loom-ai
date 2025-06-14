@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -155,13 +156,25 @@ Generated on: ${new Date().toLocaleDateString()}
               onDataChange={(data: string) => updateStepData(2, data)}
               selectedPoints={selectedForMatrix}
             />
-          ) : (
-            <CurrentStepComponent
+          ) : currentStep === 3 ? (
+            <StepThree
               pdfContent={pdfContent}
-              data={stepData[`step${currentStep}` as keyof typeof stepData]}
-              onDataChange={(data: string) => updateStepData(currentStep, data)}
+              data={stepData.step3}
+              onDataChange={(data: string) => updateStepData(3, data)}
             />
-          )}
+          ) : currentStep === 4 ? (
+            <StepFour
+              pdfContent={pdfContent}
+              data={stepData.step4}
+              onDataChange={(data: string) => updateStepData(4, data)}
+            />
+          ) : currentStep === 5 ? (
+            <StepFive
+              pdfContent={pdfContent}
+              data={stepData.step5}
+              onDataChange={(data: string) => updateStepData(5, data)}
+            />
+          ) : null}
         </div>
 
         {/* Navigation Buttons */}
@@ -190,3 +203,4 @@ Generated on: ${new Date().toLocaleDateString()}
 };
 
 export default StrategyWizard;
+
