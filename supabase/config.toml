@@ -1,1 +1,5 @@
+
 project_id = "wztmgdevfzykdnqakwhg"
+
+[functions.generate-steep-analysis]
+verify_jwt = false

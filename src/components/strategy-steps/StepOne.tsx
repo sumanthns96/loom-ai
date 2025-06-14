@@ -1,73 +1,75 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RefreshCw, Lightbulb } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+interface SteepEntry {
+  factor: string;
+  analysis: string;
+}
 
 interface StepOneProps {
   pdfContent: string;
-  data: string;
+  data: string; // This will be a JSON string of SteepEntry[]
   onDataChange: (data: string) => void;
 }
 
 const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [analysis, setAnalysis] = useState(data);
+  const [analysis, setAnalysis] = useState<SteepEntry[]>([]);
 
   useEffect(() => {
-    setAnalysis(data);
+    try {
+      if (data) {
+        const parsedData = JSON.parse(data);
+        setAnalysis(parsedData);
+      } else {
+        setAnalysis([]);
+      }
+    } catch (error) {
+      console.error("Failed to parse initial data:", error);
+      setAnalysis([]);
+    }
   }, [data]);
 
   const generateAnalysis = async () => {
     setIsGenerating(true);
-    
-    // Simulate AI analysis - in a real app, this would call an LLM API
-    setTimeout(() => {
-      const mockAnalysis = `STEEP ANALYSIS
 
-Social Factors:
-• Changing consumer lifestyles and preferences towards sustainability.
-• Increasing demand for ethical and transparent business practices.
-• Demographic shifts affecting the workforce and customer base.
+    const { data: responseData, error } = await supabase.functions.invoke('generate-steep-analysis', {
+      body: { pdfContent },
+    });
 
-Technological Factors:
-• Rapid advancements in AI and automation are disrupting industries.
-• Increased cybersecurity threats require robust defense systems.
-• Rise of e-commerce and digital marketing channels.
+    setIsGenerating(false);
 
-Economic Factors:
-• Global economic uncertainty and potential for recession.
-• Fluctuating inflation rates and interest rates impacting costs.
-• Shifting trade policies and tariffs.
-
-Environmental Factors:
-• Growing regulatory pressure for environmental sustainability.
-• Climate change risks impacting supply chains and operations.
-• Consumer preference for eco-friendly products and services.
-
-Political Factors:
-• Changes in government regulations and taxation policies.
-• Political instability in key markets.
-• International trade agreements and disputes.
-
-Key Insights:
-The analysis highlights the need for adaptability in the face of technological disruption and a proactive approach to sustainability to meet consumer expectations and regulatory requirements.`;
-
-      setAnalysis(mockAnalysis);
-      onDataChange(mockAnalysis);
-      setIsGenerating(false);
-      
+    if (error) {
       toast({
-        title: "Analysis generated",
-        description: "AI has completed the STEEP analysis based on your case study.",
+        title: "Error generating analysis",
+        description: error.message,
+        variant: "destructive",
       });
-    }, 3000);
-  };
+      return;
+    }
+    
+    const newAnalysis = responseData.steepAnalysis;
+    setAnalysis(newAnalysis);
+    onDataChange(JSON.stringify(newAnalysis));
 
-  const handleAnalysisChange = (value: string) => {
-    setAnalysis(value);
-    onDataChange(value);
+    toast({
+      title: "Analysis generated",
+      description: "AI has completed the STEEP analysis based on your case study.",
+    });
+  };
+  
+  const handleAnalysisChange = (value: string, index: number) => {
+    const newAnalysis = [...analysis];
+    newAnalysis[index].analysis = value;
+    setAnalysis(newAnalysis);
+    onDataChange(JSON.stringify(newAnalysis));
   };
 
   return (
@@ -79,16 +81,15 @@ The analysis highlights the need for adaptability in the face of technological d
             <span>Analyze STEEP Factors</span>
           </CardTitle>
           <CardDescription>
-            Analyze the Social, Technological, Economic, Environmental, and Political factors 
-            affecting your business. This forms the foundation for strategic planning.
+            Use AI to generate a STEEP analysis from your case study. This table outlines the Social, Technological, Economic, Environmental, and Political factors impacting your strategy.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">AI-Generated Analysis</h3>
+            <h3 className="text-lg font-medium">STEEP Analysis</h3>
             <Button
               onClick={generateAnalysis}
-              disabled={isGenerating}
+              disabled={isGenerating || !pdfContent}
               variant="outline"
             >
               {isGenerating ? (
@@ -99,29 +100,54 @@ The analysis highlights the need for adaptability in the face of technological d
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Generate Analysis
+                  Generate with AI
                 </>
               )}
             </Button>
           </div>
-
-          <Textarea
-            placeholder="Click 'Generate Analysis' to create an AI-powered STEEP analysis, or write your own analysis here..."
-            value={analysis}
-            onChange={(e) => handleAnalysisChange(e.target.value)}
-            className="min-h-96 font-mono text-sm"
-          />
-
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Analysis Framework:</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Social: Demographics, lifestyles, cultural norms.</li>
-              <li>• Technological: Innovation, automation, R&D.</li>
-              <li>• Economic: Growth, inflation, interest rates.</li>
-              <li>• Environmental: Climate, regulations, sustainability.</li>
-              <li>• Political: Government policy, stability, trade.</li>
-            </ul>
-          </div>
+          
+          <Card className="overflow-hidden border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[150px] bg-muted/50 font-semibold">Factor</TableHead>
+                  <TableHead className="font-semibold">Analysis</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isGenerating && (
+                  <TableRow>
+                    <TableCell colSpan={2} className="h-36 text-center">
+                      <div className="flex justify-center items-center space-x-2 text-muted-foreground">
+                        <RefreshCw className="h-5 w-5 animate-spin" />
+                        <span>Generating analysis with Gemini...</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!isGenerating && analysis.length === 0 && (
+                   <TableRow>
+                    <TableCell colSpan={2} className="h-36 text-center text-muted-foreground">
+                      Click "Generate with AI" to create a STEEP analysis from your document.
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!isGenerating && analysis.map((item, index) => (
+                  <TableRow key={item.factor}>
+                    <TableCell className="font-medium align-top bg-muted/50 pt-4">{item.factor}</TableCell>
+                    <TableCell>
+                      <Textarea
+                        value={item.analysis}
+                        onChange={(e) => handleAnalysisChange(e.target.value, index)}
+                        className="w-full border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-2 min-h-[100px] bg-transparent resize-none"
+                        placeholder="Analysis goes here..."
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
         </CardContent>
       </Card>
     </div>
