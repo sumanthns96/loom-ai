@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import type { SelectedPoint } from "./StepOne";
 
@@ -29,12 +28,6 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes }) => {
           <span className="text-black font-normal"> → Y Axis, </span>
           <span className={colorStyles[1]}>{axes[1].factor}</span>
           <span className="text-black font-normal"> → X Axis</span>
-        </div>
-        <div className="flex items-center gap-8">
-          <span className={colorStyles[0]}>{axes[0].factor}</span>
-          <span className="text-gray-400 font-medium">as Y-axis</span>
-          <span className={colorStyles[1]}>{axes[1].factor}</span>
-          <span className="text-gray-400 font-medium">as X-axis</span>
         </div>
       </div>
       {/* 2x2 Matrix */}
