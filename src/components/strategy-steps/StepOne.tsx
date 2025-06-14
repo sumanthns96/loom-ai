@@ -65,9 +65,17 @@ interface StepOneProps {
   pdfContent: string;
   data: string; // Will be JSON string of SteepFactorGroup[]
   onDataChange: (data: string) => void;
+  onNext: (selectedPoints: SelectedPoint[]) => void; // NEW for next step
 }
 
-const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
+// Selected point type
+export type SelectedPoint = {
+  factor: string;        // e.g. "Social"
+  pointIdx: number;      // index in .points array (0,1,2)
+  text: string;          // actual analysis point text
+};
+
+const StepOne = ({ pdfContent, data, onDataChange, onNext }: StepOneProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [factors, setFactors] = useState<SteepFactorGroup[]>([]);
 
@@ -232,6 +240,20 @@ ${pdfContent}
     }
   };
 
+  // Helper to extract selected points for next step
+  const getSelectedPoints = (): SelectedPoint[] => {
+    return factors.flatMap((group) =>
+      group.selected.map(i => ({
+        factor: group.factor,
+        pointIdx: i,
+        text: group.points[i]?.text || ""
+      }))
+    );
+  };
+
+  // Add "Continue" button if any point is selected
+  const selectedPoints = getSelectedPoints();
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <Card className="shadow-lg">
@@ -287,6 +309,17 @@ ${pdfContent}
                 }
               />
             ))}
+          {!isGenerating && (
+            <div className="flex justify-end mt-8">
+              <Button
+                onClick={() => onNext(selectedPoints)}
+                disabled={selectedPoints.length < 2}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Continue to Scenario Matrix
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

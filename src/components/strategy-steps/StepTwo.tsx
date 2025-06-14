@@ -1,144 +1,215 @@
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { RefreshCw, AlertTriangle } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import type { SelectedPoint } from "./StepOne";
+
+// Type for one scenario quadrant
+type MatrixScenario = {
+  title: string;
+  description: string;
+};
 
 interface StepTwoProps {
   pdfContent: string;
-  data: string;
+  data: string; // for this step (can be scenario info for export)
   onDataChange: (data: string) => void;
+  selectedPoints: SelectedPoint[]; // Passed from StepOne "Continue"
 }
 
-const StepTwo = ({ pdfContent, data, onDataChange }: StepTwoProps) => {
+// Helper for quadrant position
+const QUADRANT_LABELS = [
+  "Best Case (Both Factors in Favor)",
+  "Y-Axis Favor, X-Axis Against",
+  "Both Against",
+  "X-Axis Favor, Y-Axis Against"
+];
+
+const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProps) => {
+  // User-selected 2 points that become axes: [Y, X]
+  const [axes, setAxes] = useState<SelectedPoint[]>([]);
+  const [scenarios, setScenarios] = useState<MatrixScenario[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [problems, setProblems] = useState(data);
 
-  useEffect(() => {
-    setProblems(data);
-  }, [data]);
+  // Handle axis selection
+  const handleSelectAxis = (point: SelectedPoint) => {
+    setAxes((prev) => {
+      if (prev.find(a => a.factor === point.factor && a.pointIdx === point.pointIdx)) {
+        return prev.filter(a => !(a.factor === point.factor && a.pointIdx === point.pointIdx));
+      }
+      if (prev.length === 2) return prev; // Only allow 2
+      return [...prev, point];
+    });
+  };
 
-  const generateProblems = async () => {
-    setIsGenerating(true);
-    
-    setTimeout(() => {
-      const mockProblems = `PROBLEM IDENTIFICATION
-
-Core Strategic Challenges:
-
-1. MARKET POSITIONING ISSUES
-   Problem: Unclear value proposition in competitive market
-   Impact: Declining market share and customer confusion
-   Urgency: High - directly affects revenue
-   
-2. OPERATIONAL INEFFICIENCIES
-   Problem: Outdated systems and processes
-   Impact: Higher costs and slower response times
-   Urgency: Medium - affects long-term competitiveness
-   
-3. DIGITAL TRANSFORMATION LAG
-   Problem: Limited digital presence and capabilities
-   Impact: Missing opportunities in digital channels
-   Urgency: High - market is rapidly digitizing
-
-4. TALENT AND SKILLS GAP
-   Problem: Workforce lacks modern skill sets
-   Impact: Reduced innovation and adaptability
-   Urgency: Medium - affects future growth potential
-
-5. FINANCIAL CONSTRAINTS
-   Problem: Limited capital for strategic investments
-   Impact: Inability to fund growth initiatives
-   Urgency: High - limits strategic options
-
-Priority Matrix:
-HIGH URGENCY + HIGH IMPACT:
-• Market positioning clarity
-• Digital transformation acceleration
-
-MEDIUM URGENCY + HIGH IMPACT:
-• Operational efficiency improvements
-• Talent development programs
-
-ROOT CAUSE ANALYSIS:
-The fundamental issue appears to be a lack of strategic focus and investment in modernization, leading to competitive disadvantage in a rapidly evolving market.
-
-STAKEHOLDER IMPACT:
-• Customers: Experiencing suboptimal service
-• Employees: Frustrated with outdated tools
-• Shareholders: Concerned about declining returns
-• Partners: Questioning long-term viability`;
-
-      setProblems(mockProblems);
-      onDataChange(mockProblems);
-      setIsGenerating(false);
-      
+  // Generate scenarios from Gemini
+  const handleGenerateScenarios = async () => {
+    if (axes.length !== 2) {
       toast({
-        title: "Problems identified",
-        description: "AI has analyzed and prioritized key strategic challenges.",
+        title: "Select 2 axes",
+        description: "Please select two factors/points for the scenario matrix axes.",
+        variant: "destructive"
       });
-    }, 2500);
+      return;
+    }
+    setIsGenerating(true);
+
+    try {
+      // Compose prompt for Gemini
+      const [yAxis, xAxis] = axes;
+      const prompt = `
+Given the following business case context (Invisalign), and these two key uncertainties or factors:
+  Y Axis: ${yAxis.factor} - "${yAxis.text}"
+  X Axis: ${xAxis.factor} - "${xAxis.text}"
+
+Generate a 2x2 matrix of scenario descriptions, relevant for a strategy session.
+Return a JSON array of exactly four objects (one per quadrant, order: Q1 (both in favor), Q2 (Y in favor, X not), Q3 (both not in favor), Q4 (X in favor, Y not)). Each object should have:
+  - "title": concise quadrant label (≤8 words)
+  - "description": a scenario for the company if that quadrant occurs (3–4 sentences, specific and actionable, business-oriented, tailored to the Invisalign clear aligner context)
+NO markdown, no extra prose, JSON array only.
+
+Context: 
+---
+${pdfContent}
+---`;
+
+      const { data: responseData, error } = await supabase.functions.invoke(
+        "generate-steep-analysis",
+        { body: { pdfContent: prompt } }
+      );
+
+      if (error) {
+        toast({
+          title: "Error generating scenarios",
+          description: error.message,
+          variant: "destructive"
+        });
+        setIsGenerating(false);
+        return;
+      }
+
+      let arr: any[] | undefined = undefined;
+      if (responseData && Array.isArray(responseData.steepAnalysis)) {
+        arr = responseData.steepAnalysis;
+      } else if (Array.isArray(responseData)) {
+        arr = responseData;
+      } else if (typeof responseData === "object" && responseData !== null) {
+        // fallback if Gemini returns wrapped key
+        const possible = responseData.steepAnalysis || responseData.STEEPAnalysis;
+        if (typeof possible === "string") {
+          try {
+            const parsed = JSON.parse(possible);
+            if (Array.isArray(parsed)) {
+              arr = parsed;
+            }
+          } catch { /* ignore */ }
+        }
+      }
+      // Validate and fallback
+      if (!arr || arr.length !== 4) {
+        toast({
+          title: "Scenario format error",
+          description: "Could not parse four quadrants from AI response.",
+          variant: "destructive"
+        });
+        setIsGenerating(false);
+        return;
+      }
+
+      setScenarios(arr as MatrixScenario[]);
+      onDataChange(JSON.stringify(arr));
+      toast({
+        title: "Scenario Matrix Ready",
+        description: "Generated 2x2 scenario matrix using your selected uncertainties."
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Unexpected error occurred while generating scenarios.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
-  const handleProblemsChange = (value: string) => {
-    setProblems(value);
-    onDataChange(value);
-  };
-
+  // Render
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="space-y-8 max-w-5xl mx-auto">
+      <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <AlertTriangle className="h-5 w-5 text-orange-600" />
-            <span>Problem Identification</span>
+          <CardTitle>
+            Scenario Generation: 2x2 Uncertainty Matrix
           </CardTitle>
-          <CardDescription>
-            Identify and prioritize the key challenges and problems that need to be addressed. 
-            This step helps focus strategic efforts on the most critical issues.
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">Problem Analysis</h3>
+        <CardContent>
+          <h3 className="font-medium mb-4">
+            Select <span className="font-bold">two</span> factors/points as key uncertainties (these become axes):
+          </h3>
+          {/* Point selection: show all selected points from Step 1 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {selectedPoints.map((pt, idx) => (
+              <button
+                key={pt.factor + pt.pointIdx}
+                type="button"
+                className={`rounded-lg px-3 py-2 border 
+                  ${axes.find(a => a.factor === pt.factor && a.pointIdx === pt.pointIdx)
+                    ? "border-blue-600 bg-blue-100 font-semibold"
+                    : "border-gray-300 bg-white"}
+                  text-left flex flex-col cursor-pointer`}
+                disabled={axes.length === 2 && !axes.find(a => a.factor === pt.factor && a.pointIdx === pt.pointIdx)}
+                onClick={() => handleSelectAxis(pt)}
+              >
+                <span className="text-xs uppercase tracking-tight text-gray-500 mb-1">
+                  {pt.factor} Point {pt.pointIdx + 1}
+                </span>
+                <span className="text-sm">{pt.text}</span>
+              </button>
+            ))}
+          </div>
+          {/* Generate Button */}
+          <div className="flex justify-end mt-6">
             <Button
-              onClick={generateProblems}
-              disabled={isGenerating}
-              variant="outline"
+              onClick={handleGenerateScenarios}
+              disabled={axes.length !== 2 || isGenerating}
+              className="bg-blue-600 hover:bg-blue-700"
             >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Identify Problems
-                </>
-              )}
+              {isGenerating ? "Generating..." : "Generate Scenario Matrix"}
             </Button>
           </div>
-
-          <Textarea
-            placeholder="Click 'Identify Problems' to generate AI analysis, or document key challenges manually..."
-            value={problems}
-            onChange={(e) => handleProblemsChange(e.target.value)}
-            className="min-h-96 font-mono text-sm"
-          />
-
-          <div className="bg-orange-50 p-4 rounded-lg">
-            <h4 className="font-medium text-orange-900 mb-2">Problem Analysis Framework:</h4>
-            <ul className="text-sm text-orange-800 space-y-1">
-              <li>• Problem definition and scope</li>
-              <li>• Impact assessment (financial, operational, strategic)</li>
-              <li>• Urgency and priority ranking</li>
-              <li>• Root cause analysis</li>
-              <li>• Stakeholder impact evaluation</li>
-            </ul>
-          </div>
+          {/* Render Matrix */}
+          {!!scenarios.length && axes.length === 2 && (
+            <div className="mt-10">
+              {/* Axes Legends */}
+              <div className="flex flex-col items-center mb-6">
+                <div className="text-lg font-semibold mb-2">
+                  {axes[0].factor} → Y Axis, {axes[1].factor} → X Axis
+                </div>
+                <div className="flex items-center">
+                  <span className="font-bold text-blue-700">{axes[0].factor}</span>
+                  <span className="mx-4 text-gray-400">as Y-axis</span>
+                  <span className="font-bold text-yellow-700">{axes[1].factor}</span>
+                  <span className="mx-4 text-gray-400">as X-axis</span>
+                </div>
+              </div>
+              {/* 2x2 Matrix */}
+              <div className="grid grid-cols-2 grid-rows-2 gap-4 max-w-3xl mx-auto">
+                {scenarios.map((sc, idx) => (
+                  <div key={idx} className="border rounded-lg bg-gray-50 shadow px-4 py-5">
+                    <div className="font-bold mb-2 text-blue-900">{sc.title}</div>
+                    <div className="text-sm text-gray-700">{sc.description}</div>
+                  </div>
+                ))}
+              </div>
+              {/* Quadrant Labels, Arrow Legends (optional) */}
+              <div className="mt-4 flex justify-between px-8 text-sm text-gray-600 font-medium">
+                <span>Y: {axes[0].text}</span>
+                <span>X: {axes[1].text}</span>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

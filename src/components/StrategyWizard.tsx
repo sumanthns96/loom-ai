@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Download, RefreshCw } from "lucide-react";
-import StepOne from "@/components/strategy-steps/StepOne";
+import StepOne, { SelectedPoint } from "@/components/strategy-steps/StepOne";
 import StepTwo from "@/components/strategy-steps/StepTwo";
 import StepThree from "@/components/strategy-steps/StepThree";
 import StepFour from "@/components/strategy-steps/StepFour";
@@ -24,10 +23,12 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
     step4: "",
     step5: "",
   });
+  // New: Track selected points for scenario axis choice
+  const [selectedForMatrix, setSelectedForMatrix] = useState<SelectedPoint[]>([]);
 
   const steps = [
     { number: 1, title: "Analyze STEEP Factors", component: StepOne },
-    { number: 2, title: "Problem Identification", component: StepTwo },
+    { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo },
     { number: 3, title: "Strategic Options", component: StepThree },
     { number: 4, title: "Implementation Plan", component: StepFour },
     { number: 5, title: "Success Metrics", component: StepFive },
@@ -76,6 +77,8 @@ Generated on: ${new Date().toLocaleDateString()}
     URL.revokeObjectURL(url);
   };
 
+  // --- Step-specific overrides
+  // Step 1: inject onNext handler
   const CurrentStepComponent = steps[currentStep - 1].component;
   const progressPercentage = (currentStep / 5) * 100;
 
@@ -138,11 +141,27 @@ Generated on: ${new Date().toLocaleDateString()}
 
         {/* Current Step Content */}
         <div className="mb-8">
-          <CurrentStepComponent
-            pdfContent={pdfContent}
-            data={stepData[`step${currentStep}` as keyof typeof stepData]}
-            onDataChange={(data: string) => updateStepData(currentStep, data)}
-          />
+          {currentStep === 1 ? (
+            <StepOne
+              pdfContent={pdfContent}
+              data={stepData.step1}
+              onDataChange={(data: string) => updateStepData(1, data)}
+              onNext={(pts) => { setSelectedForMatrix(pts); setCurrentStep(2); }}
+            />
+          ) : currentStep === 2 ? (
+            <StepTwo
+              pdfContent={pdfContent}
+              data={stepData.step2}
+              onDataChange={(data: string) => updateStepData(2, data)}
+              selectedPoints={selectedForMatrix}
+            />
+          ) : (
+            <CurrentStepComponent
+              pdfContent={pdfContent}
+              data={stepData[`step${currentStep}` as keyof typeof stepData]}
+              onDataChange={(data: string) => updateStepData(currentStep, data)}
+            />
+          )}
         </div>
 
         {/* Navigation Buttons */}
