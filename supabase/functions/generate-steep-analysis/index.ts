@@ -1,4 +1,3 @@
-
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { corsHeaders } from '../_shared/cors.ts'
 
@@ -94,13 +93,38 @@ serve(async (req) => {
     const steepAnalysisText = geminiData.candidates[0].content.parts[0].text;
     console.log('Raw STEEP analysis text:', steepAnalysisText)
     
-    let steepAnalysis: SteepFactor[]
+    // ADD: Clean up the AI response to remove ANY trailing commas before parsing
+    // 1. Remove trailing commas that break JSON (before ] or })
+    let cleanedText = steepAnalysisText
+      // Remove trailing commas before closing array/object
+      .replace(/,\s*(\]|\})/g, '$1')
+      // Remove surrounding quotes if wrapped
+      .trim();
+
+    // 2. If the entire JSON is wrapped as a property (like {"STEEPAnalysis": [...]})
+    //    Extract the relevant array if possible
+    let steepAnalysis: SteepFactor[];
     try {
-      steepAnalysis = JSON.parse(steepAnalysisText)
+      // Try parsing as-is first (could be an object or array)
+      let parsed = JSON.parse(cleanedText);
+
+      // If it's an object with STEEPAnalysis/steepAnalysis key, extract the array
+      if (
+        parsed &&
+        typeof parsed === 'object' &&
+        (parsed.STEEPAnalysis || parsed.steepAnalysis) &&
+        Array.isArray(parsed.STEEPAnalysis || parsed.steepAnalysis)
+      ) {
+        steepAnalysis = parsed.STEEPAnalysis || parsed.steepAnalysis;
+      } else if (Array.isArray(parsed)) {
+        steepAnalysis = parsed;
+      } else {
+        throw new Error('Parsed JSON is not a valid STEEP array.');
+      }
     } catch (parseError) {
-      console.error('Failed to parse STEEP analysis JSON:', parseError)
-      console.error('Raw text that failed to parse:', steepAnalysisText)
-      
+      console.error('Failed to parse STEEP analysis JSON:', parseError);
+      console.error('Raw text that failed to parse:', steepAnalysisText);
+
       // Fallback: create a basic structure if parsing fails
       steepAnalysis = [
         { factor: 'Social', analysis: 'Analysis could not be generated automatically. Please try again.' },
