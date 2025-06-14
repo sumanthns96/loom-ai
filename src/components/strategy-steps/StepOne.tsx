@@ -40,29 +40,59 @@ const StepOne = ({ pdfContent, data, onDataChange }: StepOneProps) => {
   const generateAnalysis = async () => {
     setIsGenerating(true);
 
-    const { data: responseData, error } = await supabase.functions.invoke('generate-steep-analysis', {
-      body: { pdfContent },
-    });
+    try {
+      const { data: responseData, error } = await supabase.functions.invoke('generate-steep-analysis', {
+        body: { pdfContent },
+      });
 
-    setIsGenerating(false);
+      if (error) {
+        console.error('Supabase function error:', error);
+        toast({
+          title: "Error generating analysis",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
 
-    if (error) {
+      console.log('Raw response data:', responseData);
+      
+      // Handle the response data structure
+      let newAnalysis: SteepEntry[];
+      if (responseData.steepAnalysis) {
+        // If the response has steepAnalysis key, use it
+        newAnalysis = responseData.steepAnalysis;
+      } else if (Array.isArray(responseData)) {
+        // If it's directly an array
+        newAnalysis = responseData;
+      } else {
+        console.error('Unexpected response structure:', responseData);
+        toast({
+          title: "Error processing analysis",
+          description: "Unexpected response format from AI service.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('Processed analysis:', newAnalysis);
+      setAnalysis(newAnalysis);
+      onDataChange(JSON.stringify(newAnalysis));
+
+      toast({
+        title: "Analysis generated",
+        description: "AI has completed the STEEP analysis based on your case study.",
+      });
+    } catch (error) {
+      console.error('Error in generateAnalysis:', error);
       toast({
         title: "Error generating analysis",
-        description: error.message,
+        description: "An unexpected error occurred while generating the analysis.",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsGenerating(false);
     }
-    
-    const newAnalysis = responseData.steepAnalysis;
-    setAnalysis(newAnalysis);
-    onDataChange(JSON.stringify(newAnalysis));
-
-    toast({
-      title: "Analysis generated",
-      description: "AI has completed the STEEP analysis based on your case study.",
-    });
   };
   
   const handleAnalysisChange = (value: string, index: number) => {
