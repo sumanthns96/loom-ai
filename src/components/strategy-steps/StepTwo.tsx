@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -26,6 +27,60 @@ const QUADRANT_LABELS = [
   "X-Axis Favor, Y-Axis Against"
 ];
 
+type QuadrantRequest = {
+  label: string;
+  promptDesc: string;
+};
+
+const QUADRANT_REQUESTS: QuadrantRequest[] = [
+  {
+    label: QUADRANT_LABELS[0],
+    promptDesc: "both the Y-axis and X-axis factors are in favor of Invisalign"
+  },
+  {
+    label: QUADRANT_LABELS[1],
+    promptDesc: "the Y-axis factor is in favor, but the X-axis factor is against Invisalign"
+  },
+  {
+    label: QUADRANT_LABELS[2],
+    promptDesc: "both the Y-axis and X-axis factors are against Invisalign"
+  },
+  {
+    label: QUADRANT_LABELS[3],
+    promptDesc: "the X-axis factor is in favor, but the Y-axis factor is against Invisalign"
+  }
+];
+
+// Compose a per-quadrant prompt
+function makeQuadrantPrompt(
+  pdfContent: string,
+  yAxis: SelectedPoint,
+  xAxis: SelectedPoint,
+  quadrant: QuadrantRequest
+) {
+  return `
+Given the following business case context (Invisalign):
+
+---
+${pdfContent}
+---
+
+Here are the two key uncertainties selected for a scenario matrix:
+  Y Axis: ${yAxis.factor} - "${yAxis.text}"
+  X Axis: ${xAxis.factor} - "${xAxis.text}"
+
+Generate a scenario QUADRANT for a 2x2 scenario matrix:
+Description: ${quadrant.promptDesc}
+
+Return a single compact JSON object (no extra prose, no markdown, JSON only) with:
+{
+  "title": "<concise quadrant label (max 8 words)>",
+  "description": "<a business-oriented scenario for Invisalign if this quadrant occurs; 3-4 sentences, specific, actionable>"
+}
+REPLY WITH JSON ONLY.
+  `.trim();
+}
+
 const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProps) => {
   // User-selected 2 points that become axes: [Y, X]
   const [axes, setAxes] = useState<SelectedPoint[]>([]);
@@ -43,6 +98,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
     });
   };
 
+  // Generate scenarios from Gemini (one LLM call per quadrant)
   const handleGenerateScenarios = async () => {
     if (axes.length !== 2) {
       toast({
@@ -55,97 +111,78 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
     setIsGenerating(true);
 
     try {
-      // Compose prompt for Gemini
       const [yAxis, xAxis] = axes;
-      const prompt = `
-Given the following business case context (Invisalign), and these two key uncertainties or factors:
-  Y Axis: ${yAxis.factor} - "${yAxis.text}"
-  X Axis: ${xAxis.factor} - "${xAxis.text}"
-
-Generate a 2x2 matrix of scenario descriptions, relevant for a strategy session.
-Return a JSON array of exactly four objects (one per quadrant, order: Q1 (both in favor), Q2 (Y in favor, X not), Q3 (both not in favor), Q4 (X in favor, Y not)). Each object should have:
-  - "title": concise quadrant label (≤8 words)
-  - "description": a scenario for the company if that quadrant occurs (3–4 sentences, specific and actionable, business-oriented, tailored to the Invisalign clear aligner context)
-NO markdown, no extra prose, JSON array only.
-
-Context: 
----
-${pdfContent}
----`;
-
-      const { data: responseData, error } = await supabase.functions.invoke(
-        "generate-steep-analysis",
-        { body: { pdfContent: prompt } }
-      );
-
-      if (error) {
-        toast({
-          title: "Error generating scenarios",
-          description: error.message,
-          variant: "destructive"
-        });
-        setIsGenerating(false);
-        return;
-      }
-
-      // --- Robust Gemini response parsing logic ---
-      let arr: any[] | undefined = undefined;
-      if (responseData && Array.isArray(responseData.steepAnalysis)) {
-        arr = responseData.steepAnalysis;
-      } else if (Array.isArray(responseData)) {
-        arr = responseData;
-      } else if (typeof responseData === "object" && responseData !== null) {
-        // Try all possible properties and also handle stringified arrays
-        const possible = responseData.steepAnalysis || responseData.STEEPAnalysis || responseData.scenarioMatrix || responseData.matrix;
-        if (typeof possible === "string") {
-          try {
-            // Remove trailing commas and whitespace, if any (Gemini issue)
-            let cleaned = possible
-              .replace(/,\s*(\]|\})/g, '$1')
-              .trim();
-            // Try to parse as JSON
-            const inner = JSON.parse(cleaned);
-            if (Array.isArray(inner)) {
-              arr = inner;
+      const quadrantPromises = QUADRANT_REQUESTS.map(async (q, idx) => {
+        const prompt = makeQuadrantPrompt(pdfContent, yAxis, xAxis, q);
+        // Ask the Gemini function for ONE quadrant at a time
+        const { data: responseData, error } = await supabase.functions.invoke(
+          "generate-steep-analysis",
+          { body: { pdfContent: prompt } }
+        );
+        if (error) {
+          throw new Error(error.message || `Error in quadrant ${q.label}`);
+        }
+        // Robust parse for single JSON object in responseData
+        let obj: any = undefined;
+        // Try direct object
+        if (responseData && typeof responseData === "object" && !Array.isArray(responseData)) {
+          // Take first suitable object property as scenario
+          if (
+            responseData.title &&
+            responseData.description
+          ) {
+            obj = responseData;
+          } else {
+            // try nested properties
+            const possible = responseData.scenario || responseData.result || responseData.data;
+            if (possible && possible.title && possible.description) {
+              obj = possible;
             }
-          } catch {
-            // ignore
           }
-        } else if (Array.isArray(possible)) {
-          arr = possible;
         }
-      } else if (typeof responseData === "string") {
-        // If the whole response is a stringified array
-        try {
-          let cleaned = responseData.replace(/,\s*(\]|\})/g, '$1').trim();
-          const asArr = JSON.parse(cleaned);
-          if (Array.isArray(asArr)) {
-            arr = asArr;
-          }
-        } catch {
-          // ignore
+        // Try parsing a string payload
+        if (!obj && typeof responseData === "string") {
+          try {
+            // Remove trailing commas, whitespace, markdown, etc.
+            let cleaned = responseData
+              .replace(/^`+json|`+$/gi, '')
+              .replace(/,\s*(\}|\])/g, "$1")
+              .trim();
+            const parsed = JSON.parse(cleaned);
+            if (parsed.title && parsed.description) {
+              obj = parsed;
+            }
+          } catch { /* ignore parse error */ }
         }
-      }
-      // END robust parsing
+        // As last resort, fail with quadrant label
+        if (!obj) {
+          obj = {
+            title: q.label,
+            description: "[Scenario could not be generated; please retry or adjust your axis selection.]"
+          };
+        }
+        return obj;
+      });
 
-      // Validate scenario count for a proper 2x2 matrix
-      if (!arr || arr.length !== 4) {
+      const quadrantResults: MatrixScenario[] = await Promise.all(quadrantPromises);
+
+      // Validate
+      if (!quadrantResults || quadrantResults.length !== 4) {
         toast({
           title: "Scenario format error",
-          description: "Could not parse four quadrants from AI response. Please try again, or try regenerating.",
+          description: "Could not generate all four quadrants. Please try again.",
           variant: "destructive"
         });
         setIsGenerating(false);
         return;
       }
-
-      setScenarios(arr as MatrixScenario[]);
-      onDataChange(JSON.stringify(arr));
+      setScenarios(quadrantResults);
+      onDataChange(JSON.stringify(quadrantResults));
       toast({
         title: "Scenario Matrix Ready",
         description: "Generated 2x2 scenario matrix using your selected uncertainties."
       });
-    } catch (err) {
+    } catch (err: any) {
       toast({
         title: "Error",
         description: "Unexpected error occurred while generating scenarios.",
