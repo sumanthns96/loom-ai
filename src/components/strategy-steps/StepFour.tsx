@@ -2,10 +2,10 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, TrendingUp } from "lucide-react";
+import { RefreshCw, Target } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import ThreeHorizonsChart from "./ThreeHorizonsChart";
+import DotsStrategyTable from "./DotsStrategyTable";
 
 interface StepFourProps {
   pdfContent: string;
@@ -13,55 +13,66 @@ interface StepFourProps {
   onDataChange: (data: string) => void;
 }
 
-interface HorizonsData {
-  horizon1: { focus1: string; focus2: string; strategy: string; };
-  horizon2: { focus1: string; focus2: string; strategy: string; };
-  horizon3: { focus1: string; focus2: string; strategy: string; };
+interface DotsData {
+  drivers: string[];
+  opportunities: string[];
+  threats: string[];
+  strategicResponse: string[];
 }
 
 const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [horizonsData, setHorizonsData] = useState<HorizonsData | null>(null);
+  const [dotsData, setDotsData] = useState<DotsData | null>(null);
 
   useEffect(() => {
     if (data) {
       try {
         const parsed = JSON.parse(data);
-        setHorizonsData(parsed);
+        setDotsData(parsed);
       } catch {
-        // If data is old format string, ignore and let user regenerate
+        // If data is old format or invalid, ignore and let user regenerate
       }
     }
   }, [data]);
 
-  const parseThreeHorizonsText = (text: string): HorizonsData | null => {
+  const parseDotsText = (text: string): DotsData | null => {
     try {
-      const horizonSections = text.split(/HORIZON \d/);
-      
-      const parseHorizonSection = (section: string) => {
-        const focus1Match = section.match(/Focus 1: (.+?)(?=Focus 2|Strategy|$)/s);
-        const focus2Match = section.match(/Focus 2: (.+?)(?=Strategy|$)/s);
-        const strategyMatch = section.match(/Strategy: (.+?)(?=HORIZON|$)/s);
-        
-        return {
-          focus1: focus1Match?.[1]?.trim() || "",
-          focus2: focus2Match?.[1]?.trim() || "",
-          strategy: strategyMatch?.[1]?.trim() || ""
-        };
+      const sections = {
+        drivers: [] as string[],
+        opportunities: [] as string[],
+        threats: [] as string[],
+        strategicResponse: [] as string[]
       };
 
-      return {
-        horizon1: parseHorizonSection(horizonSections[1] || ""),
-        horizon2: parseHorizonSection(horizonSections[2] || ""),
-        horizon3: parseHorizonSection(horizonSections[3] || "")
+      // Split text by main sections
+      const driversMatch = text.match(/DRIVERS:(.*?)(?=OPPORTUNITIES:|$)/s);
+      const opportunitiesMatch = text.match(/OPPORTUNITIES:(.*?)(?=THREATS:|$)/s);
+      const threatsMatch = text.match(/THREATS:(.*?)(?=STRATEGIC RESPONSE:|$)/s);
+      const strategicResponseMatch = text.match(/STRATEGIC RESPONSE:(.*?)$/s);
+
+      // Parse each section into bullet points
+      const parseSection = (sectionText: string): string[] => {
+        if (!sectionText) return [];
+        return sectionText
+          .split(/\n/)
+          .map(line => line.replace(/^[•\-\*]\s*/, '').trim())
+          .filter(line => line.length > 0 && !line.match(/^\[.*\]$/))
+          .slice(0, 4); // Limit to 4 items per section
       };
+
+      if (driversMatch) sections.drivers = parseSection(driversMatch[1]);
+      if (opportunitiesMatch) sections.opportunities = parseSection(opportunitiesMatch[1]);
+      if (threatsMatch) sections.threats = parseSection(threatsMatch[1]);
+      if (strategicResponseMatch) sections.strategicResponse = parseSection(strategicResponseMatch[1]);
+
+      return sections;
     } catch (error) {
-      console.error('Error parsing three horizons text:', error);
+      console.error('Error parsing DOTS text:', error);
       return null;
     }
   };
 
-  const generateThreeHorizons = async () => {
+  const generateDotsStrategy = async () => {
     setIsGenerating(true);
     
     try {
@@ -70,50 +81,47 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
       let steepAnalysis = "";
       let scenarioMatrix = "";
       let strategicOptions = "";
-      let dotsStrategy = "";
 
       if (wizardState) {
         const state = JSON.parse(wizardState);
         steepAnalysis = state.stepData?.step1 || "";
         scenarioMatrix = state.stepData?.step2 || "";
         strategicOptions = state.stepData?.step3 || "";
-        dotsStrategy = state.stepData?.step5 || ""; // DOTS is now step 5
       }
 
-      const { data: result, error } = await supabase.functions.invoke('generate-three-horizons', {
+      const { data: result, error } = await supabase.functions.invoke('generate-dots-strategy', {
         body: {
           pdfContent,
           steepAnalysis,
           scenarioMatrix,
-          strategicOptions,
-          dotsStrategy
+          strategicOptions
         }
       });
 
       if (error) throw error;
 
-      if (result.success && result.threeHorizons) {
-        const parsedData = parseThreeHorizonsText(result.threeHorizons);
+      if (result.success && result.dotsStrategy) {
+        const parsedData = parseDotsText(result.dotsStrategy);
         
         if (parsedData) {
-          setHorizonsData(parsedData);
+          setDotsData(parsedData);
           onDataChange(JSON.stringify(parsedData));
           
           toast({
-            title: "Three Horizons Implementation Generated",
-            description: "Strategic roadmap has been created based on your DOTS strategy.",
+            title: "DOTS Strategy Generated",
+            description: "Strategic vision framework has been created based on your analysis.",
           });
         } else {
           throw new Error("Failed to parse generated content");
         }
       } else {
-        throw new Error(result.error || "Failed to generate three horizons model");
+        throw new Error(result.error || "Failed to generate DOTS strategy");
       }
     } catch (error) {
-      console.error('Error generating three horizons:', error);
+      console.error('Error generating DOTS strategy:', error);
       toast({
         title: "Generation Failed",
-        description: "Failed to generate the Three Horizons Implementation. Please try again.",
+        description: "Failed to generate the DOTS Strategy. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -126,20 +134,19 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-blue-600" />
-            <span>Three Horizons Implementation</span>
+            <Target className="h-5 w-5 text-purple-600" />
+            <span>DOTS Strategy Framework</span>
           </CardTitle>
           <CardDescription>
-            Transform your DOTS strategic response themes into a detailed tactical roadmap 
-            across three time horizons: core optimization (0-2 years), adjacent opportunities (3-4 years), 
-            and breakthrough innovation (5-6 years).
+            Generate a comprehensive strategic vision that identifies key Drivers, Opportunities, 
+            Threats, and Strategic Response themes to guide your tactical implementation planning.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">Tactical Implementation Roadmap</h3>
+            <h3 className="text-lg font-medium">Strategic Vision</h3>
             <Button
-              onClick={generateThreeHorizons}
+              onClick={generateDotsStrategy}
               disabled={isGenerating}
               variant="outline"
             >
@@ -151,20 +158,21 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Generate Implementation Roadmap
+                  Generate DOTS Strategy
                 </>
               )}
             </Button>
           </div>
 
-          <ThreeHorizonsChart horizonsData={horizonsData} />
+          <DotsStrategyTable dotsData={dotsData} />
 
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Implementation Framework:</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>Horizon 1 (0-2 years):</strong> Tactical initiatives to operationalize strategic response themes</li>
-              <li>• <strong>Horizon 2 (3-4 years):</strong> Mid-term programs to build capabilities for strategic opportunities</li>
-              <li>• <strong>Horizon 3 (5-6 years):</strong> Long-term innovations to address strategic drivers and threats</li>
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h4 className="font-medium text-purple-900 mb-2">DOTS Framework:</h4>
+            <ul className="text-sm text-purple-800 space-y-1">
+              <li>• <strong>Drivers:</strong> Key internal capabilities and external forces shaping your future</li>
+              <li>• <strong>Opportunities:</strong> Strategic possibilities for growth and competitive advantage</li>
+              <li>• <strong>Threats:</strong> Significant risks that could impact organizational success</li>
+              <li>• <strong>Strategic Response:</strong> High-level themes that inform tactical roadmaps</li>
             </ul>
           </div>
         </CardContent>
