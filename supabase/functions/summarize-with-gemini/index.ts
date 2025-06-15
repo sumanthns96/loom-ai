@@ -22,7 +22,7 @@ serve(async (req) => {
 
     console.log('Input text to summarize:', text);
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${googleApiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${googleApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,9 +30,9 @@ serve(async (req) => {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `You must create a summary that is EXACTLY 8 words or less. Count the words carefully.
+            text: `Summarize this text in EXACTLY 8 words or less. Count carefully.
 
-Examples of correct 8-word summaries:
+Examples of good 8-word summaries:
 - "Focus AI safety research community engagement" (6 words)
 - "Build reputation through responsible AI development" (6 words)
 - "Invest heavily safety research transparency initiatives" (6 words)
@@ -40,7 +40,7 @@ Examples of correct 8-word summaries:
 
 Text to summarize: "${text}"
 
-Response format: Only return the 8-word summary, nothing else.`
+Return only the summary, nothing else:`
           }]
         }],
         generationConfig: {
