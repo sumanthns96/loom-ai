@@ -1,5 +1,5 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import MarkdownText from "./MarkdownText";
 
 interface DotsData {
   drivers: string[];
@@ -71,24 +71,28 @@ const DotsStrategyTable = ({ dotsData }: DotsStrategyTableProps) => {
           {Array.from({ length: maxRows }, (_, index) => (
             <TableRow key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
               <TableCell className="border-r border-gray-200 align-top p-4">
-                <div className="text-sm text-gray-800">
-                  {drivers[index] || ""}
-                </div>
+                <MarkdownText 
+                  text={drivers[index] || ""} 
+                  className="text-sm text-gray-800"
+                />
               </TableCell>
               <TableCell className="border-r border-gray-200 align-top p-4">
-                <div className="text-sm text-gray-800">
-                  {opportunities[index] || ""}
-                </div>
+                <MarkdownText 
+                  text={opportunities[index] || ""} 
+                  className="text-sm text-gray-800"
+                />
               </TableCell>
               <TableCell className="border-r border-gray-200 align-top p-4">
-                <div className="text-sm text-gray-800">
-                  {threats[index] || ""}
-                </div>
+                <MarkdownText 
+                  text={threats[index] || ""} 
+                  className="text-sm text-gray-800"
+                />
               </TableCell>
               <TableCell className="align-top p-4">
-                <div className="text-sm text-gray-800 font-medium">
-                  {strategicResponse[index] || ""}
-                </div>
+                <MarkdownText 
+                  text={strategicResponse[index] || ""} 
+                  className="text-sm text-gray-800 font-medium"
+                />
               </TableCell>
             </TableRow>
           ))}

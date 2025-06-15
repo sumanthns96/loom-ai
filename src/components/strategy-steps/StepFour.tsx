@@ -35,6 +35,18 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
     }
   }, [data]);
 
+  const cleanMarkdownText = (text: string): string => {
+    if (!text) return text;
+    
+    // Remove markdown formatting while preserving the text
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove **bold** formatting
+      .replace(/\*(.*?)\*/g, '$1')     // Remove *italic* formatting
+      .replace(/^\s*[\*\-\+]\s+/gm, '') // Remove bullet points at start of lines
+      .replace(/^\s*\d+\.\s+/gm, '')   // Remove numbered lists
+      .trim();
+  };
+
   const parseDotsText = (text: string): DotsData | null => {
     try {
       const sections = {
@@ -50,12 +62,12 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
       const threatsMatch = text.match(/THREATS:(.*?)(?=STRATEGIC RESPONSE:|$)/s);
       const strategicResponseMatch = text.match(/STRATEGIC RESPONSE:(.*?)$/s);
 
-      // Parse each section into bullet points
+      // Parse each section into bullet points and clean markdown
       const parseSection = (sectionText: string): string[] => {
         if (!sectionText) return [];
         return sectionText
           .split(/\n/)
-          .map(line => line.replace(/^[•\-\*]\s*/, '').trim())
+          .map(line => cleanMarkdownText(line.replace(/^[•\-\*]\s*/, '').trim()))
           .filter(line => line.length > 0 && !line.match(/^\[.*\]$/))
           .slice(0, 4); // Limit to 4 items per section
       };
