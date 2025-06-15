@@ -24,44 +24,46 @@ const MatrixAxes: FC<MatrixAxesProps> = ({ axes, axisContexts }) => {
       {/* Horizontal Axis Line */}
       <div className="absolute left-16 right-16 top-1/2 h-0.5 bg-gray-900 transform -translate-y-1/2 z-10 pointer-events-none"></div>
       
-      {/* Y-axis Factor Label (Vertical) placed above the grid center, with higher z-index */}
-      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-full z-40 flex flex-col items-center pointer-events-none" style={{ marginTop: -44 }}>
-        <div className="bg-[#111827] text-white px-3 py-1 text-[14px] font-bold uppercase tracking-wide rounded shadow-lg -rotate-90 border border-white">
+      {/* Center Y-axis Label */}
+      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-full z-40 flex flex-col items-center pointer-events-none"
+        style={{ marginTop: '-50px' }}>
+        <div className="bg-[#111827] text-white px-2 py-[2px] text-xs font-bold uppercase tracking-wide rounded shadow-lg -rotate-90 border border-white whitespace-nowrap z-50">
           {yAxis.factor}
         </div>
       </div>
-      
-      {/* X-axis Factor Label (Horizontal), slightly below the grid center, not covering the axis */}
-      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none" style={{ marginTop: 44 }}>
-        <div className="bg-[#111827] text-white px-4 py-1 text-[14px] font-bold uppercase tracking-wide rounded shadow-lg border border-white">
+      {/* Center X-axis Label */}
+      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 z-40 flex flex-col items-center pointer-events-none"
+        style={{ marginTop: 42 }}>
+        <div className="bg-[#111827] text-white px-2 py-[2px] text-xs font-bold uppercase tracking-wide rounded shadow-lg border border-white whitespace-nowrap z-50">
           {xAxis.factor}
         </div>
       </div>
       
-      {/* Corner Labels - Top */}
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none" style={{ marginTop: -32 }}>
-        <span className="text-green-700 font-semibold text-xs bg-green-100 px-3 py-1 rounded shadow-sm border border-green-300 whitespace-nowrap">
+      {/* Corner Labels - Top (Y High) */}
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none"
+        style={{ marginTop: '-18px' }}>
+        <span className="text-green-700 font-semibold text-[11px] bg-green-100 px-2 py-0.5 rounded border border-green-300 whitespace-nowrap shadow-sm">
           {cap(yContext.high)}
         </span>
       </div>
-      
-      {/* Corner Labels - Bottom */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-30 pointer-events-none" style={{ marginBottom: -32 }}>
-        <span className="text-red-700 font-semibold text-xs bg-red-100 px-3 py-1 rounded shadow-sm border border-red-300 whitespace-nowrap">
+      {/* Corner Labels - Bottom (Y Low) */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-30 pointer-events-none"
+        style={{ marginBottom: '-18px' }}>
+        <span className="text-red-700 font-semibold text-[11px] bg-red-100 px-2 py-0.5 rounded border border-red-300 whitespace-nowrap shadow-sm">
           {cap(yContext.low)}
         </span>
       </div>
-      
-      {/* Corner Labels - Left */}
-      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 z-30 pointer-events-none" style={{ marginLeft: -36 }}>
-        <span className="text-red-700 font-semibold text-xs bg-red-100 px-3 py-1 rounded shadow-sm border border-red-300 whitespace-nowrap">
+      {/* Corner Labels - Left (X Low) */}
+      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 z-30 pointer-events-none"
+        style={{ marginLeft: '-21px' }}>
+        <span className="text-red-700 font-semibold text-[11px] bg-red-100 px-2 py-0.5 rounded border border-red-300 whitespace-nowrap shadow-sm">
           {cap(xContext.low)}
         </span>
       </div>
-      
-      {/* Corner Labels - Right */}
-      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 z-30 pointer-events-none" style={{ marginRight: -36 }}>
-        <span className="text-green-700 font-semibold text-xs bg-green-100 px-3 py-1 rounded shadow-sm border border-green-300 whitespace-nowrap">
+      {/* Corner Labels - Right (X High) */}
+      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 z-30 pointer-events-none"
+        style={{ marginRight: '-21px' }}>
+        <span className="text-green-700 font-semibold text-[11px] bg-green-100 px-2 py-0.5 rounded border border-green-300 whitespace-nowrap shadow-sm">
           {cap(xContext.high)}
         </span>
       </div>
