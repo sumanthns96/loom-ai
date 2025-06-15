@@ -1,8 +1,9 @@
-import type { SelectedPoint } from "./StepOne";
+import type { SelectedPoint } from "./types";
 
-// New style for one scenario quadrant
+// Updated interface to include summary
 export type MatrixScenario = {
-  header: string;   // "In this scenario, ..."
+  summary: string;   // New: brief 5-7 word headline
+  header: string;    // "In this scenario, ..."
   bullets: string[]; // 4–6 bullet points
 };
 
@@ -63,7 +64,7 @@ export const QUADRANT_REQUESTS: QuadrantRequest[] = [
   },
 ];
 
-// New prompt, following user's style
+// Updated prompt to include summary generation
 export function makeQuadrantPrompt(
   caseTitle: string,
   industryContext: string,
@@ -81,8 +82,9 @@ Y_AXIS: "${yAxis.factor}" (LOW = "Low", HIGH = "High")
 
 For the quadrant where Y is "${quadrant.yHigh}" and X is "${quadrant.xHigh}":
 For this scenario, write:
-1. A 1-sentence header that starts with “In this scenario, ...”
-2. 4-6 concise bullet points covering:
+1. A brief 5-7 word summary headline
+2. A 1-sentence header that starts with "In this scenario, ..."
+3. 4-6 concise bullet points covering:
   (a) market dynamics,
   (b) product / service implications,
   (c) operational or cost impacts,
@@ -90,13 +92,15 @@ For this scenario, write:
   (e) any other context-specific factor.
 
 STYLE
-- ≤ 90 words per quadrant (header plus bullets)
-- Bullet verbs = present tense (“Accelerates…”, “Constrains…”)
+- Summary: 5-7 words max, captures essence of scenario
+- Header: ≤ 90 words per quadrant (header plus bullets)
+- Bullet verbs = present tense ("Accelerates…", "Constrains…")
 - No industry jargon unless present in CASE_TITLE
 - Ready for direct copy-paste into slides.
 
 Return a compact, valid JSON object (no extra prose, no markdown) in this schema:
 {
+  "summary": "Brief scenario headline",
   "header": "In this scenario, ...",
   "bullets": [
     "Bullet point 1",

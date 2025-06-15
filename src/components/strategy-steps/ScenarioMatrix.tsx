@@ -1,8 +1,8 @@
-
 import { FC } from "react";
-import type { SelectedPoint } from "./StepOne";
+import type { SelectedPoint } from "./types";
 
 export interface MatrixScenario {
+  summary: string;
   header: string;
   bullets: string[];
 }
@@ -95,6 +95,11 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-6 p-8">
               {/* Top Left */}
               <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                {scenarios[0]?.summary && (
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    {scenarios[0].summary}
+                  </div>
+                )}
                 <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
                   {scenarios[0]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
                 </div>
@@ -111,6 +116,11 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
               
               {/* Top Right */}
               <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                {scenarios[1]?.summary && (
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    {scenarios[1].summary}
+                  </div>
+                )}
                 <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
                   {scenarios[1]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
                 </div>
@@ -127,6 +137,11 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
               
               {/* Bottom Left */}
               <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                {scenarios[2]?.summary && (
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    {scenarios[2].summary}
+                  </div>
+                )}
                 <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
                   {scenarios[2]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
                 </div>
@@ -143,6 +158,11 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
               
               {/* Bottom Right */}
               <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                {scenarios[3]?.summary && (
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    {scenarios[3].summary}
+                  </div>
+                )}
                 <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
                   {scenarios[3]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
                 </div>

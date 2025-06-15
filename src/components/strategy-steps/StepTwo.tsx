@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { SelectedPoint } from "./StepOne";
+import type { SelectedPoint } from "./types";
 import { QUADRANT_REQUESTS, makeQuadrantPrompt, MatrixScenario } from "./QuadrantPromptUtils";
 import ScenarioMatrix from "./ScenarioMatrix";
 
@@ -119,12 +118,12 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
         );
         if (error) {
           console.error("Edge function error:", error);
-          quadrantResults.push({ header: "", bullets: [] });
+          quadrantResults.push({ summary: "", header: "", bullets: [] });
           continue;
         }
         let obj: any = undefined;
         if (responseData && typeof responseData === "object" && !Array.isArray(responseData)) {
-          if (responseData.header && Array.isArray(responseData.bullets)) {
+          if (responseData.summary && responseData.header && Array.isArray(responseData.bullets)) {
             obj = responseData;
           } else if (responseData.raw) {
             try {
@@ -133,7 +132,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
                   .replace(/^\s*```json\s*|\s*```\s*$/gi, "")
                   .trim()
               );
-              if (parsed.header && Array.isArray(parsed.bullets)) {
+              if (parsed.summary && parsed.header && Array.isArray(parsed.bullets)) {
                 obj = parsed;
               }
             } catch (e) { console.error("Nested parse error:", e); }
@@ -146,13 +145,13 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
               .replace(/,\s*(\}|\])/g, "$1")
               .trim();
             const parsed = JSON.parse(cleaned);
-            if (parsed.header && Array.isArray(parsed.bullets)) {
+            if (parsed.summary && parsed.header && Array.isArray(parsed.bullets)) {
               obj = parsed;
             }
           } catch { /* ignore parse error */ }
         }
         if (!obj) {
-          obj = { header: "", bullets: [] };
+          obj = { summary: "", header: "", bullets: [] };
         }
         quadrantResults.push(obj);
       }
@@ -237,5 +236,3 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
 };
 
 export default StepTwo;
-
-// NOTE: This file is now >200 lines. Consider refactoring into smaller files for better maintainability after reviewing!
