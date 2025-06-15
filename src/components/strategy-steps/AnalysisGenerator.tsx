@@ -1,10 +1,12 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { SteepFactorGroup } from "./types";
 import { FACTOR_ORDER } from "./constants";
+
 interface AnalysisGeneratorProps {
   pdfContent: string;
   isGenerating: boolean;
@@ -12,6 +14,7 @@ interface AnalysisGeneratorProps {
   onGenerationComplete: (factors: SteepFactorGroup[]) => void;
   onGenerationError: () => void;
 }
+
 const AnalysisGenerator = ({
   pdfContent,
   isGenerating,
@@ -19,6 +22,14 @@ const AnalysisGenerator = ({
   onGenerationComplete,
   onGenerationError
 }: AnalysisGeneratorProps) => {
+  
+  // Auto-start analysis when component mounts with PDF content
+  useEffect(() => {
+    if (pdfContent && !isGenerating) {
+      generateAnalysis();
+    }
+  }, [pdfContent]);
+
   const generateAnalysis = async () => {
     onGenerationStart();
     try {
@@ -33,6 +44,7 @@ Case Study:
 ---
 ${pdfContent}
 ---`;
+
       const {
         data: responseData,
         error
@@ -41,6 +53,7 @@ ${pdfContent}
           pdfContent: prompt
         }
       });
+
       if (error) {
         toast({
           title: "Error generating analysis",
@@ -71,6 +84,7 @@ ${pdfContent}
           } catch {/* ignore */}
         }
       }
+
       if (!arr || !Array.isArray(arr) || !arr[0]?.points) {
         toast({
           title: "Error processing analysis",
@@ -98,6 +112,7 @@ ${pdfContent}
           selected: []
         };
       });
+
       onGenerationComplete(ordered);
       toast({
         title: "Analysis generated",
@@ -112,17 +127,29 @@ ${pdfContent}
       onGenerationError();
     }
   };
-  return <div className="flex justify-between items-center">
+
+  return (
+    <div className="flex justify-between items-center">
       <h3 className="text-lg font-medium text-center">Analyzing the Strategic Landscape from the Outside-IN</h3>
-      <Button onClick={generateAnalysis} disabled={isGenerating || !pdfContent} variant="outline">
-        {isGenerating ? <>
+      <Button 
+        onClick={generateAnalysis} 
+        disabled={isGenerating || !pdfContent} 
+        variant="outline"
+      >
+        {isGenerating ? (
+          <>
             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             Generating...
-          </> : <>
+          </>
+        ) : (
+          <>
             <RefreshCw className="h-4 w-4 mr-2" />
             Generate with AI
-          </>}
+          </>
+        )}
       </Button>
-    </div>;
+    </div>
+  );
 };
+
 export default AnalysisGenerator;
