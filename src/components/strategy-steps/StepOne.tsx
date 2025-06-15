@@ -52,7 +52,7 @@ that impact an organization’s strategic landscape.</CardDescription>
               <span>AI Analysis in Progress..</span>
             </div>}
           {!isGenerating && !hasGenerated && <div className="h-60 flex items-center justify-center text-muted-foreground">
-              <span>Click "Generate with AI" to start your STEEP analysis</span>
+              <span>Click &quot;Initiate STEEP Analysis&quot; to start</span>
             </div>}
           {!isGenerating && hasGenerated && factors.map((group, factorIdx) => <SteepCategorySection key={group.factor} factor={group.factor} style={FACTOR_STYLES[group.factor]} points={group.points.map(p => p.text)} selectedIndexes={group.selected} onSelect={(pointIdx, checked) => handleSelect(factorIdx, pointIdx, checked)} onEdit={(pointIdx, value) => handleEdit(factorIdx, pointIdx, value)} />)}
           {!isGenerating && hasGenerated && <div className="flex justify-end mt-8">
