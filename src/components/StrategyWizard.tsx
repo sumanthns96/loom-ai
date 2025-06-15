@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -245,26 +244,28 @@ Generated on: ${new Date().toLocaleDateString()}
           ) : null}
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Previous Step
-          </Button>
-          
-          <Button
-            onClick={nextStep}
-            disabled={currentStep === 5}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            Next Step
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
+        {/* Navigation Buttons - Hide for Step 1 since it has its own Continue button */}
+        {currentStep !== 1 && (
+          <div className="flex justify-between">
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Previous Step
+            </Button>
+            
+            <Button
+              onClick={nextStep}
+              disabled={currentStep === 5}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Next Step
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
