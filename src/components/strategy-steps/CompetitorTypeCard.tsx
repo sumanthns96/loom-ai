@@ -47,9 +47,7 @@ function summarizeActions(actions: string[]): string {
   if (actions.length === 1) return actions[0];
   // Just briefly concatenate and cut if too long
   const joined = actions.map(a => a.trim().replace(/\.+$/, "")).join(". ");
-  if (joined.length <= 95) return joined;
-  // Try to keep meaningful phrases
-  return joined.slice(0, 90).replace(/\s+\S*$/, "") + "...";
+  return joined;
 }
 
 const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, getInitials }) => {
@@ -62,37 +60,30 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
   return (
     <div
       className={`
-        flex flex-col items-center border-2 rounded-xl p-3 h-full min-w-0 
-        ${styles.bg} ${styles.border} overflow-hidden shadow-sm transition-all
+        flex flex-col border-2 rounded-xl p-4 h-full min-w-0 
+        ${styles.bg} ${styles.border} shadow-sm transition-all
       `}
-      style={{ minHeight: 180 }}
+      style={{ minHeight: 280 }}
     >
       {/* Header */}
-      <div className={`w-full text-center font-bold text-xs uppercase leading-tight mb-1 ${styles.text} tracking-wide`}>
+      <div className={`w-full text-center font-bold text-xs uppercase leading-tight mb-3 ${styles.text} tracking-wide`}>
         {typeLabels[type]}
       </div>
-      {/* Main Content, one summary for all competitors */}
-      <div className="flex-1 w-full text-center flex items-center justify-center">
-        <p
-          className="text-sm text-gray-700 font-medium max-h-16 overflow-hidden text-ellipsis px-2"
-          style={{
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-            whiteSpace: "normal",
-          }}
-          title={combinedAction}
-        >
+      
+      {/* Main Content - Full text without truncation */}
+      <div className="flex-1 w-full mb-4">
+        <p className="text-sm text-gray-700 leading-relaxed px-2">
           {combinedAction}
         </p>
       </div>
-      {/* Company Logos */}
-      <div className="flex justify-center items-center space-x-2 mt-2 mb-0 w-full overflow-x-auto min-w-0">
-        {competitors.slice(0, 8).map((competitor, idx) => (
-          <div key={idx} className="flex flex-col items-center min-w-[32px] max-w-[42px]">
+      
+      {/* Company Logos Only - No Names */}
+      <div className="flex justify-center items-center space-x-3 mt-auto">
+        {competitors.slice(0, 6).map((competitor, idx) => (
+          <div key={idx} className="flex items-center">
             <div
               className={
-                "w-6 h-6 rounded bg-white border flex items-center justify-center overflow-hidden mb-1 ring-1 " +
+                "w-8 h-8 rounded bg-white border flex items-center justify-center overflow-hidden ring-1 " +
                 styles.ring
               }
             >
@@ -100,7 +91,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
                 <img
                   src={competitor.logoUrl}
                   alt={competitor.name}
-                  className="w-5 h-5 object-contain"
+                  className="w-6 h-6 object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
@@ -108,13 +99,10 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
                   }}
                 />
               ) : null}
-              <span className={`${competitor.logoUrl ? "hidden" : ""} text-gray-600 text-[11px] font-bold`}>
+              <span className={`${competitor.logoUrl ? "hidden" : ""} text-gray-600 text-xs font-bold`}>
                 {getInitials(competitor.name)}
               </span>
             </div>
-            <span className="text-xs text-gray-600 font-medium text-center w-full truncate">
-              {competitor.name.split(' ')[0].slice(0, 8)}
-            </span>
           </div>
         ))}
       </div>
