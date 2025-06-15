@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -92,29 +93,9 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
             
             {/* Scenario grid - positioned above the axes */}
+            {/* Updated mapping: Index 0: Top Right, Index 1: Top Left, Index 2: Bottom Left, Index 3: Bottom Right */}
             <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-6 p-8">
-              {/* Top Left */}
-              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
-                {scenarios[0]?.summary && (
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                    {scenarios[0].summary}
-                  </div>
-                )}
-                <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
-                  {scenarios[0]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
-                </div>
-                {Array.isArray(scenarios[0]?.bullets) && scenarios[0]?.bullets.length > 0 ? (
-                  <ul className="pl-4 list-disc space-y-1 text-gray-800 text-sm">
-                    {scenarios[0].bullets.map((pt, i) => (
-                      <li key={i}>{pt}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-gray-500 text-xs">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-                )}
-              </div>
-              
-              {/* Top Right */}
+              {/* Top Left - Index 1 */}
               <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
                 {scenarios[1]?.summary && (
                   <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
@@ -135,7 +116,28 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                 )}
               </div>
               
-              {/* Bottom Left */}
+              {/* Top Right - Index 0 */}
+              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
+                {scenarios[0]?.summary && (
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                    {scenarios[0].summary}
+                  </div>
+                )}
+                <div className="font-bold text-blue-900 text-sm mb-2 leading-tight">
+                  {scenarios[0]?.header || <span className="text-gray-400 font-normal">Scenario could not be generated</span>}
+                </div>
+                {Array.isArray(scenarios[0]?.bullets) && scenarios[0]?.bullets.length > 0 ? (
+                  <ul className="pl-4 list-disc space-y-1 text-gray-800 text-sm">
+                    {scenarios[0].bullets.map((pt, i) => (
+                      <li key={i}>{pt}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-gray-500 text-xs">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                )}
+              </div>
+              
+              {/* Bottom Left - Index 2 */}
               <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
                 {scenarios[2]?.summary && (
                   <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
@@ -156,7 +158,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                 )}
               </div>
               
-              {/* Bottom Right */}
+              {/* Bottom Right - Index 3 */}
               <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 min-h-[180px] flex flex-col">
                 {scenarios[3]?.summary && (
                   <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">

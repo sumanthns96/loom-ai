@@ -1,3 +1,4 @@
+
 import type { SelectedPoint } from "./types";
 
 // Updated interface to include summary
@@ -18,23 +19,18 @@ export type QuadrantRequest = {
 };
 
 export const QUADRANT_LABELS = [
-  "High Y / High X",
   "High Y / Low X",
+  "High Y / High X", 
   "Low Y / Low X",
   "Low Y / High X",
 ] as const;
 
-// Each quadrant explains the mix of high/low on both axes
+// Updated quadrant requests to match new index mapping:
+// Index 0: Top Right (High Y, Low X)
+// Index 1: Top Left (High Y, High X)
+// Index 2: Bottom Left (Low Y, Low X)
+// Index 3: Bottom Right (Low Y, High X)
 export const QUADRANT_REQUESTS: QuadrantRequest[] = [
-  {
-    key: 'yHigh_xHigh',
-    label: "High Y, High X",
-    desc: "Both axes (Y and X) at their high/extreme/positive setting.",
-    yHigh: "High",
-    yLow: "Low",
-    xHigh: "High",
-    xLow: "Low"
-  },
   {
     key: 'yHigh_xLow',
     label: "High Y, Low X",
@@ -43,6 +39,15 @@ export const QUADRANT_REQUESTS: QuadrantRequest[] = [
     yLow: "Low",
     xHigh: "Low",
     xLow: "High"
+  },
+  {
+    key: 'yHigh_xHigh',
+    label: "High Y, High X",
+    desc: "Both axes (Y and X) at their high/extreme/positive setting.",
+    yHigh: "High",
+    yLow: "Low",
+    xHigh: "High",
+    xLow: "Low"
   },
   {
     key: 'yLow_xLow',
@@ -64,7 +69,7 @@ export const QUADRANT_REQUESTS: QuadrantRequest[] = [
   },
 ];
 
-// Updated prompt to include summary generation
+// Updated prompt to include summary generation and word count constraint
 export function makeQuadrantPrompt(
   caseTitle: string,
   industryContext: string,
@@ -93,10 +98,11 @@ For this scenario, write:
 
 STYLE
 - Summary: 5-7 words max, captures essence of scenario
-- Header: ≤ 90 words per quadrant (header plus bullets)
+- Header: ≤ 100 words total for the entire quadrant content (header plus all bullets combined)
 - Bullet verbs = present tense ("Accelerates…", "Constrains…")
 - No industry jargon unless present in CASE_TITLE
 - Ready for direct copy-paste into slides.
+- Keep content concise and impactful
 
 Return a compact, valid JSON object (no extra prose, no markdown) in this schema:
 {
