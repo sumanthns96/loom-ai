@@ -14,159 +14,133 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
   const [selectedHorizon, setSelectedHorizon] = useState<number | null>(null);
   const [hoveredCurve, setHoveredCurve] = useState<number | null>(null);
 
-  // Enhanced content analysis for dynamic metrics
-  const analyzeContent = (horizonData: any, horizonNumber: number) => {
-    if (!horizonData?.strategy) return {
-      priority: 0.5,
-      risk: 0.5,
-      growth: 0.5,
-      confidence: 0.3,
-      complexity: 0.5,
-      timeToValue: 0.5
-    };
+  // Enhanced content analysis for truly dynamic metrics
+  const analyzeHorizonContent = (horizonData: any, horizonNumber: number) => {
+    if (!horizonData?.strategy) {
+      // Default fallback values that are clearly different for each horizon
+      return {
+        1: { priority: 0.9, risk: 0.2, growth: 0.3, confidence: 0.8, timeToValue: 0.9, currentValue: 0.8 },
+        2: { priority: 0.7, risk: 0.5, growth: 0.7, confidence: 0.6, timeToValue: 0.4, currentValue: 0.3 },
+        3: { priority: 0.5, risk: 0.8, growth: 0.9, confidence: 0.4, timeToValue: 0.1, currentValue: 0.1 }
+      }[horizonNumber] || { priority: 0.5, risk: 0.5, growth: 0.5, confidence: 0.5, timeToValue: 0.5, currentValue: 0.5 };
+    }
 
-    const text = (horizonData.strategy + ' ' + horizonData.focus1 + ' ' + horizonData.focus2).toLowerCase();
+    const text = (horizonData.strategy + ' ' + (horizonData.focus1 || '') + ' ' + (horizonData.focus2 || '')).toLowerCase();
+    const words = text.split(/\s+/);
     
-    // Priority indicators
-    const priorityKeywords = ['critical', 'essential', 'key', 'primary', 'core', 'main', 'strategic', 'important'];
-    const priority = Math.min(1, priorityKeywords.filter(k => text.includes(k)).length / 3);
+    // Horizon-specific keyword analysis
+    const h1Keywords = ['optimize', 'improve', 'enhance', 'efficiency', 'cost', 'existing', 'current', 'maintain'];
+    const h2Keywords = ['expand', 'develop', 'explore', 'adjacent', 'extend', 'build', 'market', 'capability'];
+    const h3Keywords = ['innovate', 'disrupt', 'breakthrough', 'transform', 'future', 'new', 'revolutionary', 'pioneer'];
     
-    // Risk indicators
-    const riskKeywords = ['risk', 'uncertain', 'challenge', 'complex', 'difficult', 'new', 'experimental'];
-    const risk = Math.min(1, riskKeywords.filter(k => text.includes(k)).length / 3);
+    const riskKeywords = ['risk', 'uncertain', 'challenge', 'complex', 'difficult', 'experimental', 'unknown'];
+    const growthKeywords = ['growth', 'scale', 'increase', 'revenue', 'profit', 'expand', 'market'];
+    const priorityKeywords = ['critical', 'essential', 'key', 'primary', 'strategic', 'important', 'focus'];
     
-    // Growth indicators
-    const growthKeywords = ['grow', 'expand', 'scale', 'increase', 'enhance', 'improve', 'develop'];
-    const growth = Math.min(1, growthKeywords.filter(k => text.includes(k)).length / 3);
-    
-    // Confidence based on detail level and specificity
-    const confidence = Math.min(0.95, Math.max(0.2, text.length / 300));
-    
-    // Complexity based on strategy length and technical terms
-    const complexityKeywords = ['integrate', 'transform', 'implement', 'develop', 'build', 'create'];
-    const complexity = Math.min(1, (text.length / 200) + (complexityKeywords.filter(k => text.includes(k)).length / 4));
-    
-    // Time to value (inverse for each horizon)
-    const timeToValue = horizonNumber === 1 ? 0.8 : horizonNumber === 2 ? 0.5 : 0.2;
-    
-    return { priority, risk, growth, confidence, complexity, timeToValue };
-  };
-
-  // Extract meaningful summaries from strategy text
-  const extractSummary = (strategy: string): string => {
-    if (!strategy) return "";
-    
-    const actionKeywords = [
-      { words: ['optimize', 'improve', 'enhance', 'streamline'], label: 'Optimize' },
-      { words: ['expand', 'grow', 'scale', 'extend'], label: 'Expand' },
-      { words: ['transform', 'innovate', 'disrupt', 'breakthrough'], label: 'Transform' },
-      { words: ['develop', 'build', 'create', 'establish'], label: 'Build' },
-      { words: ['integrate', 'connect', 'combine', 'merge'], label: 'Integrate' },
-      { words: ['explore', 'research', 'investigate', 'discover'], label: 'Explore' }
-    ];
-    
-    const words = strategy.toLowerCase().split(/\s+/);
-    
-    for (const group of actionKeywords) {
-      if (group.words.some(word => words.some(w => w.includes(word)))) {
-        return group.label;
-      }
+    // Calculate metrics based on horizon type and content
+    let baseMetrics;
+    if (horizonNumber === 1) {
+      const h1Score = h1Keywords.filter(k => words.some(w => w.includes(k))).length;
+      baseMetrics = {
+        priority: 0.7 + Math.min(0.3, h1Score * 0.1),
+        risk: 0.1 + Math.min(0.3, riskKeywords.filter(k => words.some(w => w.includes(k))).length * 0.1),
+        growth: 0.2 + Math.min(0.4, growthKeywords.filter(k => words.some(w => w.includes(k))).length * 0.1),
+        confidence: 0.7 + Math.min(0.3, text.length / 500),
+        timeToValue: 0.8 + Math.min(0.2, h1Score * 0.05),
+        currentValue: 0.7 + Math.min(0.3, h1Score * 0.1)
+      };
+    } else if (horizonNumber === 2) {
+      const h2Score = h2Keywords.filter(k => words.some(w => words.includes(k))).length;
+      baseMetrics = {
+        priority: 0.5 + Math.min(0.4, h2Score * 0.1),
+        risk: 0.3 + Math.min(0.4, riskKeywords.filter(k => words.some(w => words.includes(k))).length * 0.1),
+        growth: 0.4 + Math.min(0.5, growthKeywords.filter(k => words.some(w => words.includes(k))).length * 0.1),
+        confidence: 0.4 + Math.min(0.4, text.length / 400),
+        timeToValue: 0.3 + Math.min(0.4, h2Score * 0.05),
+        currentValue: 0.2 + Math.min(0.4, h2Score * 0.08)
+      };
+    } else {
+      const h3Score = h3Keywords.filter(k => words.some(w => words.includes(k))).length;
+      baseMetrics = {
+        priority: 0.3 + Math.min(0.5, h3Score * 0.1),
+        risk: 0.5 + Math.min(0.5, riskKeywords.filter(k => words.some(w => words.includes(k))).length * 0.1),
+        growth: 0.6 + Math.min(0.4, growthKeywords.filter(k => words.some(w => words.includes(k))).length * 0.1),
+        confidence: 0.2 + Math.min(0.5, text.length / 300),
+        timeToValue: 0.1 + Math.min(0.3, h3Score * 0.03),
+        currentValue: 0.05 + Math.min(0.2, h3Score * 0.05)
+      };
     }
     
-    // Fallback to horizon-specific defaults
-    return ["Core", "Growth", "Innovation"][0];
+    // Add priority boost based on strategic keywords
+    const priorityBoost = priorityKeywords.filter(k => words.some(w => w.includes(k))).length * 0.1;
+    baseMetrics.priority = Math.min(1, baseMetrics.priority + priorityBoost);
+    
+    return baseMetrics;
   };
 
-  // Calculate comprehensive metrics for each horizon
   const contentMetrics = useMemo(() => {
-    if (!horizonsData) return [
-      { priority: 0.7, risk: 0.3, growth: 0.6, confidence: 0.5, complexity: 0.4, timeToValue: 0.8 },
-      { priority: 0.6, risk: 0.5, growth: 0.8, confidence: 0.5, complexity: 0.6, timeToValue: 0.5 },
-      { priority: 0.5, risk: 0.8, growth: 0.9, confidence: 0.5, complexity: 0.8, timeToValue: 0.2 }
-    ];
-
     return [
-      analyzeContent(horizonsData.horizon1, 1),
-      analyzeContent(horizonsData.horizon2, 2),
-      analyzeContent(horizonsData.horizon3, 3)
+      analyzeHorizonContent(horizonsData?.horizon1, 1),
+      analyzeHorizonContent(horizonsData?.horizon2, 2),
+      analyzeHorizonContent(horizonsData?.horizon3, 3)
     ];
   }, [horizonsData]);
 
-  const horizonSummaries = useMemo(() => {
-    if (!horizonsData) return ["Core", "Growth", "Innovation"];
-    
-    return [
-      extractSummary(horizonsData.horizon1?.strategy) || "Core",
-      extractSummary(horizonsData.horizon2?.strategy) || "Growth", 
-      extractSummary(horizonsData.horizon3?.strategy) || "Innovation"
-    ];
-  }, [horizonsData]);
-
-  // Generate truly dynamic curve paths based on content analysis
-  const generateDynamicCurvePath = (horizonNumber: number, metrics: any) => {
-    const { priority, risk, growth, confidence, complexity, timeToValue } = metrics;
-    
-    // Base positions adjusted by content
+  // Generate proper S-curves following Three Horizons model
+  const generateSCurvePath = (horizonNumber: number, metrics: any) => {
+    const chartWidth = 640; // SVG width minus margins
+    const chartHeight = 200; // SVG height minus margins
     const startX = 80;
     const endX = 720;
-    const midX = 400;
     
-    // Dynamic Y positions based on metrics
-    const baseY = 250;
-    const maxHeight = 180;
+    // Define time segments for each horizon
+    const timeSegments = {
+      1: { start: 0, peak: 0.3, end: 1.0 },    // H1: Immediate value, gradual decline
+      2: { start: 0.2, peak: 0.7, end: 1.0 },  // H2: Build up, then plateau
+      3: { start: 0.5, peak: 0.9, end: 1.0 }   // H3: Slow start, exponential growth
+    };
     
-    // Start point - H1 starts higher (current value), others start lower
-    const startY = baseY - (horizonNumber === 1 ? 80 + (timeToValue * 40) : 20 + (timeToValue * 20));
+    const segment = timeSegments[horizonNumber as keyof typeof timeSegments];
     
-    // Peak point - influenced by growth potential and priority
-    const peakHeight = maxHeight * (0.3 + (growth * 0.4) + (priority * 0.3));
-    const peakY = baseY - peakHeight;
+    // Calculate key points based on metrics and horizon characteristics
+    const startValue = metrics.currentValue;
+    const peakValue = horizonNumber === 1 ? 
+      Math.min(1, startValue + (metrics.growth * 0.3)) :
+      horizonNumber === 2 ?
+      Math.min(1, 0.1 + (metrics.growth * 0.7)) :
+      Math.min(1, 0.05 + (metrics.growth * 0.9));
     
-    // Peak timing - high complexity and risk delay peak, high priority advances it
-    const peakOffset = (complexity * 100) + (risk * 50) - (priority * 75);
-    const peakX = midX + peakOffset;
+    const endValue = horizonNumber === 1 ?
+      Math.max(0.2, peakValue - 0.3) :
+      horizonNumber === 2 ?
+      Math.max(0.1, peakValue - 0.1) :
+      peakValue; // H3 keeps growing
     
-    // End point - long-term value influenced by growth and strategic importance
-    const endValue = (growth * 0.6) + (priority * 0.4);
-    const endY = baseY - (endValue * maxHeight * 0.8);
+    // Convert to SVG coordinates
+    const startY = 250 - (startValue * chartHeight);
+    const peakY = 250 - (peakValue * chartHeight);
+    const endY = 250 - (endValue * chartHeight);
     
-    // Control points for curve shape
-    const cp1X = startX + (peakX - startX) * 0.4;
-    const cp1Y = startY - ((peakY - startY) * 0.3);
+    const startSvgX = startX + (segment.start * chartWidth);
+    const peakSvgX = startX + (segment.peak * chartWidth);
+    const endSvgX = startX + (segment.end * chartWidth);
     
-    const cp2X = peakX + (endX - peakX) * 0.3;
-    const cp2Y = peakY + ((endY - peakY) * 0.2);
+    // Create S-curve with proper control points
+    const cp1X = startSvgX + (peakSvgX - startSvgX) * 0.4;
+    const cp1Y = startY - (startY - peakY) * 0.2;
     
-    // Create smooth curve with multiple control points
-    return `M ${startX} ${startY} 
-            Q ${cp1X} ${cp1Y} ${peakX} ${peakY} 
-            Q ${cp2X} ${cp2Y} ${endX} ${endY}`;
-  };
-
-  // Generate confidence bands around curves
-  const generateConfidenceBand = (horizonNumber: number, metrics: any) => {
-    const { confidence, risk } = metrics;
-    const bandWidth = (1 - confidence) * 15 + risk * 10;
+    const cp2X = peakSvgX + (endSvgX - peakSvgX) * 0.3;
+    const cp2Y = peakY + (endY - peakY) * 0.1;
     
-    const mainPath = generateDynamicCurvePath(horizonNumber, metrics);
-    const upperPath = generateDynamicCurvePath(horizonNumber, {
-      ...metrics,
-      growth: Math.min(1, metrics.growth + bandWidth/100),
-      priority: Math.min(1, metrics.priority + bandWidth/150)
-    });
-    const lowerPath = generateDynamicCurvePath(horizonNumber, {
-      ...metrics,
-      growth: Math.max(0, metrics.growth - bandWidth/100),
-      priority: Math.max(0, metrics.priority - bandWidth/150)
-    });
-    
-    return { mainPath, upperPath, lowerPath, bandWidth };
+    return `M ${startSvgX} ${startY} 
+            Q ${cp1X} ${cp1Y} ${peakSvgX} ${peakY} 
+            Q ${cp2X} ${cp2Y} ${endSvgX} ${endY}`;
   };
 
   const horizonColors = [
-    { primary: '#10b981', secondary: '#6ee7b7', hover: '#059669', band: '#10b98120' },
-    { primary: '#f59e0b', secondary: '#fbbf24', hover: '#d97706', band: '#f59e0b20' },
-    { primary: '#ef4444', secondary: '#f87171', hover: '#dc2626', band: '#ef444420' }
+    { primary: '#10b981', secondary: '#6ee7b7', hover: '#059669', band: '#10b98120' }, // Green
+    { primary: '#f59e0b', secondary: '#fbbf24', hover: '#d97706', band: '#f59e0b20' }, // Orange  
+    { primary: '#ef4444', secondary: '#f87171', hover: '#dc2626', band: '#ef444420' }  // Red
   ];
 
   const handleCurveClick = (horizonNumber: number) => {
@@ -186,15 +160,6 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
               <pattern id="grid" width="80" height="30" patternUnits="userSpaceOnUse">
                 <path d="M 80 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" strokeWidth="1"/>
               </pattern>
-              
-              {/* Dynamic gradients based on metrics */}
-              {horizonColors.map((color, index) => (
-                <linearGradient key={index} id={`gradient${index + 1}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor={color.primary} stopOpacity={0.2 + contentMetrics[index].confidence * 0.3}/>
-                  <stop offset="50%" stopColor={color.secondary} stopOpacity={0.4 + contentMetrics[index].priority * 0.4}/>
-                  <stop offset="100%" stopColor={color.primary} stopOpacity={0.6 + contentMetrics[index].growth * 0.3}/>
-                </linearGradient>
-              ))}
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
             
@@ -207,51 +172,42 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
               Strategic Value
             </text>
             
-            <text x="160" y="275" fill="#374151" fontSize="12" textAnchor="middle">0-2 years</text>
-            <text x="320" y="275" fill="#374151" fontSize="12" textAnchor="middle">3-4 years</text>
-            <text x="480" y="275" fill="#374151" fontSize="12" textAnchor="middle">5-6 years</text>
+            <text x="200" y="275" fill="#374151" fontSize="12" textAnchor="middle">0-2 years</text>
+            <text x="400" y="275" fill="#374151" fontSize="12" textAnchor="middle">3-5 years</text>
+            <text x="600" y="275" fill="#374151" fontSize="12" textAnchor="middle">5+ years</text>
             <text x="400" y="295" fill="#374151" fontSize="14" textAnchor="middle">Time Horizon</text>
             
-            {/* Dynamic Horizon Curves with Confidence Bands */}
+            {/* Three Horizons S-Curves */}
             {[1, 2, 3].map((horizonNumber, index) => {
               const color = horizonColors[index];
               const metrics = contentMetrics[index];
               const isHovered = hoveredCurve === horizonNumber;
               const isSelected = selectedHorizon === horizonNumber;
-              const { mainPath, upperPath, lowerPath, bandWidth } = generateConfidenceBand(horizonNumber, metrics);
+              const curvePath = generateSCurvePath(horizonNumber, metrics);
               
               return (
                 <g key={horizonNumber}>
-                  {/* Confidence Band */}
+                  {/* Confidence Band (optional visual enhancement) */}
                   <path
-                    d={upperPath}
+                    d={curvePath}
                     fill="none"
                     stroke={color.band}
-                    strokeWidth="2"
-                    strokeOpacity="0.3"
-                    strokeDasharray="3,3"
-                  />
-                  <path
-                    d={lowerPath}
-                    fill="none"
-                    stroke={color.band}
-                    strokeWidth="2"
-                    strokeOpacity="0.3"
-                    strokeDasharray="3,3"
+                    strokeWidth={8 - metrics.confidence * 3}
+                    strokeOpacity="0.2"
                   />
                   
-                  {/* Main Curve */}
+                  {/* Main S-Curve */}
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <path
-                        d={mainPath}
+                        d={curvePath}
                         fill="none"
                         stroke={isHovered || isSelected ? color.hover : color.primary}
-                        strokeWidth={3 + metrics.priority * 3 + (isHovered || isSelected ? 2 : 0)}
+                        strokeWidth={2 + metrics.priority * 3 + (isHovered || isSelected ? 2 : 0)}
                         strokeLinecap="round"
                         style={{
                           cursor: 'pointer',
-                          opacity: 0.7 + metrics.confidence * 0.3,
+                          opacity: 0.8 + metrics.confidence * 0.2,
                           transition: 'all 0.3s ease',
                           filter: isSelected ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' : 'none'
                         }}
@@ -282,13 +238,13 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
                     </TooltipContent>
                   </Tooltip>
                   
-                  {/* Dynamic Summary Labels */}
+                  {/* Horizon Labels */}
                   <text
-                    x={400 + (metrics.complexity - 0.5) * 100}
-                    y={120 + index * 25 - metrics.priority * 20}
+                    x={horizonNumber === 1 ? 200 : horizonNumber === 2 ? 400 : 600}
+                    y={70 + index * 15}
                     fill={color.primary}
-                    fontSize={12 + metrics.priority * 3}
-                    fontWeight={400 + metrics.priority * 300}
+                    fontSize={13}
+                    fontWeight={500}
                     textAnchor="middle"
                     style={{
                       textShadow: '1px 1px 2px rgba(255,255,255,0.8)',
@@ -296,7 +252,7 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
                       transform: isHovered || isSelected ? 'scale(1.1)' : 'scale(1)'
                     }}
                   >
-                    {horizonSummaries[index]}
+                    H{horizonNumber}: {horizonNumber === 1 ? 'Core' : horizonNumber === 2 ? 'Adjacent' : 'Transformational'}
                   </text>
                 </g>
               );
@@ -304,9 +260,8 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
           </svg>
         </div>
 
-        {/* Enhanced Metrics Display */}
+        {/* Dynamic Metrics Display */}
         <div className="grid grid-cols-3 gap-6 mb-8">
-          {/* Horizon Metrics */}
           {[1, 2, 3].map((horizonNumber, index) => {
             const metrics = contentMetrics[index];
             const color = horizonColors[index];
@@ -377,7 +332,7 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
           <div className={`bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg transition-all duration-300 ${
             selectedHorizon === 2 ? 'shadow-lg scale-105 bg-orange-100' : ''
           }`}>
-            <h3 className="font-bold text-orange-800 mb-3">Horizon 2 (3-4 years)</h3>
+            <h3 className="font-bold text-orange-800 mb-3">Horizon 2 (3-5 years)</h3>
             <h4 className="text-sm font-semibold text-orange-700 mb-1">Adjacent Opportunities</h4>
             <div className="space-y-2 text-sm text-orange-700">
               <div>
@@ -401,7 +356,7 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
           <div className={`bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg transition-all duration-300 ${
             selectedHorizon === 3 ? 'shadow-lg scale-105 bg-red-100' : ''
           }`}>
-            <h3 className="font-bold text-red-800 mb-3">Horizon 3 (5-6 years)</h3>
+            <h3 className="font-bold text-red-800 mb-3">Horizon 3 (5+ years)</h3>
             <h4 className="text-sm font-semibold text-red-700 mb-1">Breakthrough Innovation</h4>
             <div className="space-y-2 text-sm text-red-700">
               <div>
