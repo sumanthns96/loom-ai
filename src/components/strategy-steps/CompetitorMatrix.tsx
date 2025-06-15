@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -39,30 +38,34 @@ const CompetitorTypeCard: FC<{
     Adjacent: "ADJACENTS"
   };
 
-  // Combine all actions for this type into one coherent description
+  // Truncate combined action to 10-15 words max
   const combinedAction = competitors.map(c => c.action).join(". ");
+  const words = combinedAction.split(" ");
+  const truncatedAction = words.length > 15 
+    ? words.slice(0, 15).join(" ") + "..." 
+    : combinedAction;
   
   return (
-    <div className={`${typeColors[type]} rounded-2xl border-2 p-4 min-h-[240px] flex flex-col justify-between shadow-md`}>
+    <div className={`${typeColors[type]} rounded-xl border-2 p-2 h-28 flex flex-col justify-between shadow-sm`}>
       {/* Header */}
-      <div className="text-center mb-3">
-        <h4 className="text-sm font-bold text-gray-800 tracking-wide">
+      <div className="text-center">
+        <h4 className="text-[10px] font-bold text-gray-800 tracking-wide">
           {typeLabels[type]}
         </h4>
       </div>
       
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-2">
-        <p className="text-xs text-gray-700 text-center leading-relaxed">
-          {combinedAction}
+      <div className="flex-1 flex items-center justify-center px-1">
+        <p className="text-[9px] text-gray-700 text-center leading-tight">
+          {truncatedAction}
         </p>
       </div>
       
       {/* Company Logos */}
-      <div className="flex justify-center items-center space-x-2 mt-3">
+      <div className="flex justify-center items-center space-x-1">
         {competitors.slice(0, 3).map((competitor, index) => (
           <div key={index} className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
+            <div className="w-4 h-4 rounded bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
               <img 
                 src={competitor.logoUrl} 
                 alt={competitor.name}
@@ -73,11 +76,11 @@ const CompetitorTypeCard: FC<{
                   target.nextElementSibling!.classList.remove('hidden');
                 }}
               />
-              <span className="hidden text-gray-600 text-xs font-bold">
+              <span className="hidden text-gray-600 text-[8px] font-bold">
                 {getInitials(competitor.name)}
               </span>
             </div>
-            <span className="text-xs text-gray-500 mt-0.5 font-medium text-center max-w-[40px] truncate">
+            <span className="text-[8px] text-gray-500 font-medium text-center max-w-[30px] truncate">
               {competitor.name.split(' ')[0]}
             </span>
           </div>
@@ -136,7 +139,7 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
             </span>
           </div>
           
-          <div className="relative" style={{ minHeight: 600 }}>
+          <div className="relative" style={{ minHeight: 500 }}>
             {/* Horizontal X axis */}
             <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 z-10">
               <div className="flex items-center">
@@ -174,16 +177,16 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
             </div>
             
             {/* Competitor quadrants */}
-            <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-6 p-6">
+            <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-4 p-4">
               {/* Top Left - Index 1 (High Y, Low X) */}
-              <div className="space-y-4">
-                <h4 className="text-center text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide bg-white px-3 py-1 rounded-lg shadow-sm">
+              <div className="space-y-2">
+                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
                   {getQuadrantHeader(true, false)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(1);
                   return (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                       {insurgents.length > 0 && (
                         <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
                       )}
@@ -199,14 +202,14 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
               </div>
               
               {/* Top Right - Index 0 (High Y, High X) */}
-              <div className="space-y-4">
-                <h4 className="text-center text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide bg-white px-3 py-1 rounded-lg shadow-sm">
+              <div className="space-y-2">
+                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
                   {getQuadrantHeader(true, true)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(0);
                   return (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                       {insurgents.length > 0 && (
                         <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
                       )}
@@ -222,14 +225,14 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
               </div>
               
               {/* Bottom Left - Index 2 (Low Y, Low X) */}
-              <div className="space-y-4">
-                <h4 className="text-center text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide bg-white px-3 py-1 rounded-lg shadow-sm">
+              <div className="space-y-2">
+                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
                   {getQuadrantHeader(false, false)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(2);
                   return (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                       {insurgents.length > 0 && (
                         <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
                       )}
@@ -245,14 +248,14 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
               </div>
               
               {/* Bottom Right - Index 3 (Low Y, High X) */}
-              <div className="space-y-4">
-                <h4 className="text-center text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide bg-white px-3 py-1 rounded-lg shadow-sm">
+              <div className="space-y-2">
+                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
                   {getQuadrantHeader(false, true)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(3);
                   return (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                       {insurgents.length > 0 && (
                         <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
                       )}
