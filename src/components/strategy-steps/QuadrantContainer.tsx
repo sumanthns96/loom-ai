@@ -36,12 +36,12 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
       <h4 className="text-center text-sm font-bold text-gray-800 uppercase tracking-wide mb-8 bg-white px-4 py-3 rounded-lg border shadow-sm">
         {title}
       </h4>
-      {/* Grid of 3 wider rectangular competitor type cards */}
+      {/* Grid of 3 nearly square competitor type cards */}
       <div className="grid grid-cols-3 gap-8 flex-1">
         {allTypes.map(({ type, list }) => (
           <div
             key={type}
-            className="w-full min-h-[200px] flex"
+            className="w-full aspect-square flex"
           >
             <CompetitorTypeCard
               type={type as any}
