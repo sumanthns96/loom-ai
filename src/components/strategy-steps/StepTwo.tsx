@@ -282,7 +282,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
         <CardContent>
           <div className="mb-6">
             <h3 className="font-medium mb-4 text-lg">
-              Based on your selection of Driving Forces, AI will identify uncertainties that you can't predict that impact your Strategic Choices. Select <span className="font-bold text-blue-600">two factors</span> as key uncertainties for your scenario matrix:
+              Based on your selection of Driving Forces, AI will identify uncertainties that you can't predict that impact your Strategic Choices. Select <span className="font-bold text-blue-600">two factors</span> as key uncertainties to Identify Plausible Scenarios
             </h3>
             
             <div className="space-y-4">
