@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { RefreshCw, Calendar } from "lucide-react";
+import { RefreshCw, TrendingUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import ThreeHorizonsChart from "./ThreeHorizonsChart";
 
 interface StepFourProps {
   pdfContent: string;
@@ -12,126 +13,109 @@ interface StepFourProps {
   onDataChange: (data: string) => void;
 }
 
+interface HorizonsData {
+  horizon1: { focus1: string; focus2: string; strategy: string; };
+  horizon2: { focus1: string; focus2: string; strategy: string; };
+  horizon3: { focus1: string; focus2: string; strategy: string; };
+}
+
 const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [plan, setPlan] = useState(data);
+  const [horizonsData, setHorizonsData] = useState<HorizonsData | null>(null);
 
   useEffect(() => {
-    setPlan(data);
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        setHorizonsData(parsed);
+      } catch {
+        // If data is old format string, ignore and let user regenerate
+      }
+    }
   }, [data]);
 
-  const generatePlan = async () => {
-    setIsGenerating(true);
-    
-    setTimeout(() => {
-      const mockPlan = `IMPLEMENTATION PLAN
-
-PHASE 1: FOUNDATION (Months 1-6)
-Objective: Establish operational excellence and quick wins
-
-Key Initiatives:
-1. Process Optimization Project
-   • Timeline: Months 1-3
-   • Owner: Operations Director
-   • Budget: $200K
-   • Deliverables: Streamlined processes, 15% cost reduction
-
-2. Technology Infrastructure Assessment
-   • Timeline: Months 2-4
-   • Owner: IT Director
-   • Budget: $100K
-   • Deliverables: Technology roadmap, system requirements
-
-3. Team Training & Development
-   • Timeline: Months 3-6
-   • Owner: HR Director
-   • Budget: $150K
-   • Deliverables: Skills assessment, training programs
-
-PHASE 2: EXPANSION (Months 7-18)
-Objective: Market growth and capability building
-
-Key Initiatives:
-1. Market Expansion Project
-   • Timeline: Months 7-15
-   • Owner: Sales Director
-   • Budget: $800K
-   • Deliverables: New market entry, 25% revenue growth
-
-2. Partnership Development
-   • Timeline: Months 8-12
-   • Owner: Business Development Manager
-   • Budget: $300K
-   • Deliverables: 3-5 strategic partnerships
-
-3. Customer Experience Enhancement
-   • Timeline: Months 9-18
-   • Owner: Customer Success Manager
-   • Budget: $400K
-   • Deliverables: Improved NPS, retention increase
-
-PHASE 3: TRANSFORMATION (Months 19-24)
-Objective: Digital transformation and innovation
-
-Key Initiatives:
-1. Digital Platform Development
-   • Timeline: Months 19-24
-   • Owner: CTO
-   • Budget: $1.2M
-   • Deliverables: Modern platform, digital capabilities
-
-2. Data Analytics Implementation
-   • Timeline: Months 20-24
-   • Owner: Data Analytics Manager
-   • Budget: $500K
-   • Deliverables: Business intelligence, predictive analytics
-
-3. Innovation Lab Launch
-   • Timeline: Months 22-24
-   • Owner: Innovation Director
-   • Budget: $300K
-   • Deliverables: Innovation processes, new product pipeline
-
-RESOURCE ALLOCATION:
-Total Investment: $3.95M over 24 months
-• Personnel: 60% ($2.37M)
-• Technology: 25% ($988K)
-• Marketing: 10% ($395K)
-• Operations: 5% ($197K)
-
-RISK MANAGEMENT:
-High Risk Items:
-• Technology implementation delays → Mitigation: Phased rollout
-• Market entry challenges → Mitigation: Pilot programs
-• Resource constraints → Mitigation: Flexible budgeting
-
-GOVERNANCE STRUCTURE:
-• Executive Steering Committee (monthly)
-• Project Management Office (weekly)
-• Phase Gate Reviews (quarterly)
-• Board Updates (quarterly)
-
-SUCCESS FACTORS:
-• Strong executive sponsorship
-• Clear communication plan
-• Regular progress monitoring
-• Agile adaptation capability
-• Change management support`;
-
-      setPlan(mockPlan);
-      onDataChange(mockPlan);
-      setIsGenerating(false);
+  const parseThreeHorizonsText = (text: string): HorizonsData | null => {
+    try {
+      const horizonSections = text.split(/HORIZON \d/);
       
-      toast({
-        title: "Implementation plan created",
-        description: "AI has developed a detailed execution roadmap with timelines and resources.",
-      });
-    }, 3500);
+      const parseHorizonSection = (section: string) => {
+        const focus1Match = section.match(/Focus 1: (.+?)(?=Focus 2|Strategy|$)/s);
+        const focus2Match = section.match(/Focus 2: (.+?)(?=Strategy|$)/s);
+        const strategyMatch = section.match(/Strategy: (.+?)(?=HORIZON|$)/s);
+        
+        return {
+          focus1: focus1Match?.[1]?.trim() || "",
+          focus2: focus2Match?.[1]?.trim() || "",
+          strategy: strategyMatch?.[1]?.trim() || ""
+        };
+      };
+
+      return {
+        horizon1: parseHorizonSection(horizonSections[1] || ""),
+        horizon2: parseHorizonSection(horizonSections[2] || ""),
+        horizon3: parseHorizonSection(horizonSections[3] || "")
+      };
+    } catch (error) {
+      console.error('Error parsing three horizons text:', error);
+      return null;
+    }
   };
 
-  const handlePlanChange = (value: string) => {
-    setPlan(value);
-    onDataChange(value);
+  const generateThreeHorizons = async () => {
+    setIsGenerating(true);
+    
+    try {
+      // Get previous step data from localStorage
+      const wizardState = localStorage.getItem("strategyWizardState");
+      let steepAnalysis = "";
+      let scenarioMatrix = "";
+      let strategicOptions = "";
+
+      if (wizardState) {
+        const state = JSON.parse(wizardState);
+        steepAnalysis = state.stepData?.step1 || "";
+        scenarioMatrix = state.stepData?.step2 || "";
+        strategicOptions = state.stepData?.step3 || "";
+      }
+
+      const { data: result, error } = await supabase.functions.invoke('generate-three-horizons', {
+        body: {
+          pdfContent,
+          steepAnalysis,
+          scenarioMatrix,
+          strategicOptions
+        }
+      });
+
+      if (error) throw error;
+
+      if (result.success && result.threeHorizons) {
+        const parsedData = parseThreeHorizonsText(result.threeHorizons);
+        
+        if (parsedData) {
+          setHorizonsData(parsedData);
+          onDataChange(JSON.stringify(parsedData));
+          
+          toast({
+            title: "Three Horizons Model Generated",
+            description: "McKinsey's strategic roadmap has been created based on your analysis.",
+          });
+        } else {
+          throw new Error("Failed to parse generated content");
+        }
+      } else {
+        throw new Error(result.error || "Failed to generate three horizons model");
+      }
+    } catch (error) {
+      console.error('Error generating three horizons:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate the Three Horizons Model. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -139,51 +123,45 @@ SUCCESS FACTORS:
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-blue-600" />
-            <span>Implementation Plan</span>
+            <TrendingUp className="h-5 w-5 text-blue-600" />
+            <span>McKinsey Three Horizons Model</span>
           </CardTitle>
           <CardDescription>
-            Create a detailed execution roadmap with timelines, resources, responsibilities, 
-            and milestones to transform strategy into actionable initiatives.
+            Generate a strategic roadmap that balances present performance with future innovation 
+            across three time horizons: core optimization (0-2 years), adjacent opportunities (3-4 years), 
+            and breakthrough innovation (5-6 years).
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">Execution Roadmap</h3>
+            <h3 className="text-lg font-medium">Strategic Roadmap</h3>
             <Button
-              onClick={generatePlan}
+              onClick={generateThreeHorizons}
               disabled={isGenerating}
               variant="outline"
             >
               {isGenerating ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Planning...
+                  Generating...
                 </>
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Create Plan
+                  Generate Three Horizons Model
                 </>
               )}
             </Button>
           </div>
 
-          <Textarea
-            placeholder="Click 'Create Plan' to generate implementation roadmap, or develop your own plan..."
-            value={plan}
-            onChange={(e) => handlePlanChange(e.target.value)}
-            className="min-h-96 font-mono text-sm"
-          />
+          <ThreeHorizonsChart horizonsData={horizonsData} />
 
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Implementation Framework:</h4>
+            <h4 className="font-medium text-blue-900 mb-2">Three Horizons Framework:</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Phased approach with clear milestones</li>
-              <li>• Resource allocation and budget planning</li>
-              <li>• Responsibility assignment and governance</li>
-              <li>• Risk identification and mitigation strategies</li>
-              <li>• Communication and change management</li>
+              <li>• <strong>Horizon 1 (0-2 years):</strong> Optimize core business operations and improve current offerings</li>
+              <li>• <strong>Horizon 2 (3-4 years):</strong> Explore adjacent opportunities and build emerging capabilities</li>
+              <li>• <strong>Horizon 3 (5-6 years):</strong> Invest in breakthrough innovations and disruptive technologies</li>
             </ul>
           </div>
         </CardContent>
