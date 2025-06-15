@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -290,7 +291,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
                   key={factor}
                   factor={factor}
                   style={FACTOR_STYLES[factor]}
-                  points={points.map(p => p.text)}
+                  points={points.map(p => ({ text: p.text, isUserAdded: false }))}
                   selectedIndexes={factorSelections[factor] || []}
                   onSelect={(idx, checked) => handleSelect(factor, idx, checked)}
                   onEdit={() => {}} // No editing in step 2
