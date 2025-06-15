@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -6,7 +5,6 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { SteepFactorGroup } from "./types";
 import { FACTOR_ORDER } from "./constants";
-
 interface AnalysisGeneratorProps {
   pdfContent: string;
   isGenerating: boolean;
@@ -14,10 +12,8 @@ interface AnalysisGeneratorProps {
   onGenerationComplete: (factors: SteepFactorGroup[]) => void;
   onGenerationError: () => void;
 }
-
 const LoadingText = () => {
   const [phase, setPhase] = useState(1);
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setPhase(2);
@@ -25,22 +21,14 @@ const LoadingText = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  return (
-    <span className="transition-opacity duration-500">
-      {phase === 1 ? (
-        <span className="animate-fade-in">
+  return <span className="transition-opacity duration-500">
+      {phase === 1 ? <span className="animate-fade-in">
           Analyzing the Strategic Landscape from the Outside-In
-        </span>
-      ) : (
-        <span className="animate-fade-in">
+        </span> : <span className="animate-fade-in">
           Analyzing all factors
-        </span>
-      )}
-    </span>
-  );
+        </span>}
+    </span>;
 };
-
 const AnalysisGenerator = ({
   pdfContent,
   isGenerating,
@@ -48,7 +36,6 @@ const AnalysisGenerator = ({
   onGenerationComplete,
   onGenerationError
 }: AnalysisGeneratorProps) => {
-
   const generateAnalysis = async () => {
     onGenerationStart();
     try {
@@ -63,7 +50,6 @@ Case Study:
 ---
 ${pdfContent}
 ---`;
-
       const {
         data: responseData,
         error
@@ -72,7 +58,6 @@ ${pdfContent}
           pdfContent: prompt
         }
       });
-
       if (error) {
         toast({
           title: "Error generating analysis",
@@ -103,7 +88,6 @@ ${pdfContent}
           } catch {/* ignore */}
         }
       }
-
       if (!arr || !Array.isArray(arr) || !arr[0]?.points) {
         toast({
           title: "Error processing analysis",
@@ -131,7 +115,6 @@ ${pdfContent}
           selected: []
         };
       });
-
       onGenerationComplete(ordered);
       toast({
         title: "Analysis generated",
@@ -146,29 +129,17 @@ ${pdfContent}
       onGenerationError();
     }
   };
-
-  return (
-    <div className="flex justify-between items-center">
-      <h3 className="text-lg font-medium text-center">Analyzing the Strategic Landscape from the Outside-IN</h3>
-      <Button 
-        onClick={generateAnalysis} 
-        disabled={isGenerating || !pdfContent} 
-        variant="outline"
-      >
-        {isGenerating ? (
-          <>
+  return <div className="flex justify-between items-center">
+      
+      <Button onClick={generateAnalysis} disabled={isGenerating || !pdfContent} variant="outline">
+        {isGenerating ? <>
             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             <LoadingText />
-          </>
-        ) : (
-          <>
+          </> : <>
             <RefreshCw className="h-4 w-4 mr-2" />
             Initiate STEEP Analysis
-          </>
-        )}
+          </>}
       </Button>
-    </div>
-  );
+    </div>;
 };
-
 export default AnalysisGenerator;
