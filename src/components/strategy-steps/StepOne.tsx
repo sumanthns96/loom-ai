@@ -49,7 +49,7 @@ that impact an organization’s strategic landscape.</CardDescription>
           <AnalysisGenerator pdfContent={pdfContent} isGenerating={isGenerating} onGenerationStart={handleGenerationStart} onGenerationComplete={handleGenerationComplete} onGenerationError={handleGenerationError} />
           {isGenerating && <div className="h-60 flex items-center justify-center text-muted-foreground gap-2">
               <RefreshCw className="h-5 w-5 animate-spin" />
-              <span>Generating detailed analysis with Gemini...</span>
+              <span>AI Analysis in Progress..</span>
             </div>}
           {!isGenerating && !hasGenerated && <div className="h-60 flex items-center justify-center text-muted-foreground">
               <span>Click "Generate with AI" to start your STEEP analysis</span>
