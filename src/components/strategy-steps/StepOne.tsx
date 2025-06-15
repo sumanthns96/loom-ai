@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -11,7 +12,7 @@ import { StepOneProps } from "./types";
 const LoadingText = () => {
   const [phase, setPhase] = useState(1);
   
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       setPhase(2);
     }, 2000); // 2 seconds for first phase
