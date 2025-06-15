@@ -63,11 +63,15 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
         });
 
         if (error) throw error;
-        setSummarizedAction(data.summarizedText || combinedAction);
+        // Limit summary to 60 characters for compact display
+        const summary = data.summarizedText || combinedAction;
+        const truncated = summary.length > 60 ? summary.substring(0, 60) + "..." : summary;
+        setSummarizedAction(truncated);
       } catch (error) {
         console.error('Summarization failed:', error);
         // Fallback to truncated original text
-        setSummarizedAction(combinedAction.length > 80 ? combinedAction.substring(0, 80) + "..." : combinedAction);
+        const fallback = combinedAction.length > 60 ? combinedAction.substring(0, 60) + "..." : combinedAction;
+        setSummarizedAction(fallback);
       } finally {
         setSummaryLoading(false);
       }
@@ -79,48 +83,56 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
   return (
     <div
       className={`
-        flex flex-col border-2 rounded-2xl p-5 h-full w-full
-        ${styles.bg} ${styles.border} shadow-sm transition-all
+        flex flex-col border-2 rounded-xl shadow-lg
+        w-72 h-80 p-5
+        ${styles.bg} ${styles.border} 
+        transition-all hover:shadow-xl
       `}
     >
-      {/* Header */}
-      <div className={`w-full text-center font-semibold text-sm uppercase leading-tight mb-3 ${styles.text} tracking-wide flex-shrink-0`}>
+      {/* Header - Fixed height */}
+      <div className={`
+        w-full text-center font-bold text-sm uppercase tracking-wide
+        ${styles.text} h-8 flex items-center justify-center flex-shrink-0
+      `}>
         {typeLabels[type]}
       </div>
       
-      {/* Main Content - Optimized for 3-4 lines in square format */}
-      <div className="flex-1 w-full mb-4 flex items-center justify-center">
-        <p className="text-sm text-gray-700 leading-relaxed text-center px-2 break-words">
-          {isLoading ? "Summarizing..." : summarizedAction}
+      {/* Main Content - Large readable text, center-aligned, 1-2 lines max */}
+      <div className="flex-1 flex items-center justify-center px-4 py-6">
+        <p className={`
+          text-lg font-medium text-gray-800 text-center leading-relaxed
+          line-clamp-2 overflow-hidden
+        `}>
+          {isLoading ? "Analyzing..." : summarizedAction}
         </p>
       </div>
       
-      {/* Company Logos Only - No Names */}
-      <div className="flex justify-center items-center space-x-2 mt-auto flex-shrink-0">
-        {competitors.slice(0, 6).map((competitor, idx) => (
-          <div key={idx} className="flex items-center">
-            <div
-              className={
-                "w-7 h-7 rounded bg-white border flex items-center justify-center overflow-hidden ring-1 flex-shrink-0 " +
-                styles.ring
-              }
-            >
-              {competitor.logoUrl ? (
-                <img
-                  src={competitor.logoUrl}
-                  alt={competitor.name}
-                  className="w-4 h-4 object-contain"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = "none";
-                    target.nextElementSibling!.classList.remove("hidden");
-                  }}
-                />
-              ) : null}
-              <span className={`${competitor.logoUrl ? "hidden" : ""} text-gray-600 text-xs font-medium`}>
-                {getInitials(competitor.name)}
-              </span>
-            </div>
+      {/* Company Logos - Bottom section, max 4 logos */}
+      <div className="flex justify-center items-center gap-3 h-16 flex-shrink-0">
+        {competitors.slice(0, 4).map((competitor, idx) => (
+          <div
+            key={idx}
+            className={`
+              w-10 h-10 rounded-lg bg-white border-2 shadow-sm
+              flex items-center justify-center overflow-hidden
+              ${styles.ring} transition-transform hover:scale-105
+            `}
+          >
+            {competitor.logoUrl ? (
+              <img
+                src={competitor.logoUrl}
+                alt={competitor.name}
+                className="w-6 h-6 object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                  target.nextElementSibling!.classList.remove("hidden");
+                }}
+              />
+            ) : null}
+            <span className={`${competitor.logoUrl ? "hidden" : ""} text-gray-700 text-xs font-semibold`}>
+              {getInitials(competitor.name)}
+            </span>
           </div>
         ))}
       </div>
