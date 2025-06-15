@@ -60,15 +60,13 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
         });
 
         if (error) throw error;
-        // Limit summary to 60 characters for compact display
+        // Use the summarized text directly without character truncation
         const summary = data.summarizedText || combinedAction;
-        const truncated = summary.length > 60 ? summary.substring(0, 60) + "..." : summary;
-        setSummarizedAction(truncated);
+        setSummarizedAction(summary);
       } catch (error) {
         console.error('Summarization failed:', error);
-        // Fallback to truncated original text
-        const fallback = combinedAction.length > 60 ? combinedAction.substring(0, 60) + "..." : combinedAction;
-        setSummarizedAction(fallback);
+        // Fallback to original text if summarization fails
+        setSummarizedAction(combinedAction);
       } finally {
         setSummaryLoading(false);
       }
