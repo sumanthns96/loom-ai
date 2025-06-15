@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -47,6 +46,7 @@ const StepOne = ({
     hasGenerated,
     handleEdit,
     handleAddPoint,
+    handleDeletePoint,
     updateFactors
   } = useSteepData(data, onDataChange);
 
@@ -113,9 +113,10 @@ const StepOne = ({
               key={group.factor}
               factor={group.factor}
               style={FACTOR_STYLES[group.factor]}
-              points={group.points.map(p => p.text)}
+              points={group.points}
               onEdit={(pointIdx, value) => handleEdit(factorIdx, pointIdx, value)}
               onAddPoint={(text) => handleAddPoint(factorIdx, text)}
+              onDeletePoint={(pointIdx) => handleDeletePoint(factorIdx, pointIdx)}
               canAddMore={group.points.length < 5} // 3 generated + 2 user additions max
               showCheckboxes={false}
               selectedIndexes={[]}

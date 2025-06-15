@@ -1,6 +1,6 @@
-
 export type SteepAnalysisPoint = {
   text: string;
+  isUserAdded?: boolean;
 };
 
 export type SteepFactorGroup = {

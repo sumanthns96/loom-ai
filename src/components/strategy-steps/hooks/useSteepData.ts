@@ -65,7 +65,25 @@ export const useSteepData = (data: string, onDataChange: (data: string) => void)
         i === factorIdx && f.points.length < 5 // Max 5 points (3 generated + 2 user)
           ? {
               ...f,
-              points: [...f.points, { text }],
+              points: [...f.points, { text, isUserAdded: true }],
+            }
+          : f
+      );
+      onDataChange(JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleDeletePoint = (factorIdx: number, pointIdx: number) => {
+    setFactors((prev) => {
+      const next = prev.map((f, i) =>
+        i === factorIdx
+          ? {
+              ...f,
+              points: f.points.filter((_, j) => j !== pointIdx),
+              selected: f.selected
+                .filter(idx => idx !== pointIdx)
+                .map(idx => idx > pointIdx ? idx - 1 : idx)
             }
           : f
       );
@@ -97,6 +115,7 @@ export const useSteepData = (data: string, onDataChange: (data: string) => void)
     handleSelect,
     handleEdit,
     handleAddPoint,
+    handleDeletePoint,
     getSelectedPoints,
     updateFactors,
   };
