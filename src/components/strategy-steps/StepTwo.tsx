@@ -260,10 +260,6 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
         description: "Generated 2x2 scenario matrix with consistent axis labels."
       });
 
-      // After successful generation, proceed to next step
-      if (onNext) {
-        onNext();
-      }
     } catch (err: any) {
       console.error("Scenario generation error:", err);
       toast({
