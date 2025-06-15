@@ -15,7 +15,7 @@ const LoadingText = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setPhase(2);
-    }, 2000); // 2 seconds for first phase
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -45,53 +45,99 @@ const StepOne = ({
   const {
     factors,
     hasGenerated,
-    handleSelect,
     handleEdit,
-    getSelectedPoints,
+    handleAddPoint,
     updateFactors
   } = useSteepData(data, onDataChange);
 
   const handleGenerationStart = () => {
     setIsGenerating(true);
   };
+  
   const handleGenerationComplete = (newFactors: any[]) => {
     updateFactors(newFactors);
     setIsGenerating(false);
   };
+  
   const handleGenerationError = () => {
     setIsGenerating(false);
   };
 
-  // Add "Continue" button if any point is selected
-  const selectedPoints = getSelectedPoints();
-  return <div className="space-y-6 max-w-5xl mx-auto">
+  const handleContinue = () => {
+    // Pass all analysis points to step 2
+    const allPoints = factors.flatMap((group) =>
+      group.points.map((point, idx) => ({
+        factor: group.factor,
+        pointIdx: idx,
+        text: point.text
+      }))
+    );
+    onNext(allPoints);
+  };
+
+  return (
+    <div className="space-y-6 max-w-5xl mx-auto">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            
-            
+            STEEP Analysis: External Factor Identification
           </CardTitle>
-          <CardDescription className="text-xl">The STEEP analysis is a tool used to map the external factors
-that impact an organization's strategic landscape.</CardDescription>
+          <CardDescription className="text-xl">
+            The STEEP analysis is a tool used to map the external factors that impact an organization's strategic landscape.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 min-h-[800px]">
-          <AnalysisGenerator pdfContent={pdfContent} isGenerating={isGenerating} onGenerationStart={handleGenerationStart} onGenerationComplete={handleGenerationComplete} onGenerationError={handleGenerationError} />
-          {isGenerating && <div className="h-60 flex items-center justify-center text-muted-foreground gap-2">
+          <AnalysisGenerator 
+            pdfContent={pdfContent} 
+            isGenerating={isGenerating} 
+            onGenerationStart={handleGenerationStart} 
+            onGenerationComplete={handleGenerationComplete} 
+            onGenerationError={handleGenerationError} 
+          />
+          
+          {isGenerating && (
+            <div className="h-60 flex items-center justify-center text-muted-foreground gap-2">
               <RefreshCw className="h-5 w-5 animate-spin" />
               <LoadingText />
-            </div>}
-          {!isGenerating && !hasGenerated && <div className="h-60 flex items-center justify-center text-muted-foreground">
-              <span>Click &quot;Initiate STEEP Analysis&quot; to start</span>
-            </div>}
-          {!isGenerating && hasGenerated && factors.map((group, factorIdx) => <SteepCategorySection key={group.factor} factor={group.factor} style={FACTOR_STYLES[group.factor]} points={group.points.map(p => p.text)} selectedIndexes={group.selected} onSelect={(pointIdx, checked) => handleSelect(factorIdx, pointIdx, checked)} onEdit={(pointIdx, value) => handleEdit(factorIdx, pointIdx, value)} />)}
-          {!isGenerating && hasGenerated && <div className="flex justify-end mt-8">
-              <Button onClick={() => onNext(selectedPoints)} disabled={selectedPoints.length < 2} className="bg-blue-600 hover:bg-blue-700">
-                Continue to Scenario Matrix
+            </div>
+          )}
+          
+          {!isGenerating && !hasGenerated && (
+            <div className="h-60 flex items-center justify-center text-muted-foreground">
+              <span>Click "Initiate STEEP Analysis" to start</span>
+            </div>
+          )}
+          
+          {!isGenerating && hasGenerated && factors.map((group, factorIdx) => (
+            <SteepCategorySection
+              key={group.factor}
+              factor={group.factor}
+              style={FACTOR_STYLES[group.factor]}
+              points={group.points.map(p => p.text)}
+              onEdit={(pointIdx, value) => handleEdit(factorIdx, pointIdx, value)}
+              onAddPoint={(text) => handleAddPoint(factorIdx, text)}
+              canAddMore={group.points.length < 5} // 3 generated + 2 user additions max
+              showCheckboxes={false}
+              selectedIndexes={[]}
+              onSelect={() => {}}
+            />
+          ))}
+          
+          {!isGenerating && hasGenerated && (
+            <div className="flex justify-end mt-8">
+              <Button 
+                onClick={handleContinue}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Continue to Factor Selection
               </Button>
-            </div>}
+            </div>
+          )}
         </CardContent>
       </Card>
-    </div>;
+    </div>
+  );
 };
+
 export default StepOne;
 export type { SelectedPoint } from "./types";

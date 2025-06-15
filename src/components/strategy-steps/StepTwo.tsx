@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
@@ -7,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SelectedPoint } from "./types";
 import { QUADRANT_REQUESTS, makeQuadrantPrompt, MatrixScenario } from "./QuadrantPromptUtils";
 import ScenarioMatrix from "./ScenarioMatrix";
+import SteepCategorySection from "./SteepCategorySection";
+import { FACTOR_STYLES } from "./constants";
 
 // Improved axis context generation with more specific prompting
 async function fetchAxisContext(factor: string, axisText: string, caseContext: string) {
@@ -92,14 +93,33 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
   const [scenarios, setScenarios] = useState<MatrixScenario[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [axisContexts, setAxisContexts] = useState<{ low: string; high: string }[]>([]);
+  const [factorSelections, setFactorSelections] = useState<{[key: string]: number[]}>({});
 
-  const handleSelectAxis = (point: SelectedPoint) => {
-    setAxes((prev) => {
-      if (prev.find(a => a.factor === point.factor && a.pointIdx === point.pointIdx)) {
-        return prev.filter(a => !(a.factor === point.factor && a.pointIdx === point.pointIdx));
-      }
-      if (prev.length === 2) return prev;
-      return [...prev, point];
+  // Group selected points by factor for display
+  const groupedPoints = selectedPoints.reduce((acc, point) => {
+    if (!acc[point.factor]) {
+      acc[point.factor] = [];
+    }
+    acc[point.factor].push(point);
+    return acc;
+  }, {} as {[key: string]: SelectedPoint[]});
+
+  const handleSelect = (factor: string, localIdx: number, checked: boolean) => {
+    setFactorSelections(prev => {
+      const factorSelected = prev[factor] || [];
+      const updated = checked 
+        ? [...factorSelected, localIdx]
+        : factorSelected.filter(idx => idx !== localIdx);
+      
+      const newSelections = { ...prev, [factor]: updated };
+      
+      // Update axes based on total selections
+      const allSelected = Object.entries(newSelections).flatMap(([factorName, indices]) =>
+        indices.map(idx => groupedPoints[factorName][idx])
+      ).filter(Boolean);
+      
+      setAxes(allSelected.slice(0, 2)); // Only allow 2 axes
+      return newSelections;
     });
   };
 
@@ -255,36 +275,35 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle>
-            Scenario Generation: 2x2 Uncertainty Matrix
+            Factor Selection: Choose Key Uncertainties
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <h3 className="font-medium mb-4">
-            Select <span className="font-bold">two</span> factors/points as key uncertainties (these become axes):
-          </h3>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {selectedPoints.map((pt, idx) => (
-              <button
-                key={pt.factor + pt.pointIdx}
-                type="button"
-                className={`rounded-lg px-3 py-2 border 
-                  ${axes.find(a => a.factor === pt.factor && a.pointIdx === pt.pointIdx)
-                    ? "border-blue-600 bg-blue-100 font-semibold"
-                    : "border-gray-300 bg-white"}
-                  text-left flex flex-col cursor-pointer`}
-                disabled={axes.length === 2 && !axes.find(a => a.factor === pt.factor && a.pointIdx === pt.pointIdx)}
-                onClick={() => handleSelectAxis(pt)}
-              >
-                <span className="text-xs uppercase tracking-tight text-gray-500 mb-1">
-                  {pt.factor} Point {pt.pointIdx + 1}
-                </span>
-                <span className="text-sm">{pt.text}</span>
-              </button>
-            ))}
+          <div className="mb-6">
+            <h3 className="font-medium mb-4 text-lg">
+              Select <span className="font-bold text-blue-600">two factors</span> as key uncertainties for your scenario matrix:
+            </h3>
+            
+            <div className="space-y-4">
+              {Object.entries(groupedPoints).map(([factor, points]) => (
+                <SteepCategorySection
+                  key={factor}
+                  factor={factor}
+                  style={FACTOR_STYLES[factor]}
+                  points={points.map(p => p.text)}
+                  selectedIndexes={factorSelections[factor] || []}
+                  onSelect={(idx, checked) => handleSelect(factor, idx, checked)}
+                  onEdit={() => {}} // No editing in step 2
+                  showCheckboxes={true}
+                />
+              ))}
+            </div>
           </div>
           
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-gray-600">
+              Selected: {axes.length}/2 factors
+            </div>
             <Button
               onClick={handleGenerateScenarios}
               disabled={axes.length !== 2 || isGenerating}

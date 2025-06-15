@@ -6,11 +6,10 @@ export const useSteepData = (data: string, onDataChange: (data: string) => void)
   const [factors, setFactors] = useState<SteepFactorGroup[]>([]);
   const [hasGenerated, setHasGenerated] = useState(false);
 
-  // Parse JSON model for 3 points per factor
+  // Parse JSON model for 3 points per factor + user additions
   useEffect(() => {
     try {
       if (data) {
-        // Data is a JSON string of SteepFactorGroup[]
         const parsed: SteepFactorGroup[] = JSON.parse(data);
         if (Array.isArray(parsed) && parsed[0]?.points) {
           setFactors(parsed);
@@ -60,6 +59,21 @@ export const useSteepData = (data: string, onDataChange: (data: string) => void)
     });
   };
 
+  const handleAddPoint = (factorIdx: number, text: string) => {
+    setFactors((prev) => {
+      const next = prev.map((f, i) =>
+        i === factorIdx && f.points.length < 5 // Max 5 points (3 generated + 2 user)
+          ? {
+              ...f,
+              points: [...f.points, { text }],
+            }
+          : f
+      );
+      onDataChange(JSON.stringify(next));
+      return next;
+    });
+  };
+
   // Helper to extract selected points for next step
   const getSelectedPoints = (): SelectedPoint[] => {
     return factors.flatMap((group) =>
@@ -82,6 +96,7 @@ export const useSteepData = (data: string, onDataChange: (data: string) => void)
     hasGenerated,
     handleSelect,
     handleEdit,
+    handleAddPoint,
     getSelectedPoints,
     updateFactors,
   };
