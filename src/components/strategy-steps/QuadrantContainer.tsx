@@ -32,7 +32,7 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
   ];
 
   return (
-    <div className="bg-gray-50 rounded-lg p-6 border border-gray-300 shadow-lg">
+    <>
       <h4 className="text-center text-sm font-bold text-gray-700 uppercase tracking-wide mb-6">
         {title}
       </h4>
@@ -48,7 +48,7 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
           />
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
