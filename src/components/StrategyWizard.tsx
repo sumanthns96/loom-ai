@@ -17,7 +17,6 @@ interface StrategyWizardProps {
 const STORAGE_KEY = "strategyWizardState";
 
 const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
-  // Load state from localStorage if available
   const loadState = () => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -45,7 +44,6 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
     };
   };
 
-  // Persist state to localStorage when it changes
   const saveState = (next: any) => {
     try {
       const toSave = { ...next, pdfContent };
@@ -66,7 +64,6 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   });
   const [selectedForMatrix, setSelectedForMatrixState] = useState<SelectedPoint[]>([]);
 
-  // On mount, load state from localStorage
   useEffect(() => {
     const st = loadState();
     setCurrentStepState(st.currentStep);
@@ -89,8 +86,8 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
     { number: 1, title: "Analyze STEEP Factors", component: StepOne },
     { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo },
     { number: 3, title: "Strategic Options", component: StepThree },
-    { number: 4, title: "Implementation Plan", component: StepFour },
-    { number: 5, title: "Success Metrics", component: StepFive },
+    { number: 4, title: "DOTS Strategy", component: StepFour },
+    { number: 5, title: "Three Horizons Implementation", component: StepFive },
   ];
 
   const updateStepData = (step: number, data: string) => {
@@ -245,7 +242,7 @@ Generated on: ${new Date().toLocaleDateString()}
           ) : null}
         </div>
 
-        {/* Navigation Buttons - Hide for Step 1 since it has its own Continue button */}
+        {/* Navigation Buttons */}
         {currentStep !== 1 && (
           <div className="flex justify-between">
             <Button
