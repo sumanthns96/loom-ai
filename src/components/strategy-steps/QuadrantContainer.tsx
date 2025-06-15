@@ -35,10 +35,10 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
 
   // Determine alignment based on quadrant index
   // Quadrant 1 and 4 move right, Quadrant 2 and 3 move left
-  // Matrix layout: 1=top-left, 0=top-right, 2=bottom-left, 3=bottom-right
+  // Matrix layout: 0=top-right(Q1), 1=top-left(Q2), 2=bottom-left(Q3), 3=bottom-right(Q4)
   const getAlignment = () => {
-    if (quadrantIndex === 1 || quadrantIndex === 2) return "justify-start"; // Q2 and Q3 move left
-    if (quadrantIndex === 0 || quadrantIndex === 3) return "justify-end"; // Q1 and Q4 move right
+    if (quadrantIndex === 1 || quadrantIndex === 2) return "justify-start pl-4"; // Q2 and Q3 move left
+    if (quadrantIndex === 0 || quadrantIndex === 3) return "justify-end pr-4"; // Q1 and Q4 move right
     return "justify-center"; // Default center
   };
 
