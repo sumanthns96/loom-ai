@@ -28,7 +28,7 @@ serve(async (req) => {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `Summarize this business strategy text in exactly 8-10 words maximum. Focus on the core action only: "${text}"`
+            text: `Summarize this business strategy text in EXACTLY 8 words or less. No more than 8 words total. Examples: "Focus AI safety research community engagement" (6 words), "Build reputation through responsible AI development" (6 words). Text to summarize: "${text}"`
           }]
         }]
       }),
