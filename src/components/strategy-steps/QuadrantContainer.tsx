@@ -13,12 +13,14 @@ interface QuadrantContainerProps {
   title: string;
   competitors: CompetitorData[];
   getCompanyInitials: (name: string) => string;
+  quadrantIndex?: number; // Add index to determine positioning
 }
 
 const QuadrantContainer: FC<QuadrantContainerProps> = ({ 
   title, 
   competitors, 
-  getCompanyInitials 
+  getCompanyInitials,
+  quadrantIndex 
 }) => {
   // Group competitors by type
   const incumbents = competitors.filter(c => c.type === "Incumbent");
@@ -31,14 +33,22 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
     { type: "Adjacent", list: adjacents },
   ];
 
+  // Determine alignment based on quadrant index
+  // Quadrants 1,4 (indices 1,3) move right, quadrants 2,3 (indices 0,2) move left
+  const getAlignment = () => {
+    if (quadrantIndex === 1 || quadrantIndex === 3) return "justify-end"; // Move right
+    if (quadrantIndex === 0 || quadrantIndex === 2) return "justify-start"; // Move left
+    return "justify-center"; // Default center
+  };
+
   return (
     <div className="flex flex-col h-full">
       <h4 className="text-center text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">
         {title}
       </h4>
       
-      {/* 3 cards in a horizontal row with tighter spacing */}
-      <div className="flex gap-2 justify-center">
+      {/* 3 cards in a horizontal row with conditional positioning */}
+      <div className={`flex gap-2 ${getAlignment()}`}>
         {allTypes.map(({ type, list }) => (
           <CompetitorTypeCard
             key={type}

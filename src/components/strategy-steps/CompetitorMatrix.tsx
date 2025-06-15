@@ -56,24 +56,28 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
               title={getQuadrantHeader(true, false)}
               competitors={quadrantCompetitors[1]?.competitors || []}
               getCompanyInitials={getCompanyInitials}
+              quadrantIndex={1}
             />
             {/* Top Right Quadrant - Index 0 (High Y, High X) */}
             <QuadrantContainer
               title={getQuadrantHeader(true, true)}
               competitors={quadrantCompetitors[0]?.competitors || []}
               getCompanyInitials={getCompanyInitials}
+              quadrantIndex={0}
             />
             {/* Bottom Left Quadrant - Index 2 (Low Y, Low X) */}
             <QuadrantContainer
               title={getQuadrantHeader(false, false)}
               competitors={quadrantCompetitors[2]?.competitors || []}
               getCompanyInitials={getCompanyInitials}
+              quadrantIndex={2}
             />
             {/* Bottom Right Quadrant - Index 3 (Low Y, High X) */}
             <QuadrantContainer
               title={getQuadrantHeader(false, true)}
               competitors={quadrantCompetitors[3]?.competitors || []}
               getCompanyInitials={getCompanyInitials}
+              quadrantIndex={3}
             />
           </div>
         </div>
