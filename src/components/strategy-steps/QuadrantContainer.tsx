@@ -32,13 +32,13 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
   ];
 
   return (
-    <div className="bg-gray-50 rounded-lg p-6 border border-gray-300 shadow-lg h-full flex flex-col">
-      <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide mb-6">
+    <div className="bg-gray-50 rounded-lg p-4 border border-gray-300 shadow-lg h-full flex flex-col min-h-[400px]">
+      <h4 className="text-center text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">
         {title}
       </h4>
       
-      {/* 3 cards in a horizontal row */}
-      <div className="flex-1 flex gap-4">
+      {/* 3 separate cards in a horizontal row with spacing between them */}
+      <div className="flex-1 flex gap-3 justify-between">
         {allTypes.map(({ type, list }) => (
           <div key={type} className="flex-1">
             <CompetitorTypeCard

@@ -60,14 +60,14 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
         });
 
         if (error) throw error;
-        // Limit summary to 80 characters for compact display
+        // Limit summary to 60 characters for compact display
         const summary = data.summarizedText || combinedAction;
-        const truncated = summary.length > 80 ? summary.substring(0, 80) + "..." : summary;
+        const truncated = summary.length > 60 ? summary.substring(0, 60) + "..." : summary;
         setSummarizedAction(truncated);
       } catch (error) {
         console.error('Summarization failed:', error);
         // Fallback to truncated original text
-        const fallback = combinedAction.length > 80 ? combinedAction.substring(0, 80) + "..." : combinedAction;
+        const fallback = combinedAction.length > 60 ? combinedAction.substring(0, 60) + "..." : combinedAction;
         setSummarizedAction(fallback);
       } finally {
         setSummaryLoading(false);
@@ -80,39 +80,40 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
   return (
     <div
       className={`
-        flex flex-col border-2 rounded-lg shadow-md
-        h-32 p-3
+        border-2 rounded-lg shadow-md p-3
+        h-full max-h-[280px] min-h-[240px]
         ${styles.bg} ${styles.border} 
         transition-all hover:shadow-lg
+        flex flex-col justify-between
       `}
     >
       {/* Header - Category name */}
       <div className={`
-        text-center font-bold text-xs uppercase tracking-wide
-        ${styles.text} h-4 flex items-center justify-center flex-shrink-0 mb-2
+        text-center font-bold text-xs uppercase tracking-wide mb-3
+        ${styles.text}
       `}>
         {typeLabels[type]}
       </div>
       
-      {/* Main Content - Summary text */}
+      {/* Main Content - Summary text (center section) */}
       <div className="flex-1 flex items-center justify-center px-2">
-        <p className="text-sm font-medium text-gray-700 text-center leading-tight line-clamp-3">
+        <p className="text-sm font-medium text-gray-700 text-center leading-relaxed">
           {isLoading ? "Analyzing..." : summarizedAction}
         </p>
       </div>
       
       {/* Company Logos - Bottom section */}
-      <div className="flex justify-center items-center gap-2 h-8 flex-shrink-0 mt-2">
+      <div className="flex justify-center items-center gap-2 mt-3">
         {competitors.slice(0, 4).map((competitor, idx) => (
           <div
             key={idx}
-            className="w-6 h-6 rounded bg-white border shadow-sm flex items-center justify-center overflow-hidden"
+            className="w-7 h-7 rounded bg-white border shadow-sm flex items-center justify-center overflow-hidden"
           >
             {competitor.logoUrl ? (
               <img
                 src={competitor.logoUrl}
                 alt={competitor.name}
-                className="w-4 h-4 object-contain"
+                className="w-5 h-5 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = "none";
