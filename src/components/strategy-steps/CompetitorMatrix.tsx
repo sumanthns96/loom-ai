@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 import MatrixAxes from "./MatrixAxes";
@@ -46,36 +45,30 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
   return (
     <div className="mt-8 animate-fade-in">
       <div className="max-w-7xl mx-auto px-8 py-12">
-        {/* Main container with proper spacing for axes */}
-        <div className="relative bg-white rounded-2xl shadow-xl p-20" style={{ minHeight: '700px' }}>
-          
-          {/* Axis Lines and Labels */}
+        {/* Main container with relative positioning for axes */}
+        <div className="relative bg-white rounded-2xl shadow-xl p-20" style={{ minHeight: "700px" }}>
+          {/* Axis lines and labels */}
           <MatrixAxes axes={axes} axisContexts={axisContexts} />
-          
-          {/* Quadrant Grid Container - More spacing from axis lines */}
-          <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-8 h-full min-h-[500px] p-12">
-            
+          {/* Quadrant Grid Container */}
+          <div className="relative z-30 grid grid-cols-2 grid-rows-2 gap-8 h-full min-h-[500px] p-12">
             {/* Top Left Quadrant - Index 1 (High Y, Low X) */}
             <QuadrantContainer
               title={getQuadrantHeader(true, false)}
               competitors={quadrantCompetitors[1]?.competitors || []}
               getCompanyInitials={getCompanyInitials}
             />
-            
             {/* Top Right Quadrant - Index 0 (High Y, High X) */}
             <QuadrantContainer
               title={getQuadrantHeader(true, true)}
               competitors={quadrantCompetitors[0]?.competitors || []}
               getCompanyInitials={getCompanyInitials}
             />
-            
             {/* Bottom Left Quadrant - Index 2 (Low Y, Low X) */}
             <QuadrantContainer
               title={getQuadrantHeader(false, false)}
               competitors={quadrantCompetitors[2]?.competitors || []}
               getCompanyInitials={getCompanyInitials}
             />
-            
             {/* Bottom Right Quadrant - Index 3 (Low Y, High X) */}
             <QuadrantContainer
               title={getQuadrantHeader(false, true)}

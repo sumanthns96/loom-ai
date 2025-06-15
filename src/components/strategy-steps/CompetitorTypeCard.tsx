@@ -14,65 +14,101 @@ interface CompetitorTypeCardProps {
   getInitials: (name: string) => string;
 }
 
+const typeStyles = {
+  Incumbent: {
+    border: "border-blue-400",
+    bg: "bg-blue-50",
+    text: "text-blue-700",
+    ring: "ring-blue-200",
+  },
+  Insurgent: {
+    border: "border-red-400",
+    bg: "bg-red-50",
+    text: "text-red-700",
+    ring: "ring-red-200",
+  },
+  Adjacent: {
+    border: "border-green-400",
+    bg: "bg-green-50",
+    text: "text-green-700",
+    ring: "ring-green-200",
+  }
+};
+
+const typeLabels = {
+  Incumbent: "INCUMBENTS",
+  Insurgent: "INSURGENTS",
+  Adjacent: "ADJACENTS"
+};
+
 const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, getInitials }) => {
   if (competitors.length === 0) return null;
+  const styles = typeStyles[type];
 
-  const typeColors = {
-    Incumbent: "border-blue-400 bg-blue-50",
-    Insurgent: "border-red-400 bg-red-50", 
-    Adjacent: "border-green-400 bg-green-50"
-  };
-
-  const typeLabels = {
-    Incumbent: "INCUMBENTS",
-    Insurgent: "INSURGENTS",
-    Adjacent: "ADJACENTS"
-  };
-
-  // Truncate combined action to 12 words max for better fit
+  // Better content truncation for 2 lines (reference design)
   const combinedAction = competitors.map(c => c.action).join(". ");
-  const words = combinedAction.split(" ");
-  const truncatedAction = words.length > 12 
-    ? words.slice(0, 12).join(" ") + "..." 
-    : combinedAction;
-  
+  function truncateToNChars(text: string, maxChars = 125) {
+    if (text.length <= maxChars) return text;
+    return text.slice(0, maxChars).replace(/\s+\S*$/, "") + "...";
+  }
+  const truncatedAction = truncateToNChars(combinedAction, 125);
+
   return (
-    <div className={`${typeColors[type]} rounded-lg border-2 p-2 h-32 flex flex-col justify-between shadow-sm overflow-hidden`}>
+    <div
+      className={`
+        flex flex-col items-center border-2 rounded-xl px-4 pt-3 pb-2 h-full min-w-0 
+        ${styles.bg} ${styles.border} overflow-hidden shadow-sm
+      `}
+      style={{ minHeight: 175, maxHeight: 200 }}
+    >
       {/* Header */}
-      <div className="text-center flex-shrink-0">
-        <h4 className="text-[9px] font-bold text-gray-800 tracking-wide">
-          {typeLabels[type]}
-        </h4>
+      <div className={`w-full text-center font-bold text-[13px] uppercase leading-tight mb-1 ${styles.text} tracking-wide`}>
+        {typeLabels[type]}
       </div>
-      
-      {/* Main Content - Scrollable if needed */}
-      <div className="flex-1 flex items-center justify-center px-1 overflow-hidden">
-        <p className="text-[8px] text-gray-700 text-center leading-tight break-words overflow-hidden">
+      {/* Main Content, two lines max */}
+      <div className="flex-1 w-full text-center flex items-center justify-center">
+        <p
+          className="text-[13px] text-gray-800 font-normal leading-tight max-h-[38px] overflow-hidden"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            whiteSpace: "normal",
+            textOverflow: "ellipsis"
+          }}
+          title={combinedAction}
+        >
           {truncatedAction}
         </p>
       </div>
-      
       {/* Company Logos */}
-      <div className="flex justify-center items-center space-x-1 flex-shrink-0">
-        {competitors.slice(0, 3).map((competitor, index) => (
-          <div key={index} className="flex flex-col items-center">
-            <div className="w-3 h-3 rounded bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
-              <img 
-                src={competitor.logoUrl} 
-                alt={competitor.name}
-                className="w-full h-full object-contain p-0.5"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling!.classList.remove('hidden');
-                }}
-              />
-              <span className="hidden text-gray-600 text-[6px] font-bold">
+      <div className="flex justify-center items-center space-x-2 mt-2 mb-0 w-full overflow-x-auto min-w-0">
+        {competitors.slice(0, 8).map((competitor, idx) => (
+          <div key={idx} className="flex flex-col items-center min-w-[36px] max-w-[46px]">
+            <div
+              className={
+                "w-7 h-7 rounded bg-white border flex items-center justify-center overflow-hidden mb-1 ring-1 " +
+                styles.ring
+              }
+            >
+              {competitor.logoUrl ? (
+                <img
+                  src={competitor.logoUrl}
+                  alt={competitor.name}
+                  className="w-5 h-5 object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "none";
+                    target.nextElementSibling!.classList.remove("hidden");
+                  }}
+                />
+              ) : null}
+              <span className={`${competitor.logoUrl ? "hidden" : ""} text-gray-600 text-xs font-bold`}>
                 {getInitials(competitor.name)}
               </span>
             </div>
-            <span className="text-[6px] text-gray-500 font-medium text-center max-w-[24px] truncate">
-              {competitor.name.split(' ')[0]}
+            <span className="text-[9px] text-gray-500 font-medium text-center w-full truncate">
+              {competitor.name.split(' ')[0].slice(0, 8)}
             </span>
           </div>
         ))}
