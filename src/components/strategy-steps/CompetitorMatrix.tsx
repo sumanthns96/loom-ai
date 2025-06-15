@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 import MatrixAxes from "./MatrixAxes";
@@ -45,11 +46,11 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
   return (
     <div className="mt-8 animate-fade-in">
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="relative bg-white rounded-2xl shadow-xl p-20" style={{ minHeight: "660px" }}>
+        <div className="relative bg-white rounded-2xl shadow-xl p-20" style={{ minHeight: "840px" }}>
           {/* Axis lines and labels */}
           <MatrixAxes axes={axes} axisContexts={axisContexts} />
           {/* Quadrant Grid Container */}
-          <div className="relative z-30 grid grid-cols-2 grid-rows-2 gap-8 h-full min-h-[480px] p-10">
+          <div className="relative z-30 grid grid-cols-2 grid-rows-2 gap-8 h-full min-h-[600px] p-10">
             {/* Top Left Quadrant - Index 1 (High Y, Low X) */}
             <QuadrantContainer
               title={getQuadrantHeader(true, false)}

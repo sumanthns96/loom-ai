@@ -64,7 +64,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
         flex flex-col items-center border-2 rounded-xl p-3 h-full min-w-0 
         ${styles.bg} ${styles.border} overflow-hidden shadow-sm transition-all
       `}
-      style={{ minHeight: 160, maxHeight: 180 }}
+      style={{ minHeight: 200 }}
     >
       {/* Header */}
       <div className={`w-full text-center font-bold text-xs uppercase leading-tight mb-1 ${styles.text} tracking-wide`}>
@@ -73,10 +73,10 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
       {/* Main Content, one summary for all competitors */}
       <div className="flex-1 w-full text-center flex items-center justify-center">
         <p
-          className="text-base text-gray-800 font-semibold max-h-[50px] overflow-hidden text-ellipsis px-2"
+          className="text-base text-gray-800 font-semibold max-h-18 overflow-hidden text-ellipsis px-2"
           style={{
             display: "-webkit-box",
-            WebkitLineClamp: 2,
+            WebkitLineClamp: 3,
             WebkitBoxOrient: "vertical",
             whiteSpace: "normal",
           }}
