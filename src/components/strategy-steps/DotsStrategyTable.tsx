@@ -21,12 +21,28 @@ const DotsStrategyTable = ({ dotsData }: DotsStrategyTableProps) => {
     );
   }
 
+  // Ensure all arrays exist and filter out empty strings
+  const drivers = Array.isArray(dotsData.drivers) ? dotsData.drivers.filter(item => item && item.trim()) : [];
+  const opportunities = Array.isArray(dotsData.opportunities) ? dotsData.opportunities.filter(item => item && item.trim()) : [];
+  const threats = Array.isArray(dotsData.threats) ? dotsData.threats.filter(item => item && item.trim()) : [];
+  const strategicResponse = Array.isArray(dotsData.strategicResponse) ? dotsData.strategicResponse.filter(item => item && item.trim()) : [];
+
   const maxRows = Math.max(
-    dotsData.drivers.length,
-    dotsData.opportunities.length,
-    dotsData.threats.length,
-    dotsData.strategicResponse.length
+    drivers.length,
+    opportunities.length,
+    threats.length,
+    strategicResponse.length,
+    1 // Ensure at least 1 row
   );
+
+  // If no data in any category, show a message
+  if (maxRows === 1 && drivers.length === 0 && opportunities.length === 0 && threats.length === 0 && strategicResponse.length === 0) {
+    return (
+      <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-8 text-center">
+        <p className="text-yellow-700">DOTS strategy data appears to be empty. Try regenerating the strategy.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="border rounded-lg overflow-hidden bg-white">
@@ -56,22 +72,22 @@ const DotsStrategyTable = ({ dotsData }: DotsStrategyTableProps) => {
             <TableRow key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
               <TableCell className="border-r border-gray-200 align-top p-4">
                 <div className="text-sm text-gray-800">
-                  {dotsData.drivers[index] || ""}
+                  {drivers[index] || ""}
                 </div>
               </TableCell>
               <TableCell className="border-r border-gray-200 align-top p-4">
                 <div className="text-sm text-gray-800">
-                  {dotsData.opportunities[index] || ""}
+                  {opportunities[index] || ""}
                 </div>
               </TableCell>
               <TableCell className="border-r border-gray-200 align-top p-4">
                 <div className="text-sm text-gray-800">
-                  {dotsData.threats[index] || ""}
+                  {threats[index] || ""}
                 </div>
               </TableCell>
               <TableCell className="align-top p-4">
                 <div className="text-sm text-gray-800 font-medium">
-                  {dotsData.strategicResponse[index] || ""}
+                  {strategicResponse[index] || ""}
                 </div>
               </TableCell>
             </TableRow>
