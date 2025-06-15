@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -87,9 +86,10 @@ interface StepTwoProps {
   data: string;
   onDataChange: (data: string) => void;
   selectedPoints: SelectedPoint[];
+  onNext?: () => void;
 }
 
-const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProps) => {
+const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: StepTwoProps) => {
   const [axes, setAxes] = useState<SelectedPoint[]>([]);
   const [scenarios, setScenarios] = useState<MatrixScenario[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -259,6 +259,11 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
         title: "Scenario Matrix Complete",
         description: "Generated 2x2 scenario matrix with consistent axis labels."
       });
+
+      // After successful generation, proceed to next step
+      if (onNext) {
+        onNext();
+      }
     } catch (err: any) {
       console.error("Scenario generation error:", err);
       toast({
@@ -310,7 +315,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
               disabled={axes.length !== 2 || isGenerating}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {isGenerating ? "Generating..." : "Generate Scenario Matrix"}
+              {isGenerating ? "Generating..." : "Generate Scenarios"}
             </Button>
           </div>
           

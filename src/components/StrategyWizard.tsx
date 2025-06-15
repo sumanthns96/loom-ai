@@ -222,6 +222,7 @@ Generated on: ${new Date().toLocaleDateString()}
               data={stepData.step2}
               onDataChange={(data: string) => updateStepData(2, data)}
               selectedPoints={selectedForMatrix}
+              onNext={() => setCurrentStepState(3)}
             />
           ) : currentStep === 3 ? (
             <StepThree
