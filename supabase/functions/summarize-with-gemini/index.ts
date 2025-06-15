@@ -28,7 +28,7 @@ serve(async (req) => {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `Summarize this business strategy text in exactly 15 words or less. Keep only the most essential strategic action: "${text}"`
+            text: `Summarize this business strategy text in exactly 12 words or less. Keep only the most essential strategic action: "${text}"`
           }]
         }]
       }),

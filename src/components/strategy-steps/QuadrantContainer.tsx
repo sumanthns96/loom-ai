@@ -32,19 +32,20 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
   ];
 
   return (
-    <div className="bg-gray-100 rounded-xl p-4 border border-gray-300 shadow-lg h-full">
-      <h4 className="text-center text-sm font-bold text-gray-800 uppercase tracking-wide mb-4 bg-white px-3 py-2 rounded-lg border shadow-sm">
+    <div className="bg-gray-200 rounded-2xl p-8 border border-gray-400 shadow-xl h-full">
+      <h4 className="text-center text-sm font-bold text-gray-800 uppercase tracking-wide mb-6 bg-white px-4 py-3 rounded-lg border shadow-sm">
         {title}
       </h4>
-      <div className="grid grid-cols-3 gap-3 h-full items-stretch">
+      <div className="grid grid-cols-3 gap-6 h-full items-stretch">
         {allTypes.map(
           ({ type, list }) => (
-            <CompetitorTypeCard
-              key={type}
-              type={type as any}
-              competitors={list}
-              getInitials={getCompanyInitials}
-            />
+            <div key={type} className="w-full">
+              <CompetitorTypeCard
+                type={type as any}
+                competitors={list}
+                getInitials={getCompanyInitials}
+              />
+            </div>
           )
         )}
       </div>
