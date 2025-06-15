@@ -7,3 +7,8 @@ verify_jwt = false
 [functions.generate-scenario-matrix]
 verify_jwt = false
 
+[functions.generate-three-horizons]
+verify_jwt = false
+
+[functions.generate-dots-strategy]
+verify_jwt = false
