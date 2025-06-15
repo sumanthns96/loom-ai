@@ -17,22 +17,19 @@ interface CompetitorTypeCardProps {
 
 const typeStyles = {
   Incumbent: {
-    border: "border-blue-400",
+    border: "border-blue-300",
     bg: "bg-blue-50",
-    text: "text-blue-700",
-    ring: "ring-blue-200",
+    text: "text-blue-800",
   },
   Insurgent: {
-    border: "border-red-400",
+    border: "border-red-300", 
     bg: "bg-red-50",
-    text: "text-red-700",
-    ring: "ring-red-200",
+    text: "text-red-800",
   },
   Adjacent: {
-    border: "border-green-400",
-    bg: "bg-green-50",
-    text: "text-green-700",
-    ring: "ring-green-200",
+    border: "border-green-300",
+    bg: "bg-green-50", 
+    text: "text-green-800",
   }
 };
 
@@ -63,14 +60,14 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
         });
 
         if (error) throw error;
-        // Limit summary to 60 characters for compact display
+        // Limit summary to 80 characters for compact display
         const summary = data.summarizedText || combinedAction;
-        const truncated = summary.length > 60 ? summary.substring(0, 60) + "..." : summary;
+        const truncated = summary.length > 80 ? summary.substring(0, 80) + "..." : summary;
         setSummarizedAction(truncated);
       } catch (error) {
         console.error('Summarization failed:', error);
         // Fallback to truncated original text
-        const fallback = combinedAction.length > 60 ? combinedAction.substring(0, 60) + "..." : combinedAction;
+        const fallback = combinedAction.length > 80 ? combinedAction.substring(0, 80) + "..." : combinedAction;
         setSummarizedAction(fallback);
       } finally {
         setSummaryLoading(false);
@@ -83,46 +80,39 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
   return (
     <div
       className={`
-        flex flex-col border-2 rounded-xl shadow-lg
-        w-72 h-80 p-5
+        flex flex-col border-2 rounded-lg shadow-md
+        h-32 p-3
         ${styles.bg} ${styles.border} 
-        transition-all hover:shadow-xl
+        transition-all hover:shadow-lg
       `}
     >
-      {/* Header - Fixed height */}
+      {/* Header - Category name */}
       <div className={`
-        w-full text-center font-bold text-sm uppercase tracking-wide
-        ${styles.text} h-8 flex items-center justify-center flex-shrink-0
+        text-center font-bold text-xs uppercase tracking-wide
+        ${styles.text} h-4 flex items-center justify-center flex-shrink-0 mb-2
       `}>
         {typeLabels[type]}
       </div>
       
-      {/* Main Content - Large readable text, center-aligned, 1-2 lines max */}
-      <div className="flex-1 flex items-center justify-center px-4 py-6">
-        <p className={`
-          text-lg font-medium text-gray-800 text-center leading-relaxed
-          line-clamp-2 overflow-hidden
-        `}>
+      {/* Main Content - Summary text */}
+      <div className="flex-1 flex items-center justify-center px-2">
+        <p className="text-sm font-medium text-gray-700 text-center leading-tight line-clamp-3">
           {isLoading ? "Analyzing..." : summarizedAction}
         </p>
       </div>
       
-      {/* Company Logos - Bottom section, max 4 logos */}
-      <div className="flex justify-center items-center gap-3 h-16 flex-shrink-0">
+      {/* Company Logos - Bottom section */}
+      <div className="flex justify-center items-center gap-2 h-8 flex-shrink-0 mt-2">
         {competitors.slice(0, 4).map((competitor, idx) => (
           <div
             key={idx}
-            className={`
-              w-10 h-10 rounded-lg bg-white border-2 shadow-sm
-              flex items-center justify-center overflow-hidden
-              ${styles.ring} transition-transform hover:scale-105
-            `}
+            className="w-6 h-6 rounded bg-white border shadow-sm flex items-center justify-center overflow-hidden"
           >
             {competitor.logoUrl ? (
               <img
                 src={competitor.logoUrl}
                 alt={competitor.name}
-                className="w-6 h-6 object-contain"
+                className="w-4 h-4 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = "none";
