@@ -70,12 +70,14 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
       let steepAnalysis = "";
       let scenarioMatrix = "";
       let strategicOptions = "";
+      let dotsStrategy = "";
 
       if (wizardState) {
         const state = JSON.parse(wizardState);
         steepAnalysis = state.stepData?.step1 || "";
         scenarioMatrix = state.stepData?.step2 || "";
         strategicOptions = state.stepData?.step3 || "";
+        dotsStrategy = state.stepData?.step5 || ""; // DOTS is now step 5
       }
 
       const { data: result, error } = await supabase.functions.invoke('generate-three-horizons', {
@@ -83,7 +85,8 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
           pdfContent,
           steepAnalysis,
           scenarioMatrix,
-          strategicOptions
+          strategicOptions,
+          dotsStrategy
         }
       });
 
@@ -97,8 +100,8 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
           onDataChange(JSON.stringify(parsedData));
           
           toast({
-            title: "Three Horizons Model Generated",
-            description: "McKinsey's strategic roadmap has been created based on your analysis.",
+            title: "Three Horizons Implementation Generated",
+            description: "Strategic roadmap has been created based on your DOTS strategy.",
           });
         } else {
           throw new Error("Failed to parse generated content");
@@ -110,7 +113,7 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
       console.error('Error generating three horizons:', error);
       toast({
         title: "Generation Failed",
-        description: "Failed to generate the Three Horizons Model. Please try again.",
+        description: "Failed to generate the Three Horizons Implementation. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -124,17 +127,17 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-blue-600" />
-            <span>McKinsey Three Horizons Model</span>
+            <span>Three Horizons Implementation</span>
           </CardTitle>
           <CardDescription>
-            Generate a strategic roadmap that balances present performance with future innovation 
+            Transform your DOTS strategic response themes into a detailed tactical roadmap 
             across three time horizons: core optimization (0-2 years), adjacent opportunities (3-4 years), 
             and breakthrough innovation (5-6 years).
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">Strategic Roadmap</h3>
+            <h3 className="text-lg font-medium">Tactical Implementation Roadmap</h3>
             <Button
               onClick={generateThreeHorizons}
               disabled={isGenerating}
@@ -148,7 +151,7 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Generate Three Horizons Model
+                  Generate Implementation Roadmap
                 </>
               )}
             </Button>
@@ -157,11 +160,11 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
           <ThreeHorizonsChart horizonsData={horizonsData} />
 
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Three Horizons Framework:</h4>
+            <h4 className="font-medium text-blue-900 mb-2">Implementation Framework:</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>Horizon 1 (0-2 years):</strong> Optimize core business operations and improve current offerings</li>
-              <li>• <strong>Horizon 2 (3-4 years):</strong> Explore adjacent opportunities and build emerging capabilities</li>
-              <li>• <strong>Horizon 3 (5-6 years):</strong> Invest in breakthrough innovations and disruptive technologies</li>
+              <li>• <strong>Horizon 1 (0-2 years):</strong> Tactical initiatives to operationalize strategic response themes</li>
+              <li>• <strong>Horizon 2 (3-4 years):</strong> Mid-term programs to build capabilities for strategic opportunities</li>
+              <li>• <strong>Horizon 3 (5-6 years):</strong> Long-term innovations to address strategic drivers and threats</li>
             </ul>
           </div>
         </CardContent>
