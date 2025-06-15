@@ -86,7 +86,7 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   const steps = [
     { number: 1, title: "Analyze STEEP Factors", component: StepOne },
     { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo },
-    { number: 3, title: "Strategic Options", component: StepThree },
+    { number: 3, title: "Competitor Analysis", component: StepThree },
     { number: 4, title: "DOTS Strategy", component: StepFour },
     { number: 5, title: "Three Horizons Implementation", component: StepFive },
   ];
