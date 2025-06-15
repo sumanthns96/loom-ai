@@ -37,7 +37,7 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
       <h4 className="text-center text-sm font-bold text-gray-800 uppercase tracking-wide mb-3 bg-white px-2 py-1 rounded-lg border shadow-sm">
         {title}
       </h4>
-      <div className="grid grid-cols-3 gap-2 h-full min-h-[200px] items-stretch">
+      <div className="grid grid-cols-3 gap-2 h-full min-h-[180px] items-stretch">
         {allTypes.map(
           ({ type, list }) => (
             <CompetitorTypeCard

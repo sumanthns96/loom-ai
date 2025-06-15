@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 
 interface CompetitorData {
@@ -64,7 +65,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
         flex flex-col items-center border-2 rounded-xl p-3 h-full min-w-0 
         ${styles.bg} ${styles.border} overflow-hidden shadow-sm transition-all
       `}
-      style={{ minHeight: 200 }}
+      style={{ minHeight: 180 }}
     >
       {/* Header */}
       <div className={`w-full text-center font-bold text-xs uppercase leading-tight mb-1 ${styles.text} tracking-wide`}>
@@ -73,7 +74,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
       {/* Main Content, one summary for all competitors */}
       <div className="flex-1 w-full text-center flex items-center justify-center">
         <p
-          className="text-base text-gray-800 font-semibold max-h-18 overflow-hidden text-ellipsis px-2"
+          className="text-sm text-gray-700 font-medium max-h-16 overflow-hidden text-ellipsis px-2"
           style={{
             display: "-webkit-box",
             WebkitLineClamp: 3,
@@ -111,7 +112,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
                 {getInitials(competitor.name)}
               </span>
             </div>
-            <span className="text-xs text-gray-600 font-semibold text-center w-full truncate">
+            <span className="text-xs text-gray-600 font-medium text-center w-full truncate">
               {competitor.name.split(' ')[0].slice(0, 8)}
             </span>
           </div>
