@@ -1,11 +1,10 @@
 
 import type { SelectedPoint } from "./types";
 
-// Updated interface to include summary
 export type MatrixScenario = {
-  summary: string;   // New: brief 5-7 word headline
-  header: string;    // "In this scenario, ..."
-  bullets: string[]; // 4–6 bullet points
+  summary: string;
+  header: string;
+  bullets: string[];
 };
 
 export type QuadrantRequest = {
@@ -25,11 +24,6 @@ export const QUADRANT_LABELS = [
   "Low Y / High X",
 ] as const;
 
-// Updated quadrant requests to match new index mapping:
-// Index 1: Top Right (High Y, Low X)
-// Index 0: Top Left (High Y, High X)
-// Index 2: Bottom Left (Low Y, Low X)
-// Index 3: Bottom Right (Low Y, High X)
 export const QUADRANT_REQUESTS: QuadrantRequest[] = [
   {
    key: 'yHigh_xHigh',
@@ -70,12 +64,9 @@ export const QUADRANT_REQUESTS: QuadrantRequest[] = [
   },
 ];
 
-// Helper function to extract industry from case context
 function extractIndustry(caseTitle: string, industryContext: string): string {
-  // Look for industry indicators in title and context
   const combinedText = `${caseTitle} ${industryContext}`.toLowerCase();
   
-  // Common industry patterns
   if (combinedText.includes('ai') || combinedText.includes('artificial intelligence') || combinedText.includes('machine learning')) {
     return "AI and Machine Learning";
   }
@@ -98,61 +89,80 @@ function extractIndustry(caseTitle: string, industryContext: string): string {
     return "Energy";
   }
   
-  // Default fallback
   return "Technology and Innovation";
 }
 
-// Updated prompt to focus on industry-wide scenarios
+// Updated prompt function to use axis contexts for consistency
 export function makeQuadrantPrompt(
   caseTitle: string,
   industryContext: string,
   horizonYear: string,
   yAxis: SelectedPoint,
   xAxis: SelectedPoint,
-  quadrant: QuadrantRequest
+  quadrant: QuadrantRequest,
+  yContext?: { low: string; high: string },
+  xContext?: { low: string; high: string }
 ) {
   const industry = extractIndustry(caseTitle, industryContext);
   
+  // Use axis contexts if provided, otherwise use generic terms
+  const yAxisHigh = yContext?.high || "High";
+  const yAxisLow = yContext?.low || "Low";
+  const xAxisHigh = xContext?.high || "High";
+  const xAxisLow = xContext?.low || "Low";
+  
+  // Determine which axis values to use for this quadrant
+  const quadrantYValue = quadrant.yHigh === "High" ? yAxisHigh : yAxisLow;
+  const quadrantXValue = quadrant.xHigh === "High" ? xAxisHigh : xAxisLow;
+  
   return `
-CASE_TITLE: "${caseTitle}"
-INDUSTRY: "${industry}"
-HORIZON_YEAR: ${horizonYear}
-X_AXIS: "${xAxis.factor}" (LOW = "Low", HIGH = "High")
-Y_AXIS: "${yAxis.factor}" (LOW = "Low", HIGH = "High")
+SCENARIO GENERATION TASK:
+Case: "${caseTitle}"
+Industry: "${industry}"
+Time Horizon: ${horizonYear}
 
-For the ${industry} industry scenario where Y is "${quadrant.yHigh}" and X is "${quadrant.xHigh}":
+AXIS DEFINITIONS:
+Y-axis (${yAxis.factor}): "${yAxisLow}" ←→ "${yAxisHigh}"
+X-axis (${xAxis.factor}): "${xAxisLow}" ←→ "${xAxisHigh}"
 
-Write an industry-wide scenario analysis covering:
-1. A brief 5-7 word summary headline
-2. A 1-sentence header that starts with "In this scenario, ..."
-3. 4-6 concise bullet points covering:
-  (a) Overall industry market dynamics and competitive landscape
-  (b) How companies in this industry typically respond/behave
-  (c) Key operational and cost implications across the industry
-  (d) Partnership patterns and ecosystem changes industry-wide
-  (e) Regulatory or external factors affecting all industry players
-  (f) Innovation trends and technology adoption patterns
+THIS QUADRANT: Y = "${quadrantYValue}", X = "${quadrantXValue}"
 
-FOCUS: Describe what happens to the ENTIRE ${industry} industry, not just one company.
-PERSPECTIVE: Industry-wide trends, market conditions, and how all major players collectively respond.
+INSTRUCTIONS:
+Create a ${industry} industry scenario where:
+- ${yAxis.factor} tends toward: ${quadrantYValue}
+- ${xAxis.factor} tends toward: ${quadrantXValue}
 
-STYLE
-- Summary: 5-7 words max, captures essence of industry scenario
-- Total content: ≤ 100 words for header plus all bullets combined
-- Bullet verbs = present tense ("Industry accelerates…", "Companies pivot…", "Market consolidates…")
-- Industry-focused language, not company-specific
-- Ready for direct copy-paste into slides
+REQUIREMENTS:
+1. SUMMARY: Create a 4-6 word headline capturing the quadrant essence
+2. HEADER: Write "In this scenario, the ${industry} industry..." (one sentence)
+3. BULLETS: Provide 4-6 concise points covering:
+   - Market dynamics and competitive landscape
+   - How companies typically respond/behave  
+   - Operational and cost implications industry-wide
+   - Partnership patterns and ecosystem changes
+   - Regulatory or external factors affecting all players
+   - Innovation trends and technology adoption
 
-Return a compact, valid JSON object (no extra prose, no markdown) in this schema:
+STYLE REQUIREMENTS:
+- Focus on INDUSTRY-WIDE trends, not individual companies
+- Use present tense ("Industry consolidates...", "Companies pivot...")
+- Keep total content ≤100 words for header + all bullets
+- Make scenarios realistic and actionable
+- Ensure consistency with axis labels: "${quadrantYValue}" and "${quadrantXValue}"
+
+OUTPUT FORMAT:
+Return valid JSON only, no markdown, no explanations:
 {
-  "summary": "Brief industry scenario headline",
-  "header": "In this scenario, the ${industry} industry...",
+  "summary": "Brief 4-6 word industry scenario headline",
+  "header": "In this scenario, the ${industry} industry [continues with scenario description]",
   "bullets": [
-    "Industry-wide dynamic 1",
-    ...
-    "Industry-wide dynamic 4 to 6"
+    "Industry-wide trend or dynamic 1",
+    "Industry-wide trend or dynamic 2", 
+    "Industry-wide trend or dynamic 3",
+    "Industry-wide trend or dynamic 4",
+    "Industry-wide trend or dynamic 5",
+    "Industry-wide trend or dynamic 6"
   ]
 }
-REPLY WITH JSON ONLY.
   `.trim();
 }

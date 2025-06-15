@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -7,65 +8,101 @@ import type { SelectedPoint } from "./types";
 import { QUADRANT_REQUESTS, makeQuadrantPrompt, MatrixScenario } from "./QuadrantPromptUtils";
 import ScenarioMatrix from "./ScenarioMatrix";
 
-// New: helper to generate Gemini axis context labels
+// Improved axis context generation with more specific prompting
 async function fetchAxisContext(factor: string, axisText: string, caseContext: string) {
-  // Build prompt dynamically
-  // e.g., "For the chosen STEEP factor Technological, what is a specific aspect of the future that might 'Advance' or 'Reduce' in this case context?"
   const prompt = `
-Given the following case context: 
-${caseContext}
+CONTEXT: ${caseContext}
 
-For the STEEP factor "${factor}", please specify the most relevant key uncertainty axis for a 2x2 scenario matrix. State what could plausibly ADVANCE (positive direction) and what could REDUCE (negative direction) for this organization/setting, as a pair of short phrases (max 4 words each, no extra text, not just 'Increase/Decrease' but what exactly is advancing/reducing).
+TASK: For the STEEP factor "${factor}", create clear axis labels for a 2x2 scenario matrix.
 
-Always respond in this exact strict JSON format, no introduction/explanation:
-{"low": "<Negative/Low axis phrase>", "high": "<Positive/High axis phrase>" }
-`;
+REQUIREMENTS:
+- Generate ONE specific aspect that could realistically increase/advance (HIGH direction)
+- Generate ONE specific aspect that could realistically decrease/decline (LOW direction)
+- Each label must be 2-4 words maximum
+- Labels must be opposite ends of the same spectrum
+- Be specific to the case context, not generic
+- Focus on measurable or observable changes
 
-  const { data: responseData } = await supabase.functions.invoke("generate-scenario-matrix", {
-    body: { prompt }
-  });
-  // Parse
+FACTOR DETAILS: ${axisText}
+
+EXAMPLES of good axis pairs:
+- "Regulation Tightens" vs "Regulation Relaxes"
+- "AI Adoption Accelerates" vs "AI Adoption Stalls"
+- "Market Consolidates" vs "Market Fragments"
+
+Respond ONLY with valid JSON in this exact format:
+{"low": "specific decline phrase", "high": "specific advance phrase"}
+
+No explanations, no markdown, just the JSON object.`;
+
   try {
-    let content = responseData?.raw || responseData;
-    if (typeof content !== "string") content = JSON.stringify(content);
-    content = content.replace(/^\s*```json\s*|\s*```\s*$/gi, "").trim();
-    const parsed = JSON.parse(content);
-    if (typeof parsed.low === "string" && typeof parsed.high === "string") {
-      return parsed;
+    const { data: responseData, error } = await supabase.functions.invoke("generate-scenario-matrix", {
+      body: { prompt }
+    });
+
+    if (error) {
+      console.error('Axis context generation error:', error);
+      return { low: "Low", high: "High" };
     }
-  } catch {
-    // fallback on generic
+
+    // Parse the response more robustly
+    let content = responseData?.raw || responseData;
+    if (typeof content !== "string") {
+      content = JSON.stringify(content);
+    }
+    
+    // Clean up common JSON formatting issues
+    content = content.replace(/^\s*```json\s*|\s*```\s*$/gi, "").trim();
+    content = content.replace(/^[^{]*({.*})[^}]*$/s, "$1"); // Extract JSON object
+    
+    const parsed = JSON.parse(content);
+    
+    if (typeof parsed.low === "string" && typeof parsed.high === "string" && 
+        parsed.low.trim() && parsed.high.trim()) {
+      return {
+        low: parsed.low.trim(),
+        high: parsed.high.trim()
+      };
+    }
+  } catch (parseError) {
+    console.error('Failed to parse axis context:', parseError);
   }
-  return { low: "Low", high: "High" };
+  
+  // Fallback with factor-specific defaults
+  const factorDefaults = {
+    'Social': { low: 'Social Resistance', high: 'Social Adoption' },
+    'Technological': { low: 'Tech Stagnation', high: 'Tech Advancement' },
+    'Economic': { low: 'Economic Decline', high: 'Economic Growth' },
+    'Environmental': { low: 'Environmental Strain', high: 'Environmental Care' },
+    'Political': { low: 'Political Instability', high: 'Political Stability' }
+  };
+  
+  return factorDefaults[factor] || { low: "Low", high: "High" };
 }
 
 interface StepTwoProps {
   pdfContent: string;
-  data: string; // for this step (can be scenario info for export)
+  data: string;
   onDataChange: (data: string) => void;
-  selectedPoints: SelectedPoint[]; // Passed from StepOne "Continue"
+  selectedPoints: SelectedPoint[];
 }
 
 const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProps) => {
-  // User-selected 2 points that become axes: [Y, X]
   const [axes, setAxes] = useState<SelectedPoint[]>([]);
   const [scenarios, setScenarios] = useState<MatrixScenario[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  // New: store contextual axis ends
   const [axisContexts, setAxisContexts] = useState<{ low: string; high: string }[]>([]);
 
-  // Handle axis selection
   const handleSelectAxis = (point: SelectedPoint) => {
     setAxes((prev) => {
       if (prev.find(a => a.factor === point.factor && a.pointIdx === point.pointIdx)) {
         return prev.filter(a => !(a.factor === point.factor && a.pointIdx === point.pointIdx));
       }
-      if (prev.length === 2) return prev; // Only allow 2
+      if (prev.length === 2) return prev;
       return [...prev, point];
     });
   };
 
-  // Clean context info for prompts
   function getCaseTitleAndContext() {
     let title = "";
     let context = "";
@@ -94,81 +131,102 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
       const { title: caseTitle, context: industryContext } = getCaseTitleAndContext();
       const horizonYear = "2027";
 
-      // STEP 1: Fetch axis labels from Gemini (for each axis: what exactly advances/reduces or favours/unfavours)
-      toast({ title: "Getting axis labels...", description: "Anazlysing contextual axis directions.." });
-      const yContext = await fetchAxisContext(yAxis.factor, yAxis.text, industryContext);
-      const xContext = await fetchAxisContext(xAxis.factor, xAxis.text, industryContext);
+      // Step 1: Generate consistent axis labels first
+      console.log('Generating axis contexts...');
+      toast({ title: "Analyzing axes...", description: "Creating consistent axis directions..." });
+      
+      const [yContext, xContext] = await Promise.all([
+        fetchAxisContext(yAxis.factor, yAxis.text, industryContext),
+        fetchAxisContext(xAxis.factor, xAxis.text, industryContext)
+      ]);
+      
+      console.log('Generated axis contexts:', { yContext, xContext });
       setAxisContexts([yContext, xContext]);
 
-      // STEP 2: Usual scenario generation
+      // Step 2: Generate scenarios using the axis contexts for consistency
+      toast({ title: "Generating scenarios...", description: "Creating industry scenarios..." });
+      
       const quadrantResults: MatrixScenario[] = [];
       for (let i = 0; i < QUADRANT_REQUESTS.length; i++) {
         const q = QUADRANT_REQUESTS[i];
+        
+        // Create more specific prompt using the axis contexts we just generated
         const prompt = makeQuadrantPrompt(
           caseTitle,
           industryContext,
           horizonYear,
           yAxis,
           xAxis,
-          q
+          q,
+          yContext, // Pass axis contexts for consistency
+          xContext
         );
+        
+        console.log(`Generating quadrant ${i + 1}...`);
+        
         const { data: responseData, error } = await supabase.functions.invoke(
           "generate-scenario-matrix",
           { body: { prompt } }
         );
+        
         if (error) {
-          console.error("Edge function error:", error);
-          quadrantResults.push({ summary: "", header: "", bullets: [] });
+          console.error(`Quadrant ${i + 1} generation error:`, error);
+          quadrantResults.push({ 
+            summary: "Generation failed", 
+            header: "Scenario could not be generated", 
+            bullets: [] 
+          });
           continue;
         }
-        let obj: any = undefined;
-        if (responseData && typeof responseData === "object" && !Array.isArray(responseData)) {
-          if (responseData.summary && responseData.header && Array.isArray(responseData.bullets)) {
-            obj = responseData;
-          } else if (responseData.raw) {
-            try {
-              const parsed = JSON.parse(
-                (responseData.raw as string)
-                  .replace(/^\s*```json\s*|\s*```\s*$/gi, "")
-                  .trim()
-              );
-              if (parsed.summary && parsed.header && Array.isArray(parsed.bullets)) {
-                obj = parsed;
-              }
-            } catch (e) { console.error("Nested parse error:", e); }
+
+        // Improved response parsing
+        let scenarioObj: MatrixScenario = { summary: "", header: "", bullets: [] };
+        
+        try {
+          let content = responseData?.raw || responseData;
+          if (typeof content !== "string") {
+            content = JSON.stringify(content);
           }
+          
+          // Clean and parse JSON response
+          content = content.replace(/^\s*```json\s*|\s*```\s*$/gi, "").trim();
+          content = content.replace(/,\s*(\}|\])/g, "$1"); // Remove trailing commas
+          
+          const parsed = JSON.parse(content);
+          
+          if (parsed.summary && parsed.header && Array.isArray(parsed.bullets)) {
+            scenarioObj = {
+              summary: parsed.summary.trim(),
+              header: parsed.header.trim(),
+              bullets: parsed.bullets.filter(bullet => bullet && bullet.trim())
+            };
+          }
+        } catch (parseError) {
+          console.error(`Failed to parse quadrant ${i + 1} response:`, parseError);
+          scenarioObj = { 
+            summary: "Parse error", 
+            header: "Scenario could not be generated", 
+            bullets: [] 
+          };
         }
-        if (!obj && typeof responseData === "string") {
-          try {
-            let cleaned = responseData
-              .replace(/^`+json|`+$/gi, '')
-              .replace(/,\s*(\}|\])/g, "$1")
-              .trim();
-            const parsed = JSON.parse(cleaned);
-            if (parsed.summary && parsed.header && Array.isArray(parsed.bullets)) {
-              obj = parsed;
-            }
-          } catch { /* ignore parse error */ }
-        }
-        if (!obj) {
-          obj = { summary: "", header: "", bullets: [] };
-        }
-        quadrantResults.push(obj);
+        
+        quadrantResults.push(scenarioObj);
       }
 
-      if (!quadrantResults || quadrantResults.length !== 4) {
+      if (quadrantResults.length !== 4) {
         toast({
-          title: "Scenario format error",
-          description: "Could not generate all four quadrants. Please try again.",
+          title: "Generation incomplete",
+          description: "Some scenarios could not be generated. Please try again.",
           variant: "destructive"
         });
         setIsGenerating(false);
         return;
       }
+
       setScenarios(quadrantResults);
       onDataChange(JSON.stringify(quadrantResults));
 
-      // Save data for Step 3 to inherit
+      // Save data for Step 3
       const step2Data = {
         scenarios: quadrantResults,
         axes: axes,
@@ -177,14 +235,14 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
       localStorage.setItem('step2Data', JSON.stringify(step2Data));
 
       toast({
-        title: "Scenario Matrix Ready",
-        description: "Generated 2x2 scenario matrix using your selected uncertainties."
+        title: "Scenario Matrix Complete",
+        description: "Generated 2x2 scenario matrix with consistent axis labels."
       });
     } catch (err: any) {
-      console.error("Fatal scenario gen error", err);
+      console.error("Scenario generation error:", err);
       toast({
         title: "Error",
-        description: "Unexpected error occurred while generating scenarios.",
+        description: "Failed to generate scenarios. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -192,7 +250,6 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
     }
   };
 
-  // Render
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <Card className="shadow-lg">
@@ -205,7 +262,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
           <h3 className="font-medium mb-4">
             Select <span className="font-bold">two</span> factors/points as key uncertainties (these become axes):
           </h3>
-          {/* Point selection UI */}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {selectedPoints.map((pt, idx) => (
               <button
@@ -226,7 +283,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
               </button>
             ))}
           </div>
-          {/* Generate Button */}
+          
           <div className="flex justify-end mt-6">
             <Button
               onClick={handleGenerateScenarios}
@@ -236,7 +293,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
               {isGenerating ? "Generating..." : "Generate Scenario Matrix"}
             </Button>
           </div>
-          {/* Render Matrix (now separated into ScenarioMatrix component) */}
+          
           <ScenarioMatrix scenarios={scenarios} axes={axes} axisContexts={axisContexts} />
         </CardContent>
       </Card>
