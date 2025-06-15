@@ -7,6 +7,33 @@ import AnalysisGenerator from "./AnalysisGenerator";
 import { useSteepData } from "./hooks/useSteepData";
 import { FACTOR_STYLES } from "./constants";
 import { StepOneProps } from "./types";
+
+const LoadingText = () => {
+  const [phase, setPhase] = useState(1);
+  
+  useState(() => {
+    const timer = setTimeout(() => {
+      setPhase(2);
+    }, 2000); // 2 seconds for first phase
+
+    return () => clearTimeout(timer);
+  }, []);
+  
+  return (
+    <span className="transition-opacity duration-500">
+      {phase === 1 ? (
+        <span className="animate-fade-in">
+          Analyzing the Strategic Landscape from the Outside-In
+        </span>
+      ) : (
+        <span className="animate-fade-in">
+          Analyzing all factors
+        </span>
+      )}
+    </span>
+  );
+};
+
 const StepOne = ({
   pdfContent,
   data,
@@ -22,6 +49,7 @@ const StepOne = ({
     getSelectedPoints,
     updateFactors
   } = useSteepData(data, onDataChange);
+
   const handleGenerationStart = () => {
     setIsGenerating(true);
   };
@@ -43,13 +71,13 @@ const StepOne = ({
             
           </CardTitle>
           <CardDescription className="text-xl">The STEEP analysis is a tool used to map the external factors
-that impact an organization’s strategic landscape.</CardDescription>
+that impact an organization's strategic landscape.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 min-h-[800px]">
           <AnalysisGenerator pdfContent={pdfContent} isGenerating={isGenerating} onGenerationStart={handleGenerationStart} onGenerationComplete={handleGenerationComplete} onGenerationError={handleGenerationError} />
           {isGenerating && <div className="h-60 flex items-center justify-center text-muted-foreground gap-2">
               <RefreshCw className="h-5 w-5 animate-spin" />
-              <span>AI Analysis in Progress..</span>
+              <LoadingText />
             </div>}
           {!isGenerating && !hasGenerated && <div className="h-60 flex items-center justify-center text-muted-foreground">
               <span>Click &quot;Initiate STEEP Analysis&quot; to start</span>
