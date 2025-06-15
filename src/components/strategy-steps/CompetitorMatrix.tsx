@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -102,7 +103,6 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
   const fallback = [{ low: "Low", high: "High" }, { low: "Low", high: "High" }];
   const [yContext, xContext] = axisContexts && axisContexts.length === 2 ? axisContexts : fallback;
 
-  const endLabelColors = ["text-red-600 font-bold", "text-green-600 font-bold"];
   const cap = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
   // Group competitors by type for each quadrant
@@ -124,151 +124,151 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
 
   return (
     <div className="mt-8 animate-fade-in">
-      <div className="max-w-7xl mx-auto px-16 py-12">
-        <div className="relative">
-          {/* Y-axis labels */}
-          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-            <span className={`${endLabelColors[1]} text-sm whitespace-nowrap px-3 py-1 bg-white rounded-lg shadow-md`}>
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* Main container with proper spacing for axes */}
+        <div className="relative" style={{ paddingTop: '80px', paddingBottom: '80px', paddingLeft: '120px', paddingRight: '120px' }}>
+          
+          {/* Vertical Axis Line */}
+          <div className="absolute top-16 bottom-16 left-1/2 w-1 bg-gray-800 transform -translate-x-1/2 z-10"></div>
+          
+          {/* Horizontal Axis Line */}
+          <div className="absolute left-24 right-24 top-1/2 h-1 bg-gray-800 transform -translate-y-1/2 z-10"></div>
+          
+          {/* Y-axis Factor Label (Vertical) */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90 z-20">
+            <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide rounded">
+              {yAxis.factor}
+            </div>
+          </div>
+          
+          {/* X-axis Factor Label (Horizontal) */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+            <div className="bg-gray-800 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide rounded">
+              {xAxis.factor}
+            </div>
+          </div>
+          
+          {/* Corner Labels - Top */}
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
+            <span className="text-green-600 font-bold text-sm bg-white px-3 py-1 rounded shadow-md border">
               {cap(yContext.high)}
             </span>
           </div>
           
-          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-            <span className={`${endLabelColors[0]} text-sm whitespace-nowrap px-3 py-1 bg-white rounded-lg shadow-md`}>
+          {/* Corner Labels - Bottom */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+            <span className="text-red-600 font-bold text-sm bg-white px-3 py-1 rounded shadow-md border">
               {cap(yContext.low)}
             </span>
           </div>
           
-          <div className="relative" style={{ minHeight: 500 }}>
-            {/* Horizontal X axis */}
-            <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 z-10">
-              <div className="flex items-center">
-                <div className="absolute -left-16 top-1/2 transform -translate-y-1/2">
-                  <span className={`${endLabelColors[0]} text-sm whitespace-nowrap px-3 py-1 bg-white rounded-lg shadow-md`}>
-                    {cap(xContext.low)}
-                  </span>
-                </div>
-                
-                <div className="w-full border-t-4 border-purple-700 relative">
-                  <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2">
-                    <span className="bg-purple-700 text-white px-3 py-1 text-sm font-bold uppercase tracking-wide rounded-lg">
-                      {xAxis.factor}
-                    </span>
+          {/* Corner Labels - Left */}
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+            <span className="text-red-600 font-bold text-sm bg-white px-3 py-1 rounded shadow-md border">
+              {cap(xContext.low)}
+            </span>
+          </div>
+          
+          {/* Corner Labels - Right */}
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+            <span className="text-green-600 font-bold text-sm bg-white px-3 py-1 rounded shadow-md border">
+              {cap(xContext.high)}
+            </span>
+          </div>
+          
+          {/* Quadrant Grid Container */}
+          <div className="relative z-30 grid grid-cols-2 grid-rows-2 gap-8 h-96">
+            
+            {/* Top Left Quadrant - Index 1 (High Y, Low X) */}
+            <div className="bg-gray-50 rounded-lg p-4 border-2 border-gray-200 shadow-sm">
+              <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 bg-white px-2 py-1 rounded border">
+                {getQuadrantHeader(true, false)}
+              </h4>
+              {(() => {
+                const { incumbents, insurgents, adjacents } = getCompetitorsByType(1);
+                return (
+                  <div className="grid grid-cols-3 gap-2 h-full">
+                    {insurgents.length > 0 && (
+                      <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                    )}
+                    {incumbents.length > 0 && (
+                      <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
+                    )}
+                    {adjacents.length > 0 && (
+                      <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
+                    )}
                   </div>
-                </div>
-                
-                <div className="absolute -right-16 top-1/2 transform -translate-y-1/2">
-                  <span className={`${endLabelColors[1]} text-sm whitespace-nowrap px-3 py-1 bg-white rounded-lg shadow-md`}>
-                    {cap(xContext.high)}
-                  </span>
-                </div>
-              </div>
+                );
+              })()}
             </div>
             
-            {/* Vertical Y axis */}
-            <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 z-10">
-              <div className="h-full border-l-4 border-purple-700 relative">
-                <div className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90">
-                  <span className="bg-purple-700 text-white px-3 py-1 text-sm font-bold uppercase tracking-wide rounded-lg whitespace-nowrap">
-                    {yAxis.factor}
-                  </span>
-                </div>
-              </div>
+            {/* Top Right Quadrant - Index 0 (High Y, High X) */}
+            <div className="bg-gray-50 rounded-lg p-4 border-2 border-gray-200 shadow-sm">
+              <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 bg-white px-2 py-1 rounded border">
+                {getQuadrantHeader(true, true)}
+              </h4>
+              {(() => {
+                const { incumbents, insurgents, adjacents } = getCompetitorsByType(0);
+                return (
+                  <div className="grid grid-cols-3 gap-2 h-full">
+                    {insurgents.length > 0 && (
+                      <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                    )}
+                    {incumbents.length > 0 && (
+                      <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
+                    )}
+                    {adjacents.length > 0 && (
+                      <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             
-            {/* Competitor quadrants */}
-            <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-4 p-4">
-              {/* Top Left - Index 1 (High Y, Low X) */}
-              <div className="space-y-2">
-                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
-                  {getQuadrantHeader(true, false)}
-                </h4>
-                {(() => {
-                  const { incumbents, insurgents, adjacents } = getCompetitorsByType(1);
-                  return (
-                    <div className="grid grid-cols-3 gap-2">
-                      {insurgents.length > 0 && (
-                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
-                      )}
-                      {incumbents.length > 0 && (
-                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
-                      )}
-                      {adjacents.length > 0 && (
-                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-              
-              {/* Top Right - Index 0 (High Y, High X) */}
-              <div className="space-y-2">
-                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
-                  {getQuadrantHeader(true, true)}
-                </h4>
-                {(() => {
-                  const { incumbents, insurgents, adjacents } = getCompetitorsByType(0);
-                  return (
-                    <div className="grid grid-cols-3 gap-2">
-                      {insurgents.length > 0 && (
-                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
-                      )}
-                      {incumbents.length > 0 && (
-                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
-                      )}
-                      {adjacents.length > 0 && (
-                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-              
-              {/* Bottom Left - Index 2 (Low Y, Low X) */}
-              <div className="space-y-2">
-                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
-                  {getQuadrantHeader(false, false)}
-                </h4>
-                {(() => {
-                  const { incumbents, insurgents, adjacents } = getCompetitorsByType(2);
-                  return (
-                    <div className="grid grid-cols-3 gap-2">
-                      {insurgents.length > 0 && (
-                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
-                      )}
-                      {incumbents.length > 0 && (
-                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
-                      )}
-                      {adjacents.length > 0 && (
-                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-              
-              {/* Bottom Right - Index 3 (Low Y, High X) */}
-              <div className="space-y-2">
-                <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide bg-white px-2 py-1 rounded shadow-sm">
-                  {getQuadrantHeader(false, true)}
-                </h4>
-                {(() => {
-                  const { incumbents, insurgents, adjacents } = getCompetitorsByType(3);
-                  return (
-                    <div className="grid grid-cols-3 gap-2">
-                      {insurgents.length > 0 && (
-                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
-                      )}
-                      {incumbents.length > 0 && (
-                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
-                      )}
-                      {adjacents.length > 0 && (
-                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
+            {/* Bottom Left Quadrant - Index 2 (Low Y, Low X) */}
+            <div className="bg-gray-50 rounded-lg p-4 border-2 border-gray-200 shadow-sm">
+              <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 bg-white px-2 py-1 rounded border">
+                {getQuadrantHeader(false, false)}
+              </h4>
+              {(() => {
+                const { incumbents, insurgents, adjacents } = getCompetitorsByType(2);
+                return (
+                  <div className="grid grid-cols-3 gap-2 h-full">
+                    {insurgents.length > 0 && (
+                      <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                    )}
+                    {incumbents.length > 0 && (
+                      <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
+                    )}
+                    {adjacents.length > 0 && (
+                      <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+            
+            {/* Bottom Right Quadrant - Index 3 (Low Y, High X) */}
+            <div className="bg-gray-50 rounded-lg p-4 border-2 border-gray-200 shadow-sm">
+              <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 bg-white px-2 py-1 rounded border">
+                {getQuadrantHeader(false, true)}
+              </h4>
+              {(() => {
+                const { incumbents, insurgents, adjacents } = getCompetitorsByType(3);
+                return (
+                  <div className="grid grid-cols-3 gap-2 h-full">
+                    {insurgents.length > 0 && (
+                      <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                    )}
+                    {incumbents.length > 0 && (
+                      <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
+                    )}
+                    {adjacents.length > 0 && (
+                      <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
