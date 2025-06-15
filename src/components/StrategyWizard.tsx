@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -15,17 +15,76 @@ interface StrategyWizardProps {
   onReset: () => void;
 }
 
+const STORAGE_KEY = "strategyWizardState";
+
 const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [stepData, setStepData] = useState({
+  // Load state from localStorage if available
+  const loadState = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Ensure content is for the same PDF (very basic check)
+        if (parsed.pdfContent === pdfContent) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Ignore/invalid
+    }
+    // Initial state if nothing found
+    return {
+      currentStep: 1,
+      stepData: {
+        step1: "",
+        step2: "",
+        step3: "",
+        step4: "",
+        step5: "",
+      },
+      selectedForMatrix: [],
+    };
+  };
+
+  // Persist state to localStorage when it changes
+  const saveState = (next: any) => {
+    try {
+      const toSave = { ...next, pdfContent };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    } catch {
+      // Ignore
+    }
+  };
+
+  // Initialize state from storage
+  const [currentStep, setCurrentStepState] = useState(1);
+  const [stepData, setStepDataState] = useState({
     step1: "",
     step2: "",
     step3: "",
     step4: "",
     step5: "",
   });
-  // New: Track selected points for scenario axis choice
-  const [selectedForMatrix, setSelectedForMatrix] = useState<SelectedPoint[]>([]);
+  const [selectedForMatrix, setSelectedForMatrixState] = useState<SelectedPoint[]>([]);
+
+  // On mount, load state from localStorage
+  useEffect(() => {
+    const st = loadState();
+    setCurrentStepState(st.currentStep);
+    setStepDataState(st.stepData);
+    setSelectedForMatrixState(st.selectedForMatrix);
+  // Only run on mount and if PDF changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pdfContent]);
+
+  // Sync all state to localStorage on change
+  useEffect(() => {
+    saveState({
+      currentStep,
+      stepData,
+      selectedForMatrix,
+    });
+  }, [currentStep, stepData, selectedForMatrix, pdfContent]);
 
   const steps = [
     { number: 1, title: "Analyze STEEP Factors", component: StepOne },
@@ -36,21 +95,24 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   ];
 
   const updateStepData = (step: number, data: string) => {
-    setStepData(prev => ({
-      ...prev,
-      [`step${step}`]: data
-    }));
+    setStepDataState(prev => {
+      const next = {
+        ...prev,
+        [`step${step}`]: data
+      };
+      return next;
+    });
   };
 
   const nextStep = () => {
     if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
+      setCurrentStepState(currentStep + 1);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStepState(currentStep - 1);
     }
   };
 
@@ -78,6 +140,12 @@ Generated on: ${new Date().toLocaleDateString()}
     URL.revokeObjectURL(url);
   };
 
+  // On reset, clear localStorage wizard state as well
+  const handleReset = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    onReset();
+  };
+
   // --- Step-specific overrides
   // Step 1: inject onNext handler
   const CurrentStepComponent = steps[currentStep - 1].component;
@@ -90,7 +158,7 @@ Generated on: ${new Date().toLocaleDateString()}
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={onReset}>
+              <Button variant="ghost" onClick={handleReset}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Upload
               </Button>
@@ -124,7 +192,7 @@ Generated on: ${new Date().toLocaleDateString()}
             {steps.map((step) => (
               <button
                 key={step.number}
-                onClick={() => setCurrentStep(step.number)}
+                onClick={() => setCurrentStepState(step.number)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors
                   ${currentStep === step.number 
                     ? 'bg-blue-600 text-white' 
@@ -147,7 +215,7 @@ Generated on: ${new Date().toLocaleDateString()}
               pdfContent={pdfContent}
               data={stepData.step1}
               onDataChange={(data: string) => updateStepData(1, data)}
-              onNext={(pts) => { setSelectedForMatrix(pts); setCurrentStep(2); }}
+              onNext={(pts) => { setSelectedForMatrixState(pts); setCurrentStepState(2); }}
             />
           ) : currentStep === 2 ? (
             <StepTwo
@@ -203,4 +271,3 @@ Generated on: ${new Date().toLocaleDateString()}
 };
 
 export default StrategyWizard;
-
