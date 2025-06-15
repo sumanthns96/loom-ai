@@ -20,37 +20,68 @@ interface CompetitorMatrixProps {
   getCompanyInitials: (name: string) => string;
 }
 
-const CompetitorCard: FC<{ competitor: CompetitorData; getInitials: (name: string) => string }> = ({ 
-  competitor, 
-  getInitials 
-}) => {
+const CompetitorTypeCard: FC<{ 
+  type: "Incumbent" | "Insurgent" | "Adjacent";
+  competitors: CompetitorData[];
+  getInitials: (name: string) => string;
+}> = ({ type, competitors, getInitials }) => {
+  if (competitors.length === 0) return null;
+
   const typeColors = {
-    Incumbent: "bg-blue-100 border-blue-300 text-blue-800",
-    Insurgent: "bg-red-100 border-red-300 text-red-800", 
-    Adjacent: "bg-green-100 border-green-300 text-green-800"
+    Incumbent: "border-blue-400",
+    Insurgent: "border-red-400", 
+    Adjacent: "border-green-400"
   };
 
+  const typeLabels = {
+    Incumbent: "INCUMBENTS",
+    Insurgent: "INSURGENTS",
+    Adjacent: "ADJACENTS"
+  };
+
+  // Combine all actions for this type into one coherent description
+  const combinedAction = competitors.map(c => c.action).join(". ");
+  
   return (
-    <div className={`p-2 rounded-xl border-2 ${typeColors[competitor.type]} mb-2 flex flex-col items-center text-center min-h-[120px] w-full`}>
-      <div className="w-10 h-10 rounded-full bg-white border flex items-center justify-center text-xs font-bold overflow-hidden mb-2">
-        <img 
-          src={competitor.logoUrl} 
-          alt={competitor.name}
-          className="w-full h-full object-contain"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-            target.nextElementSibling!.classList.remove('hidden');
-          }}
-        />
-        <span className="hidden text-gray-600">
-          {getInitials(competitor.name)}
-        </span>
+    <div className={`bg-white rounded-3xl border-4 ${typeColors[type]} p-8 min-h-[300px] flex flex-col justify-between shadow-lg`}>
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h3 className="text-xl font-bold text-gray-800 tracking-wide">
+          {typeLabels[type]}
+        </h3>
       </div>
-      <div className="flex-1 flex flex-col justify-center">
-        <div className="font-semibold text-xs mb-1 leading-tight">{competitor.name}</div>
-        <div className="text-xs opacity-75 mb-1">{competitor.type}</div>
-        <div className="text-xs leading-tight">{competitor.action}</div>
+      
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-4">
+        <p className="text-lg text-gray-700 text-center leading-relaxed">
+          {combinedAction}
+        </p>
+      </div>
+      
+      {/* Company Logos */}
+      <div className="flex justify-center items-center space-x-6 mt-6">
+        {competitors.map((competitor, index) => (
+          <div key={index} className="flex flex-col items-center">
+            <div className="w-16 h-16 rounded-lg bg-white border-2 border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
+              <img 
+                src={competitor.logoUrl} 
+                alt={competitor.name}
+                className="w-full h-full object-contain p-1"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling!.classList.remove('hidden');
+                }}
+              />
+              <span className="hidden text-gray-600 text-xs font-bold">
+                {getInitials(competitor.name)}
+              </span>
+            </div>
+            <span className="text-xs text-gray-500 mt-1 font-medium">
+              {competitor.name}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -90,41 +121,41 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
 
   return (
     <div className="mt-12 animate-fade-in">
-      <div className="max-w-6xl mx-auto px-20 py-16">
+      <div className="max-w-7xl mx-auto px-20 py-16">
         <div className="relative">
           {/* Y-axis labels */}
-          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-            <span className={`${endLabelColors[1]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
+          <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
+            <span className={`${endLabelColors[1]} text-sm whitespace-nowrap px-3 py-2 bg-white rounded-lg shadow-md`}>
               {cap(yContext.high)}
             </span>
           </div>
           
-          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-            <span className={`${endLabelColors[0]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
+          <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+            <span className={`${endLabelColors[0]} text-sm whitespace-nowrap px-3 py-2 bg-white rounded-lg shadow-md`}>
               {cap(yContext.low)}
             </span>
           </div>
           
-          <div className="relative" style={{ minHeight: 600 }}>
+          <div className="relative" style={{ minHeight: 700 }}>
             {/* Horizontal X axis */}
             <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 z-10">
               <div className="flex items-center">
-                <div className="absolute -left-16 top-1/2 transform -translate-y-1/2">
-                  <span className={`${endLabelColors[0]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
+                <div className="absolute -left-20 top-1/2 transform -translate-y-1/2">
+                  <span className={`${endLabelColors[0]} text-sm whitespace-nowrap px-3 py-2 bg-white rounded-lg shadow-md`}>
                     {cap(xContext.low)}
                   </span>
                 </div>
                 
                 <div className="w-full border-t-6 border-purple-700 relative">
                   <div className="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2">
-                    <span className="bg-purple-700 text-white px-3 py-1 text-sm font-bold uppercase tracking-wide rounded">
+                    <span className="bg-purple-700 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide rounded-lg">
                       {xAxis.factor}
                     </span>
                   </div>
                 </div>
                 
-                <div className="absolute -right-16 top-1/2 transform -translate-y-1/2">
-                  <span className={`${endLabelColors[1]} text-xs whitespace-nowrap px-2 py-1 bg-white rounded shadow`}>
+                <div className="absolute -right-20 top-1/2 transform -translate-y-1/2">
+                  <span className={`${endLabelColors[1]} text-sm whitespace-nowrap px-3 py-2 bg-white rounded-lg shadow-md`}>
                     {cap(xContext.high)}
                   </span>
                 </div>
@@ -135,7 +166,7 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
             <div className="absolute top-0 bottom-0 left-1/2 transform -translate-x-1/2 z-10">
               <div className="h-full border-l-6 border-purple-700 relative">
                 <div className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90">
-                  <span className="bg-purple-700 text-white px-3 py-1 text-sm font-bold uppercase tracking-wide rounded whitespace-nowrap">
+                  <span className="bg-purple-700 text-white px-4 py-2 text-sm font-bold uppercase tracking-wide rounded-lg whitespace-nowrap">
                     {yAxis.factor}
                   </span>
                 </div>
@@ -143,45 +174,24 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
             </div>
             
             {/* Competitor quadrants */}
-            <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-4 p-6">
+            <div className="relative z-20 grid grid-cols-2 grid-rows-2 gap-8 p-8">
               {/* Top Left - Index 1 (High Y, Low X) */}
-              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-3 min-h-[240px]">
-                <h4 className="text-xs font-bold text-gray-600 mb-3 text-center uppercase tracking-wide">
+              <div className="space-y-6">
+                <h4 className="text-center text-lg font-bold text-gray-700 mb-6 uppercase tracking-wide bg-white px-4 py-2 rounded-lg shadow-sm">
                   {getQuadrantHeader(true, false)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(1);
                   return (
-                    <div className="space-y-2">
-                      {incumbents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-blue-700 mb-1">INCUMBENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {incumbents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                    <div className="grid grid-cols-1 gap-6">
                       {insurgents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-red-700 mb-1">INSURGENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {insurgents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                      )}
+                      {incumbents.length > 0 && (
+                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
                       )}
                       {adjacents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-green-700 mb-1">ADJACENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {adjacents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
                       )}
                     </div>
                   );
@@ -189,43 +199,22 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
               </div>
               
               {/* Top Right - Index 0 (High Y, High X) */}
-              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-3 min-h-[240px]">
-                <h4 className="text-xs font-bold text-gray-600 mb-3 text-center uppercase tracking-wide">
+              <div className="space-y-6">
+                <h4 className="text-center text-lg font-bold text-gray-700 mb-6 uppercase tracking-wide bg-white px-4 py-2 rounded-lg shadow-sm">
                   {getQuadrantHeader(true, true)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(0);
                   return (
-                    <div className="space-y-2">
-                      {incumbents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-blue-700 mb-1">INCUMBENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {incumbents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                    <div className="grid grid-cols-1 gap-6">
                       {insurgents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-red-700 mb-1">INSURGENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {insurgents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                      )}
+                      {incumbents.length > 0 && (
+                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
                       )}
                       {adjacents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-green-700 mb-1">ADJACENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {adjacents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
                       )}
                     </div>
                   );
@@ -233,43 +222,22 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
               </div>
               
               {/* Bottom Left - Index 2 (Low Y, Low X) */}
-              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-3 min-h-[240px]">
-                <h4 className="text-xs font-bold text-gray-600 mb-3 text-center uppercase tracking-wide">
+              <div className="space-y-6">
+                <h4 className="text-center text-lg font-bold text-gray-700 mb-6 uppercase tracking-wide bg-white px-4 py-2 rounded-lg shadow-sm">
                   {getQuadrantHeader(false, false)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(2);
                   return (
-                    <div className="space-y-2">
-                      {incumbents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-blue-700 mb-1">INCUMBENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {incumbents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                    <div className="grid grid-cols-1 gap-6">
                       {insurgents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-red-700 mb-1">INSURGENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {insurgents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                      )}
+                      {incumbents.length > 0 && (
+                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
                       )}
                       {adjacents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-green-700 mb-1">ADJACENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {adjacents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
                       )}
                     </div>
                   );
@@ -277,43 +245,22 @@ const CompetitorMatrix: FC<CompetitorMatrixProps> = ({
               </div>
               
               {/* Bottom Right - Index 3 (Low Y, High X) */}
-              <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-3 min-h-[240px]">
-                <h4 className="text-xs font-bold text-gray-600 mb-3 text-center uppercase tracking-wide">
+              <div className="space-y-6">
+                <h4 className="text-center text-lg font-bold text-gray-700 mb-6 uppercase tracking-wide bg-white px-4 py-2 rounded-lg shadow-sm">
                   {getQuadrantHeader(false, true)}
                 </h4>
                 {(() => {
                   const { incumbents, insurgents, adjacents } = getCompetitorsByType(3);
                   return (
-                    <div className="space-y-2">
-                      {incumbents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-blue-700 mb-1">INCUMBENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {incumbents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                    <div className="grid grid-cols-1 gap-6">
                       {insurgents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-red-700 mb-1">INSURGENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {insurgents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Insurgent" competitors={insurgents} getInitials={getCompanyInitials} />
+                      )}
+                      {incumbents.length > 0 && (
+                        <CompetitorTypeCard type="Incumbent" competitors={incumbents} getInitials={getCompanyInitials} />
                       )}
                       {adjacents.length > 0 && (
-                        <div>
-                          <h5 className="text-xs font-semibold text-green-700 mb-1">ADJACENTS</h5>
-                          <div className="grid grid-cols-2 gap-1">
-                            {adjacents.map((comp, i) => (
-                              <CompetitorCard key={i} competitor={comp} getInitials={getCompanyInitials} />
-                            ))}
-                          </div>
-                        </div>
+                        <CompetitorTypeCard type="Adjacent" competitors={adjacents} getInitials={getCompanyInitials} />
                       )}
                     </div>
                   );
