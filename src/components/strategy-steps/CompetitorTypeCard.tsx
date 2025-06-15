@@ -29,34 +29,34 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
     Adjacent: "ADJACENTS"
   };
 
-  // Truncate combined action to 10-15 words max
+  // Truncate combined action to 12 words max for better fit
   const combinedAction = competitors.map(c => c.action).join(". ");
   const words = combinedAction.split(" ");
-  const truncatedAction = words.length > 15 
-    ? words.slice(0, 15).join(" ") + "..." 
+  const truncatedAction = words.length > 12 
+    ? words.slice(0, 12).join(" ") + "..." 
     : combinedAction;
   
   return (
-    <div className={`${typeColors[type]} rounded-xl border-2 p-2 h-28 flex flex-col justify-between shadow-sm`}>
+    <div className={`${typeColors[type]} rounded-lg border-2 p-2 h-32 flex flex-col justify-between shadow-sm overflow-hidden`}>
       {/* Header */}
-      <div className="text-center">
-        <h4 className="text-[10px] font-bold text-gray-800 tracking-wide">
+      <div className="text-center flex-shrink-0">
+        <h4 className="text-[9px] font-bold text-gray-800 tracking-wide">
           {typeLabels[type]}
         </h4>
       </div>
       
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-1">
-        <p className="text-[9px] text-gray-700 text-center leading-tight">
+      {/* Main Content - Scrollable if needed */}
+      <div className="flex-1 flex items-center justify-center px-1 overflow-hidden">
+        <p className="text-[8px] text-gray-700 text-center leading-tight break-words overflow-hidden">
           {truncatedAction}
         </p>
       </div>
       
       {/* Company Logos */}
-      <div className="flex justify-center items-center space-x-1">
+      <div className="flex justify-center items-center space-x-1 flex-shrink-0">
         {competitors.slice(0, 3).map((competitor, index) => (
           <div key={index} className="flex flex-col items-center">
-            <div className="w-4 h-4 rounded bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="w-3 h-3 rounded bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
               <img 
                 src={competitor.logoUrl} 
                 alt={competitor.name}
@@ -67,11 +67,11 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
                   target.nextElementSibling!.classList.remove('hidden');
                 }}
               />
-              <span className="hidden text-gray-600 text-[8px] font-bold">
+              <span className="hidden text-gray-600 text-[6px] font-bold">
                 {getInitials(competitor.name)}
               </span>
             </div>
-            <span className="text-[8px] text-gray-500 font-medium text-center max-w-[30px] truncate">
+            <span className="text-[6px] text-gray-500 font-medium text-center max-w-[24px] truncate">
               {competitor.name.split(' ')[0]}
             </span>
           </div>
