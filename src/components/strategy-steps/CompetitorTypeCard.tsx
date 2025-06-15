@@ -73,7 +73,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
       {/* Main Content, one summary for all competitors */}
       <div className="flex-1 w-full text-center flex items-center justify-center">
         <p
-          className="text-xs text-gray-800 font-normal leading-snug max-h-[34px] overflow-hidden text-ellipsis px-2"
+          className="text-sm text-gray-800 font-medium leading-normal max-h-[42px] overflow-hidden text-ellipsis px-2"
           style={{
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -111,7 +111,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
                 {getInitials(competitor.name)}
               </span>
             </div>
-            <span className="text-[8px] text-gray-500 font-medium text-center w-full truncate">
+            <span className="text-[10px] text-gray-600 font-medium text-center w-full truncate">
               {competitor.name.split(' ')[0].slice(0, 8)}
             </span>
           </div>
