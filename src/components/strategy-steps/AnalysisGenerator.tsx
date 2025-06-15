@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -22,13 +22,6 @@ const AnalysisGenerator = ({
   onGenerationComplete,
   onGenerationError
 }: AnalysisGeneratorProps) => {
-  
-  // Auto-start analysis when component mounts with PDF content
-  useEffect(() => {
-    if (pdfContent && !isGenerating) {
-      generateAnalysis();
-    }
-  }, [pdfContent]);
 
   const generateAnalysis = async () => {
     onGenerationStart();
@@ -144,7 +137,7 @@ ${pdfContent}
         ) : (
           <>
             <RefreshCw className="h-4 w-4 mr-2" />
-            Generate with AI
+            Initiate STEEP Analysis
           </>
         )}
       </Button>
