@@ -69,7 +69,39 @@ export const QUADRANT_REQUESTS: QuadrantRequest[] = [
   },
 ];
 
-// Updated prompt to include summary generation and word count constraint
+// Helper function to extract industry from case context
+function extractIndustry(caseTitle: string, industryContext: string): string {
+  // Look for industry indicators in title and context
+  const combinedText = `${caseTitle} ${industryContext}`.toLowerCase();
+  
+  // Common industry patterns
+  if (combinedText.includes('ai') || combinedText.includes('artificial intelligence') || combinedText.includes('machine learning')) {
+    return "AI and Machine Learning";
+  }
+  if (combinedText.includes('tech') || combinedText.includes('software') || combinedText.includes('digital')) {
+    return "Technology";
+  }
+  if (combinedText.includes('automotive') || combinedText.includes('car') || combinedText.includes('vehicle')) {
+    return "Automotive";
+  }
+  if (combinedText.includes('healthcare') || combinedText.includes('medical') || combinedText.includes('pharma')) {
+    return "Healthcare";
+  }
+  if (combinedText.includes('finance') || combinedText.includes('bank') || combinedText.includes('fintech')) {
+    return "Financial Services";
+  }
+  if (combinedText.includes('retail') || combinedText.includes('e-commerce') || combinedText.includes('consumer')) {
+    return "Retail and Consumer";
+  }
+  if (combinedText.includes('energy') || combinedText.includes('renewable') || combinedText.includes('oil')) {
+    return "Energy";
+  }
+  
+  // Default fallback
+  return "Technology and Innovation";
+}
+
+// Updated prompt to focus on industry-wide scenarios
 export function makeQuadrantPrompt(
   caseTitle: string,
   industryContext: string,
@@ -78,40 +110,46 @@ export function makeQuadrantPrompt(
   xAxis: SelectedPoint,
   quadrant: QuadrantRequest
 ) {
+  const industry = extractIndustry(caseTitle, industryContext);
+  
   return `
 CASE_TITLE: "${caseTitle}"
-INDUSTRY_OR_CONTEXT: "${industryContext}"
+INDUSTRY: "${industry}"
 HORIZON_YEAR: ${horizonYear}
 X_AXIS: "${xAxis.factor}" (LOW = "Low", HIGH = "High")
 Y_AXIS: "${yAxis.factor}" (LOW = "Low", HIGH = "High")
 
-For the quadrant where Y is "${quadrant.yHigh}" and X is "${quadrant.xHigh}":
-For this scenario, write:
+For the ${industry} industry scenario where Y is "${quadrant.yHigh}" and X is "${quadrant.xHigh}":
+
+Write an industry-wide scenario analysis covering:
 1. A brief 5-7 word summary headline
 2. A 1-sentence header that starts with "In this scenario, ..."
 3. 4-6 concise bullet points covering:
-  (a) market dynamics,
-  (b) product / service implications,
-  (c) operational or cost impacts,
-  (d) partnership or ecosystem notes,
-  (e) any other context-specific factor.
+  (a) Overall industry market dynamics and competitive landscape
+  (b) How companies in this industry typically respond/behave
+  (c) Key operational and cost implications across the industry
+  (d) Partnership patterns and ecosystem changes industry-wide
+  (e) Regulatory or external factors affecting all industry players
+  (f) Innovation trends and technology adoption patterns
+
+FOCUS: Describe what happens to the ENTIRE ${industry} industry, not just one company.
+PERSPECTIVE: Industry-wide trends, market conditions, and how all major players collectively respond.
 
 STYLE
-- Summary: 5-7 words max, captures essence of scenario
-- Header: ≤ 100 words total for the entire quadrant content (header plus all bullets combined)
-- Bullet verbs = present tense ("Accelerates…", "Constrains…")
-- No industry jargon unless present in CASE_TITLE
-- Ready for direct copy-paste into slides.
-- Keep content concise and impactful
+- Summary: 5-7 words max, captures essence of industry scenario
+- Total content: ≤ 100 words for header plus all bullets combined
+- Bullet verbs = present tense ("Industry accelerates…", "Companies pivot…", "Market consolidates…")
+- Industry-focused language, not company-specific
+- Ready for direct copy-paste into slides
 
 Return a compact, valid JSON object (no extra prose, no markdown) in this schema:
 {
-  "summary": "Brief scenario headline",
-  "header": "In this scenario, ...",
+  "summary": "Brief industry scenario headline",
+  "header": "In this scenario, the ${industry} industry...",
   "bullets": [
-    "Bullet point 1",
+    "Industry-wide dynamic 1",
     ...
-    "Bullet point 4 to 6"
+    "Industry-wide dynamic 4 to 6"
   ]
 }
 REPLY WITH JSON ONLY.
