@@ -26,28 +26,29 @@ export const QUADRANT_LABELS = [
 ] as const;
 
 // Updated quadrant requests to match new index mapping:
-// Index 0: Top Right (High Y, Low X)
-// Index 1: Top Left (High Y, High X)
+// Index 1: Top Right (High Y, Low X)
+// Index 0: Top Left (High Y, High X)
 // Index 2: Bottom Left (Low Y, Low X)
 // Index 3: Bottom Right (Low Y, High X)
 export const QUADRANT_REQUESTS: QuadrantRequest[] = [
   {
-    key: 'yHigh_xLow',
-    label: "High Y, Low X",
-    desc: "Y axis high, X axis low.",
-    yHigh: "High",
-    yLow: "Low",
-    xHigh: "Low",
-    xLow: "High"
-  },
-  {
-    key: 'yHigh_xHigh',
+   key: 'yHigh_xHigh',
     label: "High Y, High X",
     desc: "Both axes (Y and X) at their high/extreme/positive setting.",
     yHigh: "High",
     yLow: "Low",
     xHigh: "High",
     xLow: "Low"
+  },
+  {
+     key: 'yHigh_xLow',
+    label: "High Y, Low X",
+    desc: "Y axis high, X axis low.",
+    yHigh: "High",
+    yLow: "Low",
+    xHigh: "Low",
+    xLow: "High"
+    
   },
   {
     key: 'yLow_xLow',

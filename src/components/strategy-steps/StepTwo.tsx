@@ -95,7 +95,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
       const horizonYear = "2027";
 
       // STEP 1: Fetch axis labels from Gemini (for each axis: what exactly advances/reduces or favours/unfavours)
-      toast({ title: "Getting axis labels...", description: "Fetching contextual axis directions from Gemini..." });
+      toast({ title: "Getting axis labels...", description: "Anazlysing contextual axis directions.." });
       const yContext = await fetchAxisContext(yAxis.factor, yAxis.text, industryContext);
       const xContext = await fetchAxisContext(xAxis.factor, xAxis.text, industryContext);
       setAxisContexts([yContext, xContext]);
