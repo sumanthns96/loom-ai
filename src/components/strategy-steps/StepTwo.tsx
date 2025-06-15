@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { SelectedPoint } from "./types";
@@ -9,7 +11,6 @@ import ScenarioMatrix from "./ScenarioMatrix";
 import SteepCategorySection from "./SteepCategorySection";
 import { FACTOR_STYLES } from "./constants";
 
-// Improved axis context generation with more specific prompting
 async function fetchAxisContext(factor: string, axisText: string, caseContext: string) {
   const prompt = `
 CONTEXT: ${caseContext}
@@ -95,6 +96,7 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
   const [isGenerating, setIsGenerating] = useState(false);
   const [axisContexts, setAxisContexts] = useState<{ low: string; high: string }[]>([]);
   const [factorSelections, setFactorSelections] = useState<{[key: string]: number[]}>({});
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(true);
 
   // Group selected points by factor for display
   const groupedPoints = selectedPoints.reduce((acc, point) => {
@@ -106,6 +108,30 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
   }, {} as {[key: string]: SelectedPoint[]});
 
   const handleSelect = (factor: string, localIdx: number, checked: boolean) => {
+    if (checked) {
+      // Check if this factor already has a selection
+      const currentFactorSelections = factorSelections[factor] || [];
+      if (currentFactorSelections.length >= 1) {
+        toast({
+          title: "Selection limit reached",
+          description: `You can only select 1 item per ${factor} category.`,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Check total selections across all factors
+      const totalSelections = Object.values(factorSelections).reduce((sum, arr) => sum + arr.length, 0);
+      if (totalSelections >= 2) {
+        toast({
+          title: "Selection limit reached",
+          description: "You can only select 2 factors total across all categories.",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     setFactorSelections(prev => {
       const factorSelected = prev[factor] || [];
       const updated = checked 
@@ -255,6 +281,9 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
       };
       localStorage.setItem('step2Data', JSON.stringify(step2Data));
 
+      // Collapse the analysis section after generation
+      setIsAnalysisOpen(false);
+
       toast({
         title: "Scenario Matrix Complete",
         description: "Generated 2x2 scenario matrix with consistent axis labels."
@@ -274,6 +303,19 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
+      {/* Show Matrix at top when generated */}
+      {scenarios.length > 0 && (
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle>Scenario Matrix</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScenarioMatrix scenarios={scenarios} axes={axes} axisContexts={axisContexts} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* STEEP Analysis - Collapsible after matrix generation */}
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle>
@@ -281,41 +323,87 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-6">
-            <h3 className="font-medium mb-4 text-lg">
-              Based on your selection of Driving Forces, AI will identify uncertainties that you can't predict that impact your Strategic Choices. Select <span className="font-bold text-blue-600">two factors</span> as key uncertainties to Identify Plausible Scenarios
-            </h3>
-            
-            <div className="space-y-4">
-              {Object.entries(groupedPoints).map(([factor, points]) => (
-                <SteepCategorySection
-                  key={factor}
-                  factor={factor}
-                  style={FACTOR_STYLES[factor]}
-                  points={points.map(p => ({ text: p.text, isUserAdded: false }))}
-                  selectedIndexes={factorSelections[factor] || []}
-                  onSelect={(idx, checked) => handleSelect(factor, idx, checked)}
-                  onEdit={() => {}} // No editing in step 2
-                  showCheckboxes={true}
-                />
-              ))}
-            </div>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-600">
-              Selected: {axes.length}/2 factors
-            </div>
-            <Button
-              onClick={handleGenerateScenarios}
-              disabled={axes.length !== 2 || isGenerating}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              {isGenerating ? "Generating..." : "Generate Scenarios"}
-            </Button>
-          </div>
-          
-          <ScenarioMatrix scenarios={scenarios} axes={axes} axisContexts={axisContexts} />
+          {scenarios.length > 0 ? (
+            <Collapsible open={isAnalysisOpen} onOpenChange={setIsAnalysisOpen}>
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" className="w-full justify-between mb-6">
+                  <span>View STEEP Analysis & Selection</span>
+                  {isAnalysisOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mb-6">
+                  <h3 className="font-medium mb-4 text-lg">
+                    Based on your selection of Driving Forces, AI will identify uncertainties that you can't predict that impact your Strategic Choices. Select <span className="font-bold text-blue-600">two factors</span> as key uncertainties to Identify Plausible Scenarios
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {Object.entries(groupedPoints).map(([factor, points]) => (
+                      <SteepCategorySection
+                        key={factor}
+                        factor={factor}
+                        style={FACTOR_STYLES[factor]}
+                        points={points.map(p => ({ text: p.text, isUserAdded: false }))}
+                        selectedIndexes={factorSelections[factor] || []}
+                        onSelect={(idx, checked) => handleSelect(factor, idx, checked)}
+                        onEdit={() => {}} // No editing in step 2
+                        showCheckboxes={true}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-gray-600">
+                    Selected: {axes.length}/2 factors
+                  </div>
+                  <Button
+                    onClick={handleGenerateScenarios}
+                    disabled={axes.length !== 2 || isGenerating}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isGenerating ? "Generating..." : "Generate Scenarios"}
+                  </Button>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          ) : (
+            <>
+              <div className="mb-6">
+                <h3 className="font-medium mb-4 text-lg">
+                  Based on your selection of Driving Forces, AI will identify uncertainties that you can't predict that impact your Strategic Choices. Select <span className="font-bold text-blue-600">two factors</span> as key uncertainties to Identify Plausible Scenarios
+                </h3>
+                
+                <div className="space-y-4">
+                  {Object.entries(groupedPoints).map(([factor, points]) => (
+                    <SteepCategorySection
+                      key={factor}
+                      factor={factor}
+                      style={FACTOR_STYLES[factor]}
+                      points={points.map(p => ({ text: p.text, isUserAdded: false }))}
+                      selectedIndexes={factorSelections[factor] || []}
+                      onSelect={(idx, checked) => handleSelect(factor, idx, checked)}
+                      onEdit={() => {}} // No editing in step 2
+                      showCheckboxes={true}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <div className="text-sm text-gray-600">
+                  Selected: {axes.length}/2 factors
+                </div>
+                <Button
+                  onClick={handleGenerateScenarios}
+                  disabled={axes.length !== 2 || isGenerating}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {isGenerating ? "Generating..." : "Generate Scenarios"}
+                </Button>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
