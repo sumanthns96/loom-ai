@@ -25,7 +25,6 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
   const insurgents = competitors.filter(c => c.type === "Insurgent");
   const adjacents = competitors.filter(c => c.type === "Adjacent");
 
-  // For consistent card heights, always render 3 cards and align heights (even if some are empty)
   const allTypes = [
     { type: "Insurgent", list: insurgents },
     { type: "Incumbent", list: incumbents },
@@ -33,11 +32,11 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
   ];
 
   return (
-    <div className="bg-gray-100 rounded-xl p-6 border border-gray-300 shadow-lg h-full">
+    <div className="bg-gray-100 rounded-xl p-4 border border-gray-300 shadow-lg h-full">
       <h4 className="text-center text-sm font-bold text-gray-800 uppercase tracking-wide mb-4 bg-white px-3 py-2 rounded-lg border shadow-sm">
         {title}
       </h4>
-      <div className="grid grid-cols-3 gap-4 h-full min-h-[280px] items-stretch">
+      <div className="grid grid-cols-3 gap-3 h-full items-stretch">
         {allTypes.map(
           ({ type, list }) => (
             <CompetitorTypeCard
