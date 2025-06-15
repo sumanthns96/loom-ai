@@ -167,6 +167,15 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints }: StepTwoProp
       }
       setScenarios(quadrantResults);
       onDataChange(JSON.stringify(quadrantResults));
+
+      // Save data for Step 3 to inherit
+      const step2Data = {
+        scenarios: quadrantResults,
+        axes: axes,
+        axisContexts: [yContext, xContext]
+      };
+      localStorage.setItem('step2Data', JSON.stringify(step2Data));
+
       toast({
         title: "Scenario Matrix Ready",
         description: "Generated 2x2 scenario matrix using your selected uncertainties."
