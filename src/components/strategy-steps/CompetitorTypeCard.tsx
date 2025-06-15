@@ -1,3 +1,4 @@
+
 import { FC, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -86,8 +87,8 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
   return (
     <div
       className={`
-        border-2 rounded-lg shadow-sm p-6
-        w-80 h-64
+        border-2 rounded-lg shadow-sm p-4
+        w-48 h-44
         ${styles.bg} ${styles.border} 
         transition-all hover:shadow-md
         flex flex-col justify-between
@@ -95,31 +96,31 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
     >
       {/* Header - Category name */}
       <div className={`
-        text-center font-bold text-xs uppercase tracking-wide mb-3
+        text-center font-bold text-xs uppercase tracking-wide mb-2
         ${styles.text}
       `}>
         {typeLabels[type]}
       </div>
       
       {/* Main Content - Summary text (center section) */}
-      <div className="flex-1 flex items-center justify-center px-3">
-        <p className="text-sm text-gray-700 text-center leading-relaxed font-medium overflow-hidden">
+      <div className="flex-1 flex items-center justify-center px-2">
+        <p className="text-xs text-gray-700 text-center leading-tight font-medium overflow-hidden">
           {isLoading ? "Analyzing..." : summarizedAction || "Processing..."}
         </p>
       </div>
       
       {/* Company Logos - Bottom section */}
-      <div className="flex justify-center items-center gap-3 mt-3">
+      <div className="flex justify-center items-center gap-2 mt-2">
         {competitors.slice(0, 4).map((competitor, idx) => (
           <div
             key={idx}
-            className="w-8 h-8 rounded bg-white border shadow-sm flex items-center justify-center overflow-hidden"
+            className="w-6 h-6 rounded bg-white border shadow-sm flex items-center justify-center overflow-hidden"
           >
             {competitor.logoUrl ? (
               <img
                 src={competitor.logoUrl}
                 alt={competitor.name}
-                className="w-6 h-6 object-contain"
+                className="w-4 h-4 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = "none";

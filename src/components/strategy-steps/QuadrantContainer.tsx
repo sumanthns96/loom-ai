@@ -33,12 +33,12 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      <h4 className="text-center text-sm font-bold text-gray-700 uppercase tracking-wide mb-6">
+      <h4 className="text-center text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">
         {title}
       </h4>
       
-      {/* 3 cards in a horizontal row with more space */}
-      <div className="flex gap-4 justify-center">
+      {/* 3 cards in a horizontal row with tighter spacing */}
+      <div className="flex gap-2 justify-center">
         {allTypes.map(({ type, list }) => (
           <CompetitorTypeCard
             key={type}
