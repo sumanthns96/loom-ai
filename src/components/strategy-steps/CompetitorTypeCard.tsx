@@ -79,32 +79,30 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
   return (
     <div
       className={`
-        flex flex-col border-2 rounded-2xl p-4 h-full w-full
+        flex flex-col border-2 rounded-2xl p-6 h-full w-full
         ${styles.bg} ${styles.border} shadow-sm transition-all
-        min-h-0 overflow-hidden
+        min-h-[200px]
       `}
     >
       {/* Header */}
-      <div className={`w-full text-center font-semibold text-xs uppercase leading-tight mb-3 ${styles.text} tracking-wide flex-shrink-0`}>
+      <div className={`w-full text-center font-semibold text-sm uppercase leading-tight mb-4 ${styles.text} tracking-wide flex-shrink-0`}>
         {typeLabels[type]}
       </div>
       
-      {/* Main Content - Summarized text with proper overflow handling */}
-      <div className="flex-1 w-full mb-4 flex items-center justify-center min-h-0 overflow-hidden">
-        <p className="text-sm text-gray-700 leading-relaxed text-center px-2 break-words overflow-hidden">
-          <span className="line-clamp-6">
-            {isLoading ? "Summarizing..." : summarizedAction}
-          </span>
+      {/* Main Content - Summarized text with proper space */}
+      <div className="flex-1 w-full mb-6 flex items-center justify-center">
+        <p className="text-sm text-gray-700 leading-relaxed text-center px-3 break-words">
+          {isLoading ? "Summarizing..." : summarizedAction}
         </p>
       </div>
       
       {/* Company Logos Only - No Names */}
-      <div className="flex justify-center items-center space-x-2 mt-auto flex-shrink-0">
+      <div className="flex justify-center items-center space-x-3 mt-auto flex-shrink-0">
         {competitors.slice(0, 6).map((competitor, idx) => (
           <div key={idx} className="flex items-center">
             <div
               className={
-                "w-6 h-6 rounded bg-white border flex items-center justify-center overflow-hidden ring-1 flex-shrink-0 " +
+                "w-8 h-8 rounded bg-white border flex items-center justify-center overflow-hidden ring-1 flex-shrink-0 " +
                 styles.ring
               }
             >
@@ -112,7 +110,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
                 <img
                   src={competitor.logoUrl}
                   alt={competitor.name}
-                  className="w-4 h-4 object-contain"
+                  className="w-5 h-5 object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
