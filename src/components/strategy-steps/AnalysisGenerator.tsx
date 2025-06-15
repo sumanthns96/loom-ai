@@ -113,7 +113,7 @@ ${pdfContent}
     }
   };
   return <div className="flex justify-between items-center">
-      <h3 className="text-lg font-medium">Analyzing the Strategic Landscape from the OUTSIDE-IN</h3>
+      <h3 className="text-lg font-medium text-center">Analyzing the Strategic Landscape from the Outside-IN</h3>
       <Button onClick={generateAnalysis} disabled={isGenerating || !pdfContent} variant="outline">
         {isGenerating ? <>
             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
