@@ -37,26 +37,28 @@ const QuadrantContainer: FC<QuadrantContainerProps> = ({
   // Quadrants 0 and 3 move right, Quadrants 1 and 2 move left
   // Matrix layout: 0=top-right(Q1), 1=top-left(Q2), 2=bottom-left(Q3), 3=bottom-right(Q4)
   const getAlignment = () => {
-    if (quadrantIndex === 1 || quadrantIndex === 2) return "justify-start pl-4"; // Q1 and Q2 move left
-    if (quadrantIndex === 0 || quadrantIndex === 3) return "justify-end pr-4"; // Q0 and Q3 move right
+    if (quadrantIndex === 1 || quadrantIndex === 2) return "justify-start"; // Q1 and Q2 move left
+    if (quadrantIndex === 0 || quadrantIndex === 3) return "justify-end"; // Q0 and Q3 move right
     return "justify-center"; // Default center
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <h4 className="text-center text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">
+    <div className="flex flex-col h-full w-full p-2">
+      <h4 className="text-center text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">
         {title}
       </h4>
       
-      {/* 3 cards in a horizontal row with conditional positioning */}
-      <div className={`flex gap-2 ${getAlignment()}`}>
+      {/* Vertical stack of cards instead of horizontal row to prevent overlap */}
+      <div className={`flex flex-col gap-2 ${getAlignment()} flex-1`}>
         {allTypes.map(({ type, list }) => (
-          <CompetitorTypeCard
-            key={type}
-            type={type as any}
-            competitors={list}
-            getInitials={getCompanyInitials}
-          />
+          list.length > 0 && (
+            <CompetitorTypeCard
+              key={type}
+              type={type as any}
+              competitors={list}
+              getInitials={getCompanyInitials}
+            />
+          )
         ))}
       </div>
     </div>

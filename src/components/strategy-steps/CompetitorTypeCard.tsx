@@ -87,8 +87,8 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
   return (
     <div
       className={`
-        border-2 rounded-lg shadow-sm p-4
-        w-48 h-44
+        border-2 rounded-lg shadow-sm p-3
+        w-full max-w-[200px] h-32
         ${styles.bg} ${styles.border} 
         transition-all hover:shadow-md
         flex flex-col justify-between
@@ -96,31 +96,31 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
     >
       {/* Header - Category name */}
       <div className={`
-        text-center font-bold text-xs uppercase tracking-wide mb-2
+        text-center font-bold text-xs uppercase tracking-wide mb-1
         ${styles.text}
       `}>
         {typeLabels[type]}
       </div>
       
       {/* Main Content - Summary text (center section) */}
-      <div className="flex-1 flex items-center justify-center px-2">
+      <div className="flex-1 flex items-center justify-center px-1">
         <p className="text-xs text-gray-700 text-center leading-tight font-medium overflow-hidden">
           {isLoading ? "Analyzing..." : summarizedAction || "Processing..."}
         </p>
       </div>
       
       {/* Company Logos - Bottom section */}
-      <div className="flex justify-center items-center gap-2 mt-2">
-        {competitors.slice(0, 4).map((competitor, idx) => (
+      <div className="flex justify-center items-center gap-1 mt-1">
+        {competitors.slice(0, 3).map((competitor, idx) => (
           <div
             key={idx}
-            className="w-6 h-6 rounded bg-white border shadow-sm flex items-center justify-center overflow-hidden"
+            className="w-5 h-5 rounded bg-white border shadow-sm flex items-center justify-center overflow-hidden"
           >
             {competitor.logoUrl ? (
               <img
                 src={competitor.logoUrl}
                 alt={competitor.name}
-                className="w-4 h-4 object-contain"
+                className="w-3 h-3 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = "none";
