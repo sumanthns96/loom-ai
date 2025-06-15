@@ -20,6 +20,8 @@ serve(async (req) => {
       throw new Error('GOOGLE_API_KEY not found in environment variables');
     }
 
+    console.log('Input text to summarize:', text);
+
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${googleApiKey}`, {
       method: 'POST',
       headers: {
@@ -28,22 +30,60 @@ serve(async (req) => {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `Summarize this business strategy text in EXACTLY 8 words or less. No more than 8 words total. Examples: "Focus AI safety research community engagement" (6 words), "Build reputation through responsible AI development" (6 words). Text to summarize: "${text}"`
+            text: `You must create a summary that is EXACTLY 8 words or less. Count the words carefully.
+
+Examples of correct 8-word summaries:
+- "Focus AI safety research community engagement" (6 words)
+- "Build reputation through responsible AI development" (6 words)
+- "Invest heavily safety research transparency initiatives" (6 words)
+- "Prioritize safety applications minimal risks acceptance" (6 words)
+
+Text to summarize: "${text}"
+
+Response format: Only return the 8-word summary, nothing else.`
           }]
-        }]
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 20
+        }
       }),
     });
 
     const data = await response.json();
-    const summarizedText = data.candidates?.[0]?.content?.parts?.[0]?.text || text;
+    console.log('Gemini API response:', JSON.stringify(data, null, 2));
+    
+    let summarizedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!summarizedText) {
+      console.error('No summarized text from Gemini API');
+      // Fallback: create a simple 8-word summary
+      const words = text.split(' ').slice(0, 8);
+      summarizedText = words.join(' ');
+    } else {
+      // Clean up the response
+      summarizedText = summarizedText.trim().replace(/['"]/g, '');
+      
+      // Ensure it's not more than 8 words
+      const words = summarizedText.split(' ');
+      if (words.length > 8) {
+        summarizedText = words.slice(0, 8).join(' ');
+      }
+    }
+
+    console.log('Final summarized text:', summarizedText);
 
     return new Response(JSON.stringify({ summarizedText }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Error in summarize-with-gemini function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
+    
+    // Return a fallback summary if there's an error
+    const { text } = await req.json().catch(() => ({ text: '' }));
+    const fallbackSummary = text ? text.split(' ').slice(0, 8).join(' ') : 'AI strategy implementation';
+    
+    return new Response(JSON.stringify({ summarizedText: fallbackSummary }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

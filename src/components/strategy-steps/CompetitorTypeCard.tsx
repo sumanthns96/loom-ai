@@ -53,19 +53,28 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
     const summarizeText = async () => {
       if (!combinedAction) return;
       
+      console.log('Starting summarization for:', type, combinedAction);
       setSummaryLoading(true);
+      
       try {
         const { data, error } = await supabase.functions.invoke('summarize-with-gemini', {
           body: { text: combinedAction }
         });
 
-        if (error) throw error;
-        const summary = data.summarizedText || combinedAction;
+        console.log('Summarization response:', data, error);
+
+        if (error) {
+          console.error('Summarization error:', error);
+          throw error;
+        }
+        
+        const summary = data?.summarizedText || combinedAction.split(' ').slice(0, 8).join(' ');
+        console.log('Setting summary:', summary);
         setSummarizedAction(summary);
       } catch (error) {
-        console.error('Summarization failed:', error);
+        console.error('Summarization failed for', type, ':', error);
         // Fallback to a very short version of original text
-        const shortFallback = combinedAction.split('.')[0].substring(0, 50) + "...";
+        const shortFallback = combinedAction.split(' ').slice(0, 8).join(' ');
         setSummarizedAction(shortFallback);
       } finally {
         setSummaryLoading(false);
@@ -73,7 +82,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
     };
 
     summarizeText();
-  }, [combinedAction]);
+  }, [combinedAction, type]);
   
   return (
     <div
@@ -96,7 +105,7 @@ const CompetitorTypeCard: FC<CompetitorTypeCardProps> = ({ type, competitors, ge
       {/* Main Content - Summary text (center section) */}
       <div className="flex-1 flex items-center justify-center px-1">
         <p className="text-xs text-gray-700 text-center leading-tight font-medium">
-          {isLoading ? "Analyzing..." : summarizedAction}
+          {isLoading ? "Analyzing..." : summarizedAction || "Processing..."}
         </p>
       </div>
       
