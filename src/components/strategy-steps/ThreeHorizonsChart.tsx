@@ -108,162 +108,183 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
   return (
     <TooltipProvider>
       <div className="w-full bg-white rounded-lg border p-6">
-        {/* Interactive SVG Chart */}
-        <div className="mb-8 relative">
-          <svg viewBox="0 0 800 300" className="w-full h-64">
-            {/* Background */}
-            <rect x="0" y="0" width="800" height="300" fill="#f8fafc" />
-            
-            {/* Grid lines */}
-            <defs>
-              <pattern id="grid" width="80" height="30" patternUnits="userSpaceOnUse">
-                <path d="M 80 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" strokeWidth="1"/>
-              </pattern>
+        {/* Chart and Sidebar Layout */}
+        <div className="flex gap-6 mb-8">
+          {/* Main Chart Area */}
+          <div className="flex-1">
+            <svg viewBox="0 0 800 300" className="w-full h-64">
+              {/* Background */}
+              <rect x="0" y="0" width="800" height="300" fill="#f8fafc" />
               
-              {/* Gradients for curves */}
-              {horizonColors.map((color, index) => (
-                <linearGradient key={index} id={`gradient${index + 1}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor={color.primary} stopOpacity="0.3"/>
-                  <stop offset="50%" stopColor={color.secondary} stopOpacity="0.6"/>
-                  <stop offset="100%" stopColor={color.primary} stopOpacity="0.8"/>
-                </linearGradient>
-              ))}
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-            
-            {/* Axes */}
-            <line x1="80" y1="50" x2="80" y2="250" stroke="#374151" strokeWidth="2"/>
-            <line x1="80" y1="250" x2="720" y2="250" stroke="#374151" strokeWidth="2"/>
-            
-            {/* Y-axis label */}
-            <text x="40" y="150" fill="#374151" fontSize="14" textAnchor="middle" transform="rotate(-90, 40, 150)">
-              Strategic Value
-            </text>
-            
-            {/* X-axis labels */}
-            <text x="160" y="275" fill="#374151" fontSize="12" textAnchor="middle">0-2 years</text>
-            <text x="320" y="275" fill="#374151" fontSize="12" textAnchor="middle">3-4 years</text>
-            <text x="480" y="275" fill="#374151" fontSize="12" textAnchor="middle">5-6 years</text>
-            <text x="400" y="295" fill="#374151" fontSize="14" textAnchor="middle">Time Horizon</text>
-            
-            {/* Dynamic Horizon Curves */}
-            {[1, 2, 3].map((horizonNumber, index) => {
-              const color = horizonColors[index];
-              const metrics = curveMetrics[index];
-              const isHovered = hoveredCurve === horizonNumber;
-              const isSelected = selectedHorizon === horizonNumber;
+              {/* Grid lines */}
+              <defs>
+                <pattern id="grid" width="80" height="30" patternUnits="userSpaceOnUse">
+                  <path d="M 80 0 L 0 0 0 30" fill="none" stroke="#e2e8f0" strokeWidth="1"/>
+                </pattern>
+                
+                {/* Gradients for curves */}
+                {horizonColors.map((color, index) => (
+                  <linearGradient key={index} id={`gradient${index + 1}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor={color.primary} stopOpacity="0.3"/>
+                    <stop offset="50%" stopColor={color.secondary} stopOpacity="0.6"/>
+                    <stop offset="100%" stopColor={color.primary} stopOpacity="0.8"/>
+                  </linearGradient>
+                ))}
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
               
-              return (
-                <g key={horizonNumber}>
-                  {/* Curve path */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <path
-                        d={generateCurvePath(horizonNumber, metrics)}
-                        fill="none"
-                        stroke={isHovered || isSelected ? color.hover : color.primary}
-                        strokeWidth={isHovered || isSelected ? 5 : 4}
-                        strokeLinecap="round"
-                        style={{
-                          cursor: 'pointer',
-                          opacity: metrics.confidence,
-                          transition: 'all 0.3s ease',
-                          filter: isSelected ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' : 'none'
-                        }}
-                        onMouseEnter={() => setHoveredCurve(horizonNumber)}
-                        onMouseLeave={() => setHoveredCurve(null)}
-                        onClick={() => handleCurveClick(horizonNumber)}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="max-w-xs">
-                        <h4 className="font-semibold">Horizon {horizonNumber}</h4>
-                        <p className="text-sm">
-                          {horizonsData ? 
-                            (horizonNumber === 1 ? horizonsData.horizon1?.strategy :
-                             horizonNumber === 2 ? horizonsData.horizon2?.strategy :
-                             horizonsData.horizon3?.strategy) || "Click to generate strategy" :
-                            "Generate model to see strategy details"
-                          }
-                        </p>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  {/* Data points along the curve */}
-                  {[200, 400, 600].map((x, pointIndex) => {
-                    const y = 250 - (metrics.height * (pointIndex === 0 ? 0.3 : pointIndex === 1 ? 0.8 : 0.9));
-                    return (
-                      <circle
-                        key={pointIndex}
-                        cx={x}
-                        cy={y}
-                        r={isHovered || isSelected ? 6 : 4}
-                        fill={color.primary}
-                        style={{
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease',
-                          opacity: isHovered || isSelected ? 1 : 0.7
-                        }}
-                        onMouseEnter={() => setHoveredCurve(horizonNumber)}
-                        onMouseLeave={() => setHoveredCurve(null)}
-                        onClick={() => handleCurveClick(horizonNumber)}
-                      />
-                    );
-                  })}
-                  
-                  {/* Summary labels on curves */}
-                  <text
-                    x={400}
-                    y={250 - metrics.height + (horizonNumber === 1 ? -20 : horizonNumber === 2 ? -10 : 10)}
-                    fill={color.primary}
-                    fontSize="13"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    style={{
-                      textShadow: '1px 1px 2px rgba(255,255,255,0.8)',
-                      transition: 'all 0.3s ease',
-                      transform: isHovered || isSelected ? 'scale(1.1)' : 'scale(1)'
-                    }}
-                  >
-                    {horizonSummaries[index]}
-                  </text>
-                </g>
-              );
-            })}
-            
-            {/* Interactive Legend */}
-            <g transform="translate(550, 60)">
-              <rect x="0" y="0" width="140" height="90" fill="white" stroke="#e5e7eb" strokeWidth="1" rx="4"/>
+              {/* Axes */}
+              <line x1="80" y1="50" x2="80" y2="250" stroke="#374151" strokeWidth="2"/>
+              <line x1="80" y1="250" x2="720" y2="250" stroke="#374151" strokeWidth="2"/>
+              
+              {/* Y-axis label */}
+              <text x="40" y="150" fill="#374151" fontSize="14" textAnchor="middle" transform="rotate(-90, 40, 150)">
+                Strategic Value
+              </text>
+              
+              {/* X-axis labels */}
+              <text x="160" y="275" fill="#374151" fontSize="12" textAnchor="middle">0-2 years</text>
+              <text x="320" y="275" fill="#374151" fontSize="12" textAnchor="middle">3-4 years</text>
+              <text x="480" y="275" fill="#374151" fontSize="12" textAnchor="middle">5-6 years</text>
+              <text x="400" y="295" fill="#374151" fontSize="14" textAnchor="middle">Time Horizon</text>
+              
+              {/* Dynamic Horizon Curves */}
               {[1, 2, 3].map((horizonNumber, index) => {
                 const color = horizonColors[index];
-                const isActive = selectedHorizon === horizonNumber || hoveredCurve === horizonNumber;
+                const metrics = curveMetrics[index];
+                const isHovered = hoveredCurve === horizonNumber;
+                const isSelected = selectedHorizon === horizonNumber;
                 
                 return (
-                  <g key={horizonNumber} style={{ cursor: 'pointer' }}
-                     onClick={() => handleCurveClick(horizonNumber)}>
-                    <line 
-                      x1="10" 
-                      y1={15 + index * 20} 
-                      x2="30" 
-                      y2={15 + index * 20} 
-                      stroke={isActive ? color.hover : color.primary} 
-                      strokeWidth={isActive ? 4 : 3}
-                    />
-                    <text 
-                      x="35" 
-                      y={19 + index * 20} 
-                      fill="#374151" 
-                      fontSize="11"
-                      style={{ fontWeight: isActive ? 'bold' : 'normal' }}
+                  <g key={horizonNumber}>
+                    {/* Curve path */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <path
+                          d={generateCurvePath(horizonNumber, metrics)}
+                          fill="none"
+                          stroke={isHovered || isSelected ? color.hover : color.primary}
+                          strokeWidth={isHovered || isSelected ? 5 : 4}
+                          strokeLinecap="round"
+                          style={{
+                            cursor: 'pointer',
+                            opacity: metrics.confidence,
+                            transition: 'all 0.3s ease',
+                            filter: isSelected ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' : 'none'
+                          }}
+                          onMouseEnter={() => setHoveredCurve(horizonNumber)}
+                          onMouseLeave={() => setHoveredCurve(null)}
+                          onClick={() => handleCurveClick(horizonNumber)}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div className="max-w-xs">
+                          <h4 className="font-semibold">Horizon {horizonNumber}</h4>
+                          <p className="text-sm">
+                            {horizonsData ? 
+                              (horizonNumber === 1 ? horizonsData.horizon1?.strategy :
+                               horizonNumber === 2 ? horizonsData.horizon2?.strategy :
+                               horizonsData.horizon3?.strategy) || "Click to generate strategy" :
+                              "Generate model to see strategy details"
+                            }
+                          </p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    {/* Summary labels on curves */}
+                    <text
+                      x={400}
+                      y={250 - metrics.height + (horizonNumber === 1 ? -20 : horizonNumber === 2 ? -10 : 10)}
+                      fill={color.primary}
+                      fontSize="13"
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      style={{
+                        textShadow: '1px 1px 2px rgba(255,255,255,0.8)',
+                        transition: 'all 0.3s ease',
+                        transform: isHovered || isSelected ? 'scale(1.1)' : 'scale(1)'
+                      }}
                     >
-                      Horizon {horizonNumber}
+                      {horizonSummaries[index]}
                     </text>
                   </g>
                 );
               })}
-            </g>
-          </svg>
+            </svg>
+          </div>
+
+          {/* Interactive Sidebar */}
+          <div className="w-64 space-y-4">
+            {/* Interactive Legend */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">Interactive Legend</h4>
+              <p className="text-xs text-gray-600 mb-3">Click to highlight horizons</p>
+              <div className="space-y-2">
+                {[1, 2, 3].map((horizonNumber, index) => {
+                  const color = horizonColors[index];
+                  const isActive = selectedHorizon === horizonNumber || hoveredCurve === horizonNumber;
+                  
+                  return (
+                    <div 
+                      key={horizonNumber} 
+                      className="flex items-center space-x-3 p-2 rounded cursor-pointer hover:bg-gray-100 transition-colors"
+                      onClick={() => handleCurveClick(horizonNumber)}
+                    >
+                      <div 
+                        className="w-6 h-1 rounded"
+                        style={{ 
+                          backgroundColor: isActive ? color.hover : color.primary,
+                          transform: isActive ? 'scaleY(2)' : 'scaleY(1)',
+                          transition: 'all 0.3s ease'
+                        }}
+                      />
+                      <span 
+                        className="text-sm"
+                        style={{ 
+                          fontWeight: isActive ? 'bold' : 'normal',
+                          color: isActive ? color.hover : '#374151'
+                        }}
+                      >
+                        Horizon {horizonNumber}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Strategic Milestones Explanation */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-medium text-blue-900 mb-2">Strategic Milestones</h4>
+              <p className="text-xs text-blue-800 mb-2">Key progress indicators along each horizon</p>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-xs text-blue-800">Short-term goals</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span className="text-xs text-blue-800">Mid-term objectives</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                  <span className="text-xs text-blue-800">Long-term vision</span>
+                </div>
+              </div>
+            </div>
+
+            {/* How to Interact */}
+            <div className="bg-green-50 p-4 rounded-lg">
+              <h4 className="font-medium text-green-900 mb-2">How to Interact</h4>
+              <ul className="text-xs text-green-800 space-y-1">
+                <li>• Hover over curves for details</li>
+                <li>• Click curves to highlight</li>
+                <li>• Use legend to navigate</li>
+                <li>• View tooltips for strategies</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         {/* Enhanced Initiatives Section */}
@@ -350,17 +371,6 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
               )}
             </div>
           ))}
-        </div>
-
-        {/* Interaction Guide */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h4 className="font-medium text-blue-900 mb-2">Interactive Features:</h4>
-          <ul className="text-sm text-blue-800 space-y-1">
-            <li>• <strong>Hover over curves:</strong> See detailed strategy tooltips</li>
-            <li>• <strong>Click on curves or legend:</strong> Highlight and focus on specific horizons</li>
-            <li>• <strong>Data points:</strong> Show strategic milestones along the timeline</li>
-            <li>• <strong>Dynamic visualization:</strong> Curve height and opacity reflect strategy confidence</li>
-          </ul>
         </div>
       </div>
     </TooltipProvider>
