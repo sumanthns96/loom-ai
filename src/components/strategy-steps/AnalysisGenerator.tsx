@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -5,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { SteepFactorGroup } from "./types";
 import { FACTOR_ORDER } from "./constants";
+
 interface AnalysisGeneratorProps {
   pdfContent: string;
   isGenerating: boolean;
@@ -12,23 +14,7 @@ interface AnalysisGeneratorProps {
   onGenerationComplete: (factors: SteepFactorGroup[]) => void;
   onGenerationError: () => void;
 }
-const LoadingText = () => {
-  const [phase, setPhase] = useState(1);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPhase(2);
-    }, 2000); // 2 seconds for first phase
 
-    return () => clearTimeout(timer);
-  }, []);
-  return <span className="transition-opacity duration-500">
-      {phase === 1 ? <span className="animate-fade-in">
-          Analyzing the Strategic Landscape from the Outside-In
-        </span> : <span className="animate-fade-in">
-          Analyzing all factors
-        </span>}
-    </span>;
-};
 const AnalysisGenerator = ({
   pdfContent,
   isGenerating,
@@ -134,7 +120,7 @@ ${pdfContent}
       <Button onClick={generateAnalysis} disabled={isGenerating || !pdfContent} variant="outline">
         {isGenerating ? <>
             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-            <LoadingText />
+            Generating Analysis...
           </> : <>
             <RefreshCw className="h-4 w-4 mr-2" />
             Initiate STEEP Analysis
