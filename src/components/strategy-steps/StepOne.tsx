@@ -39,10 +39,10 @@ const StepOne = ({
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <span role="img" aria-label="lightbulb">💡</span>
-            <span>STEEP Analysis</span>
+            
+            
           </CardTitle>
-          <CardDescription>The STEEP analysis is a tool used to map the external factors
+          <CardDescription className="text-xl">The STEEP analysis is a tool used to map the external factors
 that impact an organization’s strategic landscape.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 min-h-[800px]">
