@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import MarkdownText from "./MarkdownText";
 
 interface ThreeHorizonsChartProps {
   horizonsData?: {
@@ -177,14 +178,15 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
                     <TooltipContent>
                       <div className="max-w-xs">
                         <h4 className="font-semibold">Horizon {horizonNumber}</h4>
-                        <p className="text-sm">
-                          {horizonsData ? 
+                        <MarkdownText 
+                          text={horizonsData ? 
                             (horizonNumber === 1 ? horizonsData.horizon1?.strategy :
                              horizonNumber === 2 ? horizonsData.horizon2?.strategy :
                              horizonsData.horizon3?.strategy) || "Click to generate strategy" :
                             "Generate model to see strategy details"
                           }
-                        </p>
+                          className="text-sm"
+                        />
                       </div>
                     </TooltipContent>
                   </Tooltip>
@@ -294,11 +296,17 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
             <div className="space-y-2 text-sm text-green-700">
               <div>
                 <span className="font-medium">Focus 1:</span>
-                <p className="mt-1">{horizonsData?.horizon1?.focus1 || "Generate model to see initiatives"}</p>
+                <MarkdownText 
+                  text={horizonsData?.horizon1?.focus1 || "Generate model to see initiatives"} 
+                  className="mt-1"
+                />
               </div>
               <div>
                 <span className="font-medium">Focus 2:</span>
-                <p className="mt-1">{horizonsData?.horizon1?.focus2 || "Generate model to see initiatives"}</p>
+                <MarkdownText 
+                  text={horizonsData?.horizon1?.focus2 || "Generate model to see initiatives"} 
+                  className="mt-1"
+                />
               </div>
             </div>
           </div>
@@ -312,11 +320,17 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
             <div className="space-y-2 text-sm text-orange-700">
               <div>
                 <span className="font-medium">Focus 1:</span>
-                <p className="mt-1">{horizonsData?.horizon2?.focus1 || "Generate model to see initiatives"}</p>
+                <MarkdownText 
+                  text={horizonsData?.horizon2?.focus1 || "Generate model to see initiatives"} 
+                  className="mt-1"
+                />
               </div>
               <div>
                 <span className="font-medium">Focus 2:</span>
-                <p className="mt-1">{horizonsData?.horizon2?.focus2 || "Generate model to see initiatives"}</p>
+                <MarkdownText 
+                  text={horizonsData?.horizon2?.focus2 || "Generate model to see initiatives"} 
+                  className="mt-1"
+                />
               </div>
             </div>
           </div>
@@ -330,11 +344,17 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
             <div className="space-y-2 text-sm text-red-700">
               <div>
                 <span className="font-medium">Focus 1:</span>
-                <p className="mt-1">{horizonsData?.horizon3?.focus1 || "Generate model to see initiatives"}</p>
+                <MarkdownText 
+                  text={horizonsData?.horizon3?.focus1 || "Generate model to see initiatives"} 
+                  className="mt-1"
+                />
               </div>
               <div>
                 <span className="font-medium">Focus 2:</span>
-                <p className="mt-1">{horizonsData?.horizon3?.focus2 || "Generate model to see initiatives"}</p>
+                <MarkdownText 
+                  text={horizonsData?.horizon3?.focus2 || "Generate model to see initiatives"} 
+                  className="mt-1"
+                />
               </div>
             </div>
           </div>
@@ -354,9 +374,10 @@ const ThreeHorizonsChart = ({ horizonsData }: ThreeHorizonsChartProps) => {
               }`}
             >
               <h4 className={`font-bold text-${color}-800 mb-2`}>Horizon {number} Strategy</h4>
-              <p className="text-sm text-gray-700">
-                {data?.strategy || `Focus on ${number === 1 ? 'optimizing current operations and improving existing products/services to maximize short-term performance and efficiency' : number === 2 ? 'exploring adjacent markets and capabilities while building mid-term innovations that extend the core business into new areas' : 'investing in breakthrough innovations and disruptive technologies to create new business models for long-term growth'}.`}
-              </p>
+              <MarkdownText 
+                text={data?.strategy || `Focus on ${number === 1 ? 'optimizing current operations and improving existing products/services to maximize short-term performance and efficiency' : number === 2 ? 'exploring adjacent markets and capabilities while building mid-term innovations that extend the core business into new areas' : 'investing in breakthrough innovations and disruptive technologies to create new business models for long-term growth'}.`}
+                className="text-sm text-gray-700"
+              />
               {data?.strategy && (
                 <div className="mt-3 pt-3 border-t border-gray-200">
                   <div className="flex items-center justify-between text-xs text-gray-500">
