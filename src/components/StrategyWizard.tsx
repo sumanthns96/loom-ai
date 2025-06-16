@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Download, RefreshCw, TrendingUp, Users, Target, Compass, Layers } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, RefreshCw, TrendingUp, Users, Target, Compass, Layers, CheckCircle2 } from "lucide-react";
 import StepOne, { SelectedPoint } from "@/components/strategy-steps/StepOne";
 import StepTwo from "@/components/strategy-steps/StepTwo";
 import StepThree from "@/components/strategy-steps/StepThree";
@@ -84,11 +83,11 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   }, [currentStep, stepData, selectedForMatrix, pdfContent]);
 
   const steps = [
-    { number: 1, title: "Analyze STEEP Factors", component: StepOne },
-    { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo },
-    { number: 3, title: "Competitor Analysis", component: StepThree },
-    { number: 4, title: "DOTS", component: StepFour },
-    { number: 5, title: "McKinsey's Three Horizon Model", component: StepFive },
+    { number: 1, title: "STEEP Analysis", subtitle: "Market Forces", icon: TrendingUp, component: StepOne, color: "from-blue-500 to-indigo-500" },
+    { number: 2, title: "Scenario Matrix", subtitle: "Key Uncertainties", icon: Compass, component: StepTwo, color: "from-indigo-500 to-purple-500" },
+    { number: 3, title: "Competitor Analysis", subtitle: "Market Position", icon: Users, component: StepThree, color: "from-purple-500 to-pink-500" },
+    { number: 4, title: "DOTS Framework", subtitle: "Strategic Planning", icon: Target, component: StepFour, color: "from-pink-500 to-red-500" },
+    { number: 5, title: "Three Horizons", subtitle: "Growth Strategy", icon: Layers, component: StepFive, color: "from-red-500 to-orange-500" },
   ];
 
   const updateStepData = (step: number, data: string) => {
@@ -157,19 +156,36 @@ Generated on: ${new Date().toLocaleDateString()}
   const progressPercentage = (currentStep / 5) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Modern Header */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={handleReset}>
+              <Button 
+                variant="ghost" 
+                onClick={handleReset}
+                className="hover:bg-gray-100 transition-colors duration-200"
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Upload
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Strategy Development</h1>
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-xl shadow-lg">
+                    <Target className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  Strategy Development
+                </h1>
+              </div>
             </div>
-            <Button onClick={exportStrategy} className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              onClick={exportStrategy} 
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
               <Download className="h-4 w-4 mr-2" />
               Export Strategy
             </Button>
@@ -178,78 +194,116 @@ Generated on: ${new Date().toLocaleDateString()}
       </header>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Progress Header */}
-        <Card className="mb-8">
-          <CardHeader>
-            <div className="flex items-center justify-between mb-4">
-              <CardTitle className="text-xl">
-                Step {currentStep} of 5: {steps[currentStep - 1].title}
-              </CardTitle>
-              <span className="text-sm text-gray-500">{Math.round(progressPercentage)}% Complete</span>
+        {/* Enhanced Progress Section */}
+        <Card className="mb-8 border-0 shadow-xl shadow-blue-100/30 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="pb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="space-y-2">
+                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                  <div className={`p-2 rounded-xl bg-gradient-to-r ${steps[currentStep - 1].color} shadow-lg`}>
+                    {(() => {
+                      const IconComponent = steps[currentStep - 1].icon;
+                      return <IconComponent className="h-5 w-5 text-white" />;
+                    })()}
+                  </div>
+                  <span>Step {currentStep}: {steps[currentStep - 1].title}</span>
+                </CardTitle>
+                <CardDescription className="text-base text-gray-600">
+                  {steps[currentStep - 1].subtitle}
+                </CardDescription>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-blue-600">{Math.round(progressPercentage)}%</div>
+                <div className="text-sm text-gray-500">Complete</div>
+              </div>
             </div>
-            <Progress value={progressPercentage} className="w-full" />
+            <div className="relative">
+              <Progress value={progressPercentage} className="w-full h-3" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-full"></div>
+            </div>
           </CardHeader>
         </Card>
 
-        {/* Clean Professional Step Navigation - Full Width for Text Visibility */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-2xl border border-gray-100 p-1 shadow-lg shadow-gray-100/50 w-full">
+        {/* Modern Step Navigation */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-100 p-2 shadow-xl shadow-gray-100/50 max-w-5xl w-full">
             <div className="flex justify-between">
               {steps.map((step, index) => {
                 const isActive = currentStep === step.number;
                 const isCompleted = currentStep > step.number;
                 const isNext = currentStep < step.number;
+                const IconComponent = step.icon;
                 
                 return (
                   <div key={step.number} className="flex items-center flex-1">
                     <button
                       onClick={() => goToStep(step.number)}
                       className={`
-                        relative flex items-center space-x-2 px-2 py-3 rounded-xl transition-all duration-300 ease-out font-medium text-xs w-full justify-center
+                        relative flex flex-col items-center space-y-2 px-3 py-4 rounded-xl transition-all duration-500 ease-out font-medium text-xs w-full group
                         ${isActive 
-                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105' 
+                          ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-600/30 scale-105 transform' 
                           : isCompleted 
-                            ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-100' 
+                            ? 'bg-gradient-to-br from-green-50 to-emerald-50 text-green-700 hover:from-green-100 hover:to-emerald-100 border border-green-200 hover:shadow-lg' 
                             : isNext
-                              ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-                              : 'text-gray-600 hover:bg-gray-50'
+                              ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-50/50'
+                              : 'text-gray-600 hover:bg-gray-50/50'
                         }
                       `}
                     >
+                      {/* Icon and number container */}
                       <div className={`
-                        flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold transition-all duration-300 flex-shrink-0
+                        flex items-center justify-center w-10 h-10 rounded-full transition-all duration-500 flex-shrink-0
                         ${isActive 
-                          ? 'bg-white text-blue-600' 
+                          ? 'bg-white/20 backdrop-blur-sm border-2 border-white/30' 
                           : isCompleted 
-                            ? 'bg-green-600 text-white' 
+                            ? 'bg-green-600 text-white shadow-lg' 
                             : isNext
-                              ? 'bg-gray-100 text-gray-400'
-                              : 'bg-gray-200 text-gray-600'
+                              ? 'bg-gray-100 text-gray-400 border-2 border-gray-200'
+                              : 'bg-gray-200 text-gray-600 border-2 border-gray-300'
                         }
                       `}>
                         {isCompleted ? (
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                          <CheckCircle2 className="w-5 h-5" />
+                        ) : isActive ? (
+                          <IconComponent className="w-5 h-5" />
                         ) : (
-                          step.number
+                          <span className="text-sm font-bold">{step.number}</span>
                         )}
                       </div>
                       
-                      <span className="hidden sm:block text-center leading-tight min-w-0 flex-1">
-                        {step.title}
-                      </span>
+                      {/* Text content */}
+                      <div className="text-center space-y-1 min-w-0 flex-1">
+                        <div className={`font-semibold leading-tight transition-colors duration-300 ${
+                          isActive ? 'text-white' : isCompleted ? 'text-green-700' : 'text-gray-600'
+                        }`}>
+                          {step.title}
+                        </div>
+                        <div className={`text-xs leading-tight transition-colors duration-300 ${
+                          isActive ? 'text-white/80' : isCompleted ? 'text-green-600' : 'text-gray-500'
+                        }`}>
+                          {step.subtitle}
+                        </div>
+                      </div>
                       
                       {/* Active indicator */}
                       {isActive && (
-                        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-600 rounded-full"></div>
+                        <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full animate-pulse"></div>
                       )}
+
+                      {/* Hover effect overlay */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
                     
-                    {/* Connector line */}
+                    {/* Enhanced connector line */}
                     {index < steps.length - 1 && (
                       <div className={`
-                        w-3 h-0.5 mx-1 transition-all duration-300 flex-shrink-0
-                        ${currentStep > step.number ? 'bg-green-300' : 'bg-gray-200'}
-                      `}></div>
+                        w-4 h-0.5 mx-2 transition-all duration-500 flex-shrink-0 relative
+                        ${currentStep > step.number ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gray-200'}
+                      `}>
+                        {currentStep > step.number && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-500 rounded-full animate-pulse"></div>
+                        )}
+                      </div>
                     )}
                   </div>
                 );
@@ -258,58 +312,66 @@ Generated on: ${new Date().toLocaleDateString()}
           </div>
         </div>
 
-        {/* Current Step Content */}
-        <div className="mb-8">
-          {currentStep === 1 ? (
-            <StepOne
-              pdfContent={pdfContent}
-              data={stepData.step1}
-              onDataChange={(data: string) => updateStepData(1, data)}
-              onNext={(pts) => { 
-                setSelectedForMatrixState(pts); 
-                setCurrentStepState(2);
-                scrollToTop();
-              }}
-            />
-          ) : currentStep === 2 ? (
-            <StepTwo
-              pdfContent={pdfContent}
-              data={stepData.step2}
-              onDataChange={(data: string) => updateStepData(2, data)}
-              selectedPoints={selectedForMatrix}
-              onNext={() => {
-                setCurrentStepState(3);
-                scrollToTop();
-              }}
-            />
-          ) : currentStep === 3 ? (
-            <StepThree
-              pdfContent={pdfContent}
-              data={stepData.step3}
-              onDataChange={(data: string) => updateStepData(3, data)}
-            />
-          ) : currentStep === 4 ? (
-            <StepFour
-              pdfContent={pdfContent}
-              data={stepData.step4}
-              onDataChange={(data: string) => updateStepData(4, data)}
-            />
-          ) : currentStep === 5 ? (
-            <StepFive
-              pdfContent={pdfContent}
-              data={stepData.step5}
-              onDataChange={(data: string) => updateStepData(5, data)}
-            />
-          ) : null}
+        {/* Enhanced Step Content Container */}
+        <div className="mb-8 animate-fade-in">
+          <Card className="border-0 shadow-xl shadow-gray-100/50 bg-white/80 backdrop-blur-sm overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            <CardContent className="p-8">
+              {
+              currentStep === 1 ? (
+                <StepOne
+                  pdfContent={pdfContent}
+                  data={stepData.step1}
+                  onDataChange={(data: string) => updateStepData(1, data)}
+                  onNext={(pts) => { 
+                    setSelectedForMatrixState(pts); 
+                    setCurrentStepState(2);
+                    scrollToTop();
+                  }}
+                />
+              ) : currentStep === 2 ? (
+                <StepTwo
+                  pdfContent={pdfContent}
+                  data={stepData.step2}
+                  onDataChange={(data: string) => updateStepData(2, data)}
+                  selectedPoints={selectedForMatrix}
+                  onNext={() => {
+                    setCurrentStepState(3);
+                    scrollToTop();
+                  }}
+                />
+              ) : currentStep === 3 ? (
+                <StepThree
+                  pdfContent={pdfContent}
+                  data={stepData.step3}
+                  onDataChange={(data: string) => updateStepData(3, data)}
+                />
+              ) : currentStep === 4 ? (
+                <StepFour
+                  pdfContent={pdfContent}
+                  data={stepData.step4}
+                  onDataChange={(data: string) => updateStepData(4, data)}
+                />
+              ) : currentStep === 5 ? (
+                <StepFive
+                  pdfContent={pdfContent}
+                  data={stepData.step5}
+                  onDataChange={(data: string) => updateStepData(5, data)}
+                />
+              ) : null
+            }
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Navigation Buttons */}
+        {/* Enhanced Navigation Buttons */}
         {currentStep !== 1 && currentStep !== 2 && (
           <div className="flex justify-between">
             <Button
               variant="outline"
               onClick={prevStep}
               disabled={currentStep === 1}
+              className="bg-white/80 backdrop-blur-sm hover:bg-white border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Previous Step
@@ -318,7 +380,7 @@ Generated on: ${new Date().toLocaleDateString()}
             <Button
               onClick={nextStep}
               disabled={currentStep === 5}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Next Step
               <ArrowRight className="h-4 w-4 ml-2" />
