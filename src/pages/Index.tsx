@@ -1,9 +1,12 @@
+
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, FileText, TrendingUp, CheckCircle } from "lucide-react";
+import { Target, FileText, TrendingUp, CheckCircle, ArrowRight, Sparkles } from "lucide-react";
 import PDFUploader from "@/components/PDFUploader";
+
 const Index = () => {
   const navigate = useNavigate();
+
   const handlePdfExtracted = (content: string) => {
     navigate("/strategy-wizard", {
       state: {
@@ -11,109 +14,203 @@ const Index = () => {
       }
     });
   };
-  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Modern Header */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <Target className="h-6 w-6 text-white" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-xl shadow-lg">
+                  <Target className="h-6 w-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  StrategyBuilder
+                </h1>
+                <p className="text-xs text-gray-500 font-medium">AI-Powered Strategic Intelligence</p>
+              </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">StrategyBuilder</h1>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Sparkles className="h-4 w-4 text-yellow-500 animate-pulse" />
+              <span className="font-medium">Powered by AI</span>
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h2 className="font-bold text-gray-900 mb-4 text-3xl">
-            A Strategic Intelligence Engine Powered by Porter's Competitive Forces and McKinsey's Growth Horizons
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Bridge case study insights to strategic execution — with AI and a proven 5-step framework</p>
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Hero Section with Animation */}
+        <div className="text-center py-16 space-y-8">
+          <div className="space-y-6 animate-fade-in">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium mb-4">
+              <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
+              Strategic Intelligence Engine
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight max-w-5xl mx-auto">
+              Transform Case Studies into 
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent block mt-2">
+                Strategic Action Plans
+              </span>
+            </h2>
+            
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Bridge theoretical insights to practical execution with our AI-powered framework 
+              combining Porter's Competitive Forces and McKinsey's Growth Horizons
+            </p>
+          </div>
           
-          <div className="flex justify-center space-x-8 mb-12">
-            {[{
-            icon: FileText,
-            label: "Upload PDF",
-            desc: "Case study analysis"
-          }, {
-            icon: TrendingUp,
-            label: "AI Analysis",
-            desc: "Extract key insights"
-          }, {
-            icon: Target,
-            label: "5-Step Framework",
-            desc: "Strategic planning"
-          }, {
-            icon: CheckCircle,
-            label: "Action Plan",
-            desc: "Implementation ready"
-          }].map((item, index) => <div key={index} className="flex flex-col items-center">
-                <div className="bg-blue-100 p-4 rounded-full mb-3">
-                  <item.icon className="h-8 w-8 text-blue-600" />
+          {/* Animated Process Flow */}
+          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mt-12">
+            {[
+              { icon: FileText, label: "Upload PDF", desc: "Case study analysis", delay: "0ms" },
+              { icon: TrendingUp, label: "AI Analysis", desc: "Extract insights", delay: "200ms" },
+              { icon: Target, label: "Strategic Framework", desc: "5-step planning", delay: "400ms" },
+              { icon: CheckCircle, label: "Action Plan", desc: "Ready to implement", delay: "600ms" }
+            ].map((item, index) => (
+              <div key={index} className="flex items-center group">
+                <div 
+                  className="flex flex-col items-center space-y-3 animate-fade-in"
+                  style={{ animationDelay: item.delay }}
+                >
+                  <div className="relative">
+                    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                      <item.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                  </div>
+                  <div className="text-center">
+                    <h3 className="font-semibold text-gray-900 text-sm">{item.label}</h3>
+                    <p className="text-xs text-gray-600">{item.desc}</p>
+                  </div>
                 </div>
-                <h3 className="font-semibold text-gray-900">{item.label}</h3>
-                <p className="text-sm text-gray-600">{item.desc}</p>
-              </div>)}
+                
+                {index < 3 && (
+                  <ArrowRight className="h-5 w-5 text-gray-400 mx-2 md:mx-4 animate-pulse" />
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Upload Section */}
-        <div className="max-w-2xl mx-auto">
-          <Card className="border-2 border-dashed border-gray-300 bg-white">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-gray-900">Upload Your Case Study</CardTitle>
-              <CardDescription className="text-lg">
-                Start by uploading a PDF case study document to begin your strategic analysis
+        {/* Upload Section - Modern Card Design */}
+        <div className="max-w-3xl mx-auto mb-20">
+          <Card className="border-0 shadow-2xl shadow-blue-100/50 bg-white/70 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group">
+            <CardHeader className="text-center pb-8 pt-12">
+              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <FileText className="h-8 w-8 text-white" />
+              </div>
+              <CardTitle className="text-3xl text-gray-900 mb-4">Upload Your Case Study</CardTitle>
+              <CardDescription className="text-lg text-gray-600 max-w-md mx-auto">
+                Transform your PDF case study into actionable strategic insights with our AI-powered analysis
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-12 pb-12">
               <PDFUploader onTextExtracted={handlePdfExtracted} />
             </CardContent>
           </Card>
         </div>
 
-        {/* Framework Preview */}
-        <div className="mt-20">
-          <h3 className="text-2xl font-bold text-center text-gray-900 mb-12">
-            Our 5-Step Strategic Framework
-          </h3>
+        {/* Framework Preview - Enhanced Grid */}
+        <div className="pb-20">
+          <div className="text-center mb-16 space-y-4">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 text-indigo-700 text-sm font-medium">
+              Our Proven Methodology
+            </div>
+            <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
+              5-Step Strategic Framework
+            </h3>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              A systematic approach to strategic analysis and planning, powered by proven business frameworks
+            </p>
+          </div>
+          
           <div className="grid md:grid-cols-5 gap-6">
-            {[{
-            step: 1,
-            title: "Situational Analysis",
-            desc: "Analyze market position and competitive landscape"
-          }, {
-            step: 2,
-            title: "Problem Identification",
-            desc: "Identify key challenges and opportunities"
-          }, {
-            step: 3,
-            title: "Strategic Options",
-            desc: "Develop multiple strategic alternatives"
-          }, {
-            step: 4,
-            title: "Implementation Plan",
-            desc: "Create detailed execution roadmap"
-          }, {
-            step: 5,
-            title: "Success Metrics",
-            desc: "Define KPIs and measurement framework"
-          }].map((item, index) => <Card key={index} className="bg-white hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mb-2">
-                    {item.step}
+            {[
+              {
+                step: 1,
+                title: "Situational Analysis",
+                desc: "Comprehensive market position and competitive landscape analysis",
+                color: "from-red-500 to-pink-500",
+                delay: "0ms"
+              },
+              {
+                step: 2,
+                title: "Problem Identification", 
+                desc: "Identify key strategic challenges and growth opportunities",
+                color: "from-orange-500 to-red-500",
+                delay: "100ms"
+              },
+              {
+                step: 3,
+                title: "Strategic Options",
+                desc: "Develop and evaluate multiple strategic alternatives",
+                color: "from-yellow-500 to-orange-500",
+                delay: "200ms"
+              },
+              {
+                step: 4,
+                title: "Implementation Plan",
+                desc: "Create detailed execution roadmap with timelines",
+                color: "from-green-500 to-yellow-500",
+                delay: "300ms"
+              },
+              {
+                step: 5,
+                title: "Success Metrics",
+                desc: "Define comprehensive KPIs and measurement framework",
+                color: "from-blue-500 to-green-500",
+                delay: "400ms"
+              }
+            ].map((item, index) => (
+              <Card 
+                key={index} 
+                className="bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-xl transition-all duration-500 border-0 shadow-lg group cursor-pointer animate-fade-in"
+                style={{ animationDelay: item.delay }}
+              >
+                <CardHeader className="pb-4">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className={`bg-gradient-to-r ${item.color} text-white rounded-xl w-10 h-10 flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                      {item.step}
+                    </div>
+                    <div className="w-full h-1 bg-gradient-to-r from-gray-200 to-transparent rounded-full">
+                      <div className={`h-full bg-gradient-to-r ${item.color} rounded-full w-0 group-hover:w-full transition-all duration-1000`}></div>
+                    </div>
                   </div>
-                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                  <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                    {item.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 text-sm">{item.desc}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
                 </CardContent>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
+
+        {/* Footer Section */}
+        <footer className="border-t border-gray-100 py-12 text-center">
+          <div className="space-y-4">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
+                <Target className="h-5 w-5 text-white" />
+              </div>
+              <span className="font-bold text-gray-900">StrategyBuilder</span>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Empowering strategic decision-making through AI-powered analysis
+            </p>
+          </div>
+        </footer>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
