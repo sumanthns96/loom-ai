@@ -190,22 +190,22 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
       console.log('Generated axis contexts:', { yContext, xContext });
       setAxisContexts([yContext, xContext]);
 
-      // Step 2: Generate scenarios using the axis contexts for consistency
-      toast({ title: "Generating scenarios...", description: "Creating industry scenarios..." });
+      // Step 2: Generate scenarios using the AI-detected industry and axis contexts
+      toast({ title: "Detecting industry...", description: "Using AI to identify case study industry..." });
       
       const quadrantResults: MatrixScenario[] = [];
       for (let i = 0; i < QUADRANT_REQUESTS.length; i++) {
         const q = QUADRANT_REQUESTS[i];
         
-        // Create more specific prompt using the axis contexts we just generated
-        const prompt = makeQuadrantPrompt(
+        // Create prompt using AI-detected industry (makeQuadrantPrompt is now async)
+        const prompt = await makeQuadrantPrompt(
           caseTitle,
           industryContext,
           horizonYear,
           yAxis,
           xAxis,
           q,
-          yContext, // Pass axis contexts for consistency
+          yContext,
           xContext
         );
         
@@ -226,7 +226,6 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
           continue;
         }
 
-        // Improved response parsing
         let scenarioObj: MatrixScenario = { summary: "", header: "", bullets: [] };
         
         try {
@@ -284,12 +283,9 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
       // Collapse the analysis section after generation
       setIsAnalysisOpen(false);
 
-      // Remove automatic navigation - let user stay on the page
-      // Removed: if (onNext) { setTimeout(() => { onNext(); }, 1000); }
-
       toast({
         title: "Scenario Matrix Complete",
-        description: "Generated 2x2 scenario matrix with consistent axis labels."
+        description: "Generated industry-specific 2x2 scenario matrix using AI-detected industry."
       });
 
     } catch (err: any) {

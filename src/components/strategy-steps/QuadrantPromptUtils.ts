@@ -1,4 +1,6 @@
+
 import type { SelectedPoint } from "./types";
+import { supabase } from "@/integrations/supabase/client";
 
 export type MatrixScenario = {
   summary: string;
@@ -63,36 +65,27 @@ export const QUADRANT_REQUESTS: QuadrantRequest[] = [
   },
 ];
 
-function extractIndustry(caseTitle: string, industryContext: string): string {
-  const combinedText = `${caseTitle} ${industryContext}`.toLowerCase();
-  
-  if (combinedText.includes('ai') || combinedText.includes('artificial intelligence') || combinedText.includes('machine learning')) {
-    return "AI and Machine Learning";
+// AI-powered industry extraction
+async function extractIndustryWithAI(caseContent: string): Promise<string> {
+  try {
+    const { data, error } = await supabase.functions.invoke("extract-industry", {
+      body: { caseContent }
+    });
+
+    if (error) {
+      console.error('Industry extraction error:', error);
+      return "Technology and Innovation"; // fallback
+    }
+
+    return data?.industry || "Technology and Innovation";
+  } catch (error) {
+    console.error('Failed to extract industry:', error);
+    return "Technology and Innovation"; // fallback
   }
-  if (combinedText.includes('tech') || combinedText.includes('software') || combinedText.includes('digital')) {
-    return "Technology";
-  }
-  if (combinedText.includes('automotive') || combinedText.includes('car') || combinedText.includes('vehicle')) {
-    return "Automotive";
-  }
-  if (combinedText.includes('healthcare') || combinedText.includes('medical') || combinedText.includes('pharma')) {
-    return "Healthcare";
-  }
-  if (combinedText.includes('finance') || combinedText.includes('bank') || combinedText.includes('fintech')) {
-    return "Financial Services";
-  }
-  if (combinedText.includes('retail') || combinedText.includes('e-commerce') || combinedText.includes('consumer')) {
-    return "Retail and Consumer";
-  }
-  if (combinedText.includes('energy') || combinedText.includes('renewable') || combinedText.includes('oil')) {
-    return "Energy";
-  }
-  
-  return "Technology and Innovation";
 }
 
-// Updated prompt function to use axis contexts for consistency
-export function makeQuadrantPrompt(
+// Updated prompt function to use AI-detected industry
+export async function makeQuadrantPrompt(
   caseTitle: string,
   industryContext: string,
   horizonYear: string,
@@ -102,7 +95,8 @@ export function makeQuadrantPrompt(
   yContext?: { low: string; high: string },
   xContext?: { low: string; high: string }
 ) {
-  const industry = extractIndustry(caseTitle, industryContext);
+  // Use AI to detect the industry instead of hardcoded keywords
+  const industry = await extractIndustryWithAI(`${caseTitle} ${industryContext}`);
   
   // Use axis contexts if provided, otherwise use generic terms
   const yAxisHigh = yContext?.high || "High";
