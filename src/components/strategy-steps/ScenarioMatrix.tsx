@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -78,9 +79,9 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
           </div>
 
-          {/* Axis labels positioned clearly at the center intersection */}
+          {/* Axis labels positioned at the vertex */}
           <div className="absolute inset-0 pointer-events-none z-50">
-            {/* X-axis label - positioned clearly below the center intersection */}
+            {/* X-axis label (technological) - positioned below the center intersection */}
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 transform-gpu"
                  style={{ transform: 'translateX(-50%) translateY(60px) translateZ(25px)' }}>
               <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 min-w-[180px] text-center">
@@ -88,9 +89,9 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
               </div>
             </div>
             
-            {/* Y-axis label - positioned at vertex, overlapping technological label vertically */}
+            {/* Y-axis label (social) - positioned at the vertex on X-axis, horizontally */}
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transform-gpu"
-                 style={{ transform: 'translateX(-90px) translateY(-30px) translateZ(30px) rotate(-90deg)' }}>
+                 style={{ transform: 'translateX(-50%) translateY(-60px) translateZ(30px)' }}>
               <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 whitespace-nowrap min-w-[180px] text-center">
                 {yAxis.factor}
               </div>
@@ -131,7 +132,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
           </div>
 
           {/* Enhanced 3D scenario grid - More space from edges and top to avoid overlap */}
-          <div className="relative z-40 grid grid-cols-2 grid-rows-2 gap-8 pt-28 pb-20 px-24 transform-gpu"
+          <div className="relative z-40 grid grid-cols-2 grid-rows-2 gap-8 pt-32 pb-20 px-24 transform-gpu"
                style={{ transform: 'translateZ(20px)' }}>
             
             {/* Top Left - Index 1 */}
