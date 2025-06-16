@@ -16,10 +16,17 @@ const AxisLines: FC<AxisLinesProps> = ({ axes }) => {
       {/* Horizontal axis line - prominent and clearly visible */}
       <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex items-center justify-center">
         <div className="w-full h-2 bg-gradient-to-r from-gray-400 via-gray-600 to-gray-400 shadow-lg">
-          {/* Axis label for horizontal */}
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="bg-gray-700 text-white px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-gray-600 whitespace-nowrap">
-              {xAxis.factor}
+          {/* Left part of X-axis label – "ENVIRO" */}
+          <div className="absolute top-1/2 left-[calc(50%-65px)] transform -translate-y-1/2 z-[70]">
+            <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-l-md shadow-xl border border-blue-600">
+              ENVIRO
+            </div>
+          </div>
+
+          {/* Right part of X-axis label – "NMENT" */}
+          <div className="absolute top-1/2 left-[calc(50%+5px)] transform -translate-y-1/2 z-[70]">
+            <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-r-md shadow-xl border border-blue-600">
+              NMENT
             </div>
           </div>
         </div>
