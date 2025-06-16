@@ -1,12 +1,9 @@
-
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, FileText, TrendingUp, CheckCircle, ArrowRight, Sparkles, Upload, Zap } from "lucide-react";
 import PDFUploader from "@/components/PDFUploader";
-
 const Index = () => {
   const navigate = useNavigate();
-
   const handlePdfExtracted = (content: string) => {
     navigate("/strategy-wizard", {
       state: {
@@ -14,9 +11,7 @@ const Index = () => {
       }
     });
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+  return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Modern Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -67,17 +62,34 @@ const Index = () => {
           
           {/* Process Flow */}
           <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 mt-16">
-            {[
-              { icon: FileText, label: "Upload PDF", desc: "Case study analysis", delay: "0ms", color: "from-blue-500 to-blue-600" },
-              { icon: TrendingUp, label: "AI Analysis", desc: "Extract insights", delay: "200ms", color: "from-indigo-500 to-indigo-600" },
-              { icon: Target, label: "Strategic Framework", desc: "5-step planning", delay: "400ms", color: "from-purple-500 to-purple-600" },
-              { icon: CheckCircle, label: "Action Plan", desc: "Ready to implement", delay: "600ms", color: "from-green-500 to-green-600" }
-            ].map((item, index) => (
-              <div key={index} className="flex items-center group">
-                <div 
-                  className="flex flex-col items-center space-y-3 animate-fade-in"
-                  style={{ animationDelay: item.delay }}
-                >
+            {[{
+            icon: FileText,
+            label: "Upload PDF",
+            desc: "Case study analysis",
+            delay: "0ms",
+            color: "from-blue-500 to-blue-600"
+          }, {
+            icon: TrendingUp,
+            label: "AI Analysis",
+            desc: "Extract insights",
+            delay: "200ms",
+            color: "from-indigo-500 to-indigo-600"
+          }, {
+            icon: Target,
+            label: "Strategic Framework",
+            desc: "5-step planning",
+            delay: "400ms",
+            color: "from-purple-500 to-purple-600"
+          }, {
+            icon: CheckCircle,
+            label: "Action Plan",
+            desc: "Ready to implement",
+            delay: "600ms",
+            color: "from-green-500 to-green-600"
+          }].map((item, index) => <div key={index} className="flex items-center group">
+                <div className="flex flex-col items-center space-y-3 animate-fade-in" style={{
+              animationDelay: item.delay
+            }}>
                   <div className="relative">
                     <div className={`bg-gradient-to-br ${item.color} p-5 rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:-rotate-3`}>
                       <item.icon className="h-7 w-7 text-white" />
@@ -90,11 +102,8 @@ const Index = () => {
                   </div>
                 </div>
                 
-                {index < 3 && (
-                  <ArrowRight className="h-5 w-5 text-gray-400 mx-4 md:mx-6 animate-pulse" />
-                )}
-              </div>
-            ))}
+                {index < 3 && <ArrowRight className="h-5 w-5 text-gray-400 mx-4 md:mx-6 animate-pulse" />}
+              </div>)}
           </div>
         </div>
 
@@ -122,61 +131,47 @@ const Index = () => {
         {/* Framework Preview */}
         <div className="pb-20">
           <div className="text-center mb-16 space-y-4">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 text-indigo-700 text-sm font-medium">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Our Proven Methodology
-            </div>
+            
             <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               5-Step Strategic Framework
             </h3>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              A systematic approach to strategic analysis and planning, powered by proven business frameworks
-            </p>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">A systematic approach to strategic analysis and planning, powered by proven business frameworks</p>
           </div>
           
           <div className="grid md:grid-cols-5 gap-6">
-            {[
-              {
-                step: 1,
-                title: "Situational Analysis",
-                desc: "Comprehensive market position and competitive landscape analysis",
-                color: "from-red-500 to-pink-500",
-                delay: "0ms"
-              },
-              {
-                step: 2,
-                title: "Problem Identification", 
-                desc: "Identify key strategic challenges and growth opportunities",
-                color: "from-orange-500 to-red-500",
-                delay: "100ms"
-              },
-              {
-                step: 3,
-                title: "Strategic Options",
-                desc: "Develop and evaluate multiple strategic alternatives",
-                color: "from-yellow-500 to-orange-500",
-                delay: "200ms"
-              },
-              {
-                step: 4,
-                title: "Implementation Plan",
-                desc: "Create detailed execution roadmap with timelines",
-                color: "from-green-500 to-yellow-500",
-                delay: "300ms"
-              },
-              {
-                step: 5,
-                title: "Success Metrics",
-                desc: "Define comprehensive KPIs and measurement framework",
-                color: "from-blue-500 to-green-500",
-                delay: "400ms"
-              }
-            ].map((item, index) => (
-              <Card 
-                key={index} 
-                className="bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-xl transition-all duration-500 border-0 shadow-lg group cursor-pointer animate-fade-in hover:-translate-y-2"
-                style={{ animationDelay: item.delay }}
-              >
+            {[{
+            step: 1,
+            title: "Situational Analysis",
+            desc: "Comprehensive market position and competitive landscape analysis",
+            color: "from-red-500 to-pink-500",
+            delay: "0ms"
+          }, {
+            step: 2,
+            title: "Problem Identification",
+            desc: "Identify key strategic challenges and growth opportunities",
+            color: "from-orange-500 to-red-500",
+            delay: "100ms"
+          }, {
+            step: 3,
+            title: "Strategic Options",
+            desc: "Develop and evaluate multiple strategic alternatives",
+            color: "from-yellow-500 to-orange-500",
+            delay: "200ms"
+          }, {
+            step: 4,
+            title: "Implementation Plan",
+            desc: "Create detailed execution roadmap with timelines",
+            color: "from-green-500 to-yellow-500",
+            delay: "300ms"
+          }, {
+            step: 5,
+            title: "Success Metrics",
+            desc: "Define comprehensive KPIs and measurement framework",
+            color: "from-blue-500 to-green-500",
+            delay: "400ms"
+          }].map((item, index) => <Card key={index} className="bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-xl transition-all duration-500 border-0 shadow-lg group cursor-pointer animate-fade-in hover:-translate-y-2" style={{
+            animationDelay: item.delay
+          }}>
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className={`bg-gradient-to-r ${item.color} text-white rounded-xl w-10 h-10 flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300`}>
@@ -193,8 +188,7 @@ const Index = () => {
                 <CardContent>
                   <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
 
@@ -213,8 +207,6 @@ const Index = () => {
           </div>
         </footer>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
