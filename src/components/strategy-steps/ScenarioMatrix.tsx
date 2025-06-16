@@ -79,19 +79,19 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
           </div>
 
-          {/* Axis labels with 3D positioning */}
+          {/* Axis labels with updated 3D positioning */}
           <div className="absolute inset-0 pointer-events-none z-30">
-            {/* X-axis label */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transform-gpu"
-                 style={{ transform: 'translateX(-50%) translateY(-50%) translateZ(20px)' }}>
+            {/* X-axis label - positioned below the horizontal line */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 transform-gpu"
+                 style={{ transform: 'translateX(-50%) translateY(60%) translateZ(20px)' }}>
               <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600">
                 {xAxis.factor}
               </div>
             </div>
             
-            {/* Y-axis label */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90 transform-gpu"
-                 style={{ transform: 'translateX(-50%) translateY(-50%) rotate(-90deg) translateZ(20px)' }}>
+            {/* Y-axis label - positioned to the left of the vertical line without rotation */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transform-gpu"
+                 style={{ transform: 'translateX(-120%) translateY(-50%) translateZ(20px)' }}>
               <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 whitespace-nowrap">
                 {yAxis.factor}
               </div>
