@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,16 +100,27 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
     });
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const nextStep = () => {
     if (currentStep < 5) {
       setCurrentStepState(currentStep + 1);
+      scrollToTop();
     }
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStepState(currentStep - 1);
+      scrollToTop();
     }
+  };
+
+  const goToStep = (stepNumber: number) => {
+    setCurrentStepState(stepNumber);
+    scrollToTop();
   };
 
   const exportStrategy = () => {
@@ -143,9 +153,6 @@ Generated on: ${new Date().toLocaleDateString()}
     onReset();
   };
 
-  // --- Step-specific overrides
-  // Step 1: inject onNext handler
-  const CurrentStepComponent = steps[currentStep - 1].component;
   const progressPercentage = (currentStep / 5) * 100;
 
   return (
@@ -189,7 +196,7 @@ Generated on: ${new Date().toLocaleDateString()}
             {steps.map((step) => (
               <button
                 key={step.number}
-                onClick={() => setCurrentStepState(step.number)}
+                onClick={() => goToStep(step.number)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors
                   ${currentStep === step.number 
                     ? 'bg-blue-600 text-white' 
@@ -212,7 +219,11 @@ Generated on: ${new Date().toLocaleDateString()}
               pdfContent={pdfContent}
               data={stepData.step1}
               onDataChange={(data: string) => updateStepData(1, data)}
-              onNext={(pts) => { setSelectedForMatrixState(pts); setCurrentStepState(2); }}
+              onNext={(pts) => { 
+                setSelectedForMatrixState(pts); 
+                setCurrentStepState(2);
+                scrollToTop();
+              }}
             />
           ) : currentStep === 2 ? (
             <StepTwo
@@ -220,7 +231,10 @@ Generated on: ${new Date().toLocaleDateString()}
               data={stepData.step2}
               onDataChange={(data: string) => updateStepData(2, data)}
               selectedPoints={selectedForMatrix}
-              onNext={() => setCurrentStepState(3)}
+              onNext={() => {
+                setCurrentStepState(3);
+                scrollToTop();
+              }}
             />
           ) : currentStep === 3 ? (
             <StepThree
@@ -244,7 +258,7 @@ Generated on: ${new Date().toLocaleDateString()}
         </div>
 
         {/* Navigation Buttons */}
-        {currentStep !== 1 && (
+        {currentStep !== 1 && currentStep !== 2 && (
           <div className="flex justify-between">
             <Button
               variant="outline"

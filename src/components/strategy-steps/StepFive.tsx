@@ -22,14 +22,17 @@ interface HorizonsData {
 const StepFive = ({ pdfContent, data, onDataChange }: StepFiveProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [horizonsData, setHorizonsData] = useState<HorizonsData | null>(null);
+  const [hasGenerated, setHasGenerated] = useState(false);
 
   useEffect(() => {
     if (data) {
       try {
         const parsed = JSON.parse(data);
         setHorizonsData(parsed);
+        setHasGenerated(true);
       } catch {
         // If data is old format string, ignore and let user regenerate
+        setHasGenerated(false);
       }
     }
   }, [data]);
@@ -97,6 +100,7 @@ const StepFive = ({ pdfContent, data, onDataChange }: StepFiveProps) => {
         
         if (parsedData) {
           setHorizonsData(parsedData);
+          setHasGenerated(true);
           onDataChange(JSON.stringify(parsedData));
           
           toast({
@@ -136,37 +140,70 @@ const StepFive = ({ pdfContent, data, onDataChange }: StepFiveProps) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">Tactical Implementation Roadmap</h3>
-            <Button
-              onClick={generateThreeHorizons}
-              disabled={isGenerating}
-              variant="outline"
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Generate Implementation Roadmap
-                </>
-              )}
-            </Button>
-          </div>
+          {!hasGenerated ? (
+            <div className="text-center py-12">
+              <div className="mb-6">
+                <h3 className="text-lg font-medium mb-2">Ready to Generate Your Implementation Roadmap</h3>
+                <p className="text-gray-600 mb-8">
+                  Click the button below to transform your DOTS strategy into a comprehensive 
+                  Three Horizons implementation plan.
+                </p>
+              </div>
+              
+              <Button
+                onClick={generateThreeHorizons}
+                disabled={isGenerating}
+                className="bg-blue-600 hover:bg-blue-700"
+                size="lg"
+              >
+                {isGenerating ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Generating Implementation Roadmap...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Generate Implementation Roadmap
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Tactical Implementation Roadmap</h3>
+                <Button
+                  onClick={generateThreeHorizons}
+                  disabled={isGenerating}
+                  variant="outline"
+                >
+                  {isGenerating ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Regenerating...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Regenerate Roadmap
+                    </>
+                  )}
+                </Button>
+              </div>
 
-          <ThreeHorizonsChart horizonsData={horizonsData} />
+              <ThreeHorizonsChart horizonsData={horizonsData} />
 
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Implementation Framework:</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>Horizon 1 (0-2 years):</strong> Tactical initiatives to operationalize strategic response themes</li>
-              <li>• <strong>Horizon 2 (3-4 years):</strong> Mid-term programs to build capabilities for strategic opportunities</li>
-              <li>• <strong>Horizon 3 (5-6 years):</strong> Long-term innovations to address strategic drivers and threats</li>
-            </ul>
-          </div>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-medium text-blue-900 mb-2">Implementation Framework:</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• <strong>Horizon 1 (0-2 years):</strong> Tactical initiatives to operationalize strategic response themes</li>
+                  <li>• <strong>Horizon 2 (3-4 years):</strong> Mid-term programs to build capabilities for strategic opportunities</li>
+                  <li>• <strong>Horizon 3 (5-6 years):</strong> Long-term innovations to address strategic drivers and threats</li>
+                </ul>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

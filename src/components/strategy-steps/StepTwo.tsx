@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -284,6 +285,13 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
       // Collapse the analysis section after generation
       setIsAnalysisOpen(false);
 
+      // Automatically proceed to next step after successful generation
+      if (onNext) {
+        setTimeout(() => {
+          onNext();
+        }, 1000); // Small delay to show success message
+      }
+
       toast({
         title: "Scenario Matrix Complete",
         description: "Generated 2x2 scenario matrix with consistent axis labels."
@@ -353,14 +361,12 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
                   </div>
                 </div>
                 
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-600">
-                    Selected: {axes.length}/2 factors
-                  </div>
+                <div className="flex justify-center">
                   <Button
                     onClick={handleGenerateScenarios}
                     disabled={axes.length !== 2 || isGenerating}
                     className="bg-blue-600 hover:bg-blue-700"
+                    size="lg"
                   >
                     {isGenerating ? "Generating..." : "Generate Scenarios"}
                   </Button>
@@ -390,17 +396,20 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
                 </div>
               </div>
               
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-600">
-                  Selected: {axes.length}/2 factors
+              <div className="flex justify-center">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="text-sm text-gray-600">
+                    Selected: {axes.length}/2 factors
+                  </div>
+                  <Button
+                    onClick={handleGenerateScenarios}
+                    disabled={axes.length !== 2 || isGenerating}
+                    className="bg-blue-600 hover:bg-blue-700"
+                    size="lg"
+                  >
+                    {isGenerating ? "Generating..." : "Generate Scenarios"}
+                  </Button>
                 </div>
-                <Button
-                  onClick={handleGenerateScenarios}
-                  disabled={axes.length !== 2 || isGenerating}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  {isGenerating ? "Generating..." : "Generate Scenarios"}
-                </Button>
               </div>
             </>
           )}
