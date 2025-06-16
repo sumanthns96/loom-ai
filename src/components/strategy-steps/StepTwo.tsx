@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -285,12 +284,8 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
       // Collapse the analysis section after generation
       setIsAnalysisOpen(false);
 
-      // Automatically proceed to next step after successful generation
-      if (onNext) {
-        setTimeout(() => {
-          onNext();
-        }, 1000); // Small delay to show success message
-      }
+      // Remove automatic navigation - let user stay on the page
+      // Removed: if (onNext) { setTimeout(() => { onNext(); }, 1000); }
 
       toast({
         title: "Scenario Matrix Complete",

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -131,7 +130,7 @@ const StepFive = ({ pdfContent, data, onDataChange }: StepFiveProps) => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-blue-600" />
-            <span>Three Horizons Implementation</span>
+            <span>McKinsey's Three Horizon Model</span>
           </CardTitle>
           <CardDescription>
             Transform your DOTS strategic response themes into a detailed tactical roadmap 
