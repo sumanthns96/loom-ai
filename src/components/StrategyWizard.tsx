@@ -191,9 +191,9 @@ Generated on: ${new Date().toLocaleDateString()}
           </CardHeader>
         </Card>
 
-        {/* Clean Professional Step Navigation - Aligned with Content */}
+        {/* Clean Professional Step Navigation - Full Width for Text Visibility */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-2xl border border-gray-100 p-1 shadow-lg shadow-gray-100/50 w-full max-w-5xl">
+          <div className="bg-white rounded-2xl border border-gray-100 p-1 shadow-lg shadow-gray-100/50 w-full">
             <div className="flex justify-between">
               {steps.map((step, index) => {
                 const isActive = currentStep === step.number;
@@ -205,7 +205,7 @@ Generated on: ${new Date().toLocaleDateString()}
                     <button
                       onClick={() => goToStep(step.number)}
                       className={`
-                        relative flex items-center space-x-2 px-3 py-3 rounded-xl transition-all duration-300 ease-out font-medium text-xs w-full justify-center
+                        relative flex items-center space-x-2 px-2 py-3 rounded-xl transition-all duration-300 ease-out font-medium text-xs w-full justify-center
                         ${isActive 
                           ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105' 
                           : isCompleted 
@@ -234,7 +234,7 @@ Generated on: ${new Date().toLocaleDateString()}
                         )}
                       </div>
                       
-                      <span className="hidden sm:block whitespace-nowrap text-xs truncate max-w-[120px]">
+                      <span className="hidden sm:block text-center leading-tight min-w-0 flex-1">
                         {step.title}
                       </span>
                       
@@ -247,7 +247,7 @@ Generated on: ${new Date().toLocaleDateString()}
                     {/* Connector line */}
                     {index < steps.length - 1 && (
                       <div className={`
-                        w-4 h-0.5 mx-1 transition-all duration-300 flex-shrink-0
+                        w-3 h-0.5 mx-1 transition-all duration-300 flex-shrink-0
                         ${currentStep > step.number ? 'bg-green-300' : 'bg-gray-200'}
                       `}></div>
                     )}
