@@ -135,17 +135,11 @@ Create a ${industry} industry scenario where:
 REQUIREMENTS:
 1. SUMMARY: Create a 4-6 word headline capturing the quadrant essence
 2. HEADER: Write "In this scenario, the ${industry} industry..." (one sentence, max 20 words)
-3. BULLETS: Provide 3-4 concise points (each bullet point MUST be exactly 10-12 words) covering:
+3. BULLETS: Provide 3-4 concise points covering:
    - Market dynamics and competitive landscape
    - How companies typically respond/behave  
    - Operational and cost implications industry-wide
    - Partnership patterns and ecosystem changes
-
-CRITICAL WORD LIMITS:
-- Each bullet point: EXACTLY 10-12 words
-- Total bullet points content: MAXIMUM 50 words
-- Header: MAXIMUM 20 words
-- Be extremely concise and impactful
 
 STYLE REQUIREMENTS:
 - Focus on INDUSTRY-WIDE trends, not individual companies
@@ -159,10 +153,10 @@ Return valid JSON only, no markdown, no explanations:
   "summary": "Brief 4-6 word industry scenario headline",
   "header": "In this scenario, the ${industry} industry [continues with scenario description]",
   "bullets": [
-    "Industry-wide trend 1 (exactly 10-12 words)",
-    "Industry-wide trend 2 (exactly 10-12 words)", 
-    "Industry-wide trend 3 (exactly 10-12 words)",
-    "Industry-wide trend 4 (exactly 10-12 words)"
+    "Industry-wide trend 1",
+    "Industry-wide trend 2", 
+    "Industry-wide trend 3",
+    "Industry-wide trend 4"
   ]
 }
   `.trim();

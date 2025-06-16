@@ -1,5 +1,4 @@
 
-
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -82,17 +81,10 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
 
           {/* Axis labels positioned at the vertex */}
           <div className="absolute inset-0 pointer-events-none z-50">
-            {/* Left part of SOCIAL – "SOC" */}
-            <div className="absolute top-1/2 left-[calc(50%-60px)] transform -translate-y-1/2 z-50">
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-2 py-1 text-sm font-bold uppercase tracking-wider rounded-l-md shadow-xl border border-blue-600">
-                SOC
-              </div>
-            </div>
-
-            {/* Right part of SOCIAL – "IAL" */}
-            <div className="absolute top-1/2 left-[calc(50%+10px)] transform -translate-y-1/2 z-50">
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-2 py-1 text-sm font-bold uppercase tracking-wider rounded-r-md shadow-xl border border-blue-600">
-                IAL
+            {/* X-axis label (e.g., SOCIAL) - horizontal across X axis */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap">
+                {xAxis.factor}
               </div>
             </div>
 
@@ -137,14 +129,14 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </span>
           </div>
 
-          {/* Enhanced 3D scenario grid - Dynamic sizing with flex layout */}
+          {/* Enhanced 3D scenario grid */}
           <div className="relative z-40 grid grid-cols-2 grid-rows-2 gap-6 pt-28 pb-16 px-20 transform-gpu"
                style={{ transform: 'translateZ(20px)' }}>
             
             {/* Top Left - Index 1 */}
-            <div className="group relative flex">
+            <div className="group relative">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -158,7 +150,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                   {scenarios[1]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[1]?.bullets) && scenarios[1]?.bullets.length > 0 ? (
-                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
+                  <ul className="space-y-2 text-gray-700 text-xs">
                     {scenarios[1].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
                         <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></div>
@@ -173,9 +165,9 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
             
             {/* Top Right - Index 0 */}
-            <div className="group relative flex">
+            <div className="group relative">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -189,7 +181,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                   {scenarios[0]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[0]?.bullets) && scenarios[0]?.bullets.length > 0 ? (
-                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
+                  <ul className="space-y-2 text-gray-700 text-xs">
                     {scenarios[0].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
                         <div className="w-1 h-1 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
@@ -204,9 +196,9 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
             
             {/* Bottom Left - Index 2 */}
-            <div className="group relative flex">
+            <div className="group relative">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -220,7 +212,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                   {scenarios[2]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[2]?.bullets) && scenarios[2]?.bullets.length > 0 ? (
-                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
+                  <ul className="space-y-2 text-gray-700 text-xs">
                     {scenarios[2].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
                         <div className="w-1 h-1 bg-orange-500 rounded-full mt-1.5 flex-shrink-0"></div>
@@ -235,9 +227,9 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
             
             {/* Bottom Right - Index 3 */}
-            <div className="group relative flex">
+            <div className="group relative">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -251,7 +243,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                   {scenarios[3]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[3]?.bullets) && scenarios[3]?.bullets.length > 0 ? (
-                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
+                  <ul className="space-y-2 text-gray-700 text-xs">
                     {scenarios[3].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
                         <div className="w-1 h-1 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"></div>
