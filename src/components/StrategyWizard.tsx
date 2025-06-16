@@ -119,8 +119,11 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   };
 
   const goToStep = (stepNumber: number) => {
-    setCurrentStepState(stepNumber);
-    scrollToTop();
+    // Only allow navigation to current step or previous completed steps
+    if (stepNumber <= currentStep) {
+      setCurrentStepState(stepNumber);
+      scrollToTop();
+    }
   };
 
   const exportStrategy = () => {
@@ -232,22 +235,25 @@ Generated on: ${new Date().toLocaleDateString()}
                 const isActive = currentStep === step.number;
                 const isCompleted = currentStep > step.number;
                 const isNext = currentStep < step.number;
+                const isClickable = step.number <= currentStep; // Only allow clicking on current or previous steps
                 const IconComponent = step.icon;
                 
                 return (
                   <div key={step.number} className="flex items-center flex-1">
                     <button
-                      onClick={() => goToStep(step.number)}
+                      onClick={() => isClickable && goToStep(step.number)}
+                      disabled={!isClickable}
                       className={`
                         relative flex flex-col items-center space-y-2 px-3 py-4 rounded-xl transition-all duration-500 ease-out font-medium text-xs w-full group
                         ${isActive 
                           ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-600/30 scale-105 transform' 
                           : isCompleted 
-                            ? 'bg-gradient-to-br from-green-50 to-emerald-50 text-green-700 hover:from-green-100 hover:to-emerald-100 border border-green-200 hover:shadow-lg' 
+                            ? 'bg-gradient-to-br from-green-50 to-emerald-50 text-green-700 hover:from-green-100 hover:to-emerald-100 border border-green-200 hover:shadow-lg cursor-pointer' 
                             : isNext
-                              ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-50/50'
-                              : 'text-gray-600 hover:bg-gray-50/50'
+                              ? 'text-gray-400 cursor-not-allowed opacity-60'
+                              : 'text-gray-600 hover:bg-gray-50/50 cursor-pointer'
                         }
+                        ${!isClickable ? 'cursor-not-allowed' : ''}
                       `}
                     >
                       {/* Icon and number container */}
@@ -290,8 +296,10 @@ Generated on: ${new Date().toLocaleDateString()}
                         <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full animate-pulse"></div>
                       )}
 
-                      {/* Hover effect overlay */}
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      {/* Hover effect overlay - only for clickable items */}
+                      {isClickable && (
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      )}
                     </button>
                     
                     {/* Enhanced connector line */}
