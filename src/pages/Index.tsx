@@ -1,7 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, FileText, TrendingUp, CheckCircle, ArrowRight, Sparkles } from "lucide-react";
+import { Target, FileText, TrendingUp, CheckCircle, ArrowRight, Sparkles, Upload, Zap } from "lucide-react";
 import PDFUploader from "@/components/PDFUploader";
 
 const Index = () => {
@@ -44,15 +44,15 @@ const Index = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-6">
-        {/* Hero Section with Animation */}
-        <div className="text-center py-16 space-y-8">
+        {/* Hero Section */}
+        <div className="text-center py-20 space-y-8">
           <div className="space-y-6 animate-fade-in">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium mb-4">
-              <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-700 text-sm font-medium mb-6">
+              <Zap className="h-4 w-4 mr-2 text-blue-600" />
               Strategic Intelligence Engine
             </div>
             
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight max-w-5xl mx-auto">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight max-w-5xl mx-auto">
               Transform Case Studies into 
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent block mt-2">
                 Strategic Action Plans
@@ -65,13 +65,13 @@ const Index = () => {
             </p>
           </div>
           
-          {/* Animated Process Flow */}
-          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-8 mt-12">
+          {/* Process Flow */}
+          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 mt-16">
             {[
-              { icon: FileText, label: "Upload PDF", desc: "Case study analysis", delay: "0ms" },
-              { icon: TrendingUp, label: "AI Analysis", desc: "Extract insights", delay: "200ms" },
-              { icon: Target, label: "Strategic Framework", desc: "5-step planning", delay: "400ms" },
-              { icon: CheckCircle, label: "Action Plan", desc: "Ready to implement", delay: "600ms" }
+              { icon: FileText, label: "Upload PDF", desc: "Case study analysis", delay: "0ms", color: "from-blue-500 to-blue-600" },
+              { icon: TrendingUp, label: "AI Analysis", desc: "Extract insights", delay: "200ms", color: "from-indigo-500 to-indigo-600" },
+              { icon: Target, label: "Strategic Framework", desc: "5-step planning", delay: "400ms", color: "from-purple-500 to-purple-600" },
+              { icon: CheckCircle, label: "Action Plan", desc: "Ready to implement", delay: "600ms", color: "from-green-500 to-green-600" }
             ].map((item, index) => (
               <div key={index} className="flex items-center group">
                 <div 
@@ -79,10 +79,10 @@ const Index = () => {
                   style={{ animationDelay: item.delay }}
                 >
                   <div className="relative">
-                    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-4 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                      <item.icon className="h-6 w-6 text-white" />
+                    <div className={`bg-gradient-to-br ${item.color} p-5 rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:-rotate-3`}>
+                      <item.icon className="h-7 w-7 text-white" />
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.color} rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`}></div>
                   </div>
                   <div className="text-center">
                     <h3 className="font-semibold text-gray-900 text-sm">{item.label}</h3>
@@ -91,38 +91,42 @@ const Index = () => {
                 </div>
                 
                 {index < 3 && (
-                  <ArrowRight className="h-5 w-5 text-gray-400 mx-2 md:mx-4 animate-pulse" />
+                  <ArrowRight className="h-5 w-5 text-gray-400 mx-4 md:mx-6 animate-pulse" />
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Upload Section - Modern Card Design */}
-        <div className="max-w-3xl mx-auto mb-20">
-          <Card className="border-0 shadow-2xl shadow-blue-100/50 bg-white/70 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 group">
-            <CardHeader className="text-center pb-8 pt-12">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <FileText className="h-8 w-8 text-white" />
+        {/* Upload Section - Compact and Aesthetic */}
+        <div className="max-w-2xl mx-auto mb-16">
+          <Card className="border-0 shadow-xl shadow-blue-100/30 bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 group overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5"></div>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            
+            <CardHeader className="text-center pb-4 pt-8 relative">
+              <div className="mx-auto w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <Upload className="h-6 w-6 text-white" />
               </div>
-              <CardTitle className="text-3xl text-gray-900 mb-4">Upload Your Case Study</CardTitle>
-              <CardDescription className="text-lg text-gray-600 max-w-md mx-auto">
-                Transform your PDF case study into actionable strategic insights with our AI-powered analysis
+              <CardTitle className="text-2xl text-gray-900 mb-2">Upload Your Case Study</CardTitle>
+              <CardDescription className="text-base text-gray-600 max-w-md mx-auto">
+                Transform your PDF into actionable strategic insights
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-12 pb-12">
+            <CardContent className="px-8 pb-8 relative">
               <PDFUploader onTextExtracted={handlePdfExtracted} />
             </CardContent>
           </Card>
         </div>
 
-        {/* Framework Preview - Enhanced Grid */}
+        {/* Framework Preview */}
         <div className="pb-20">
           <div className="text-center mb-16 space-y-4">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 text-indigo-700 text-sm font-medium">
+              <Sparkles className="h-4 w-4 mr-2" />
               Our Proven Methodology
             </div>
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               5-Step Strategic Framework
             </h3>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -170,16 +174,16 @@ const Index = () => {
             ].map((item, index) => (
               <Card 
                 key={index} 
-                className="bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-xl transition-all duration-500 border-0 shadow-lg group cursor-pointer animate-fade-in"
+                className="bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-xl transition-all duration-500 border-0 shadow-lg group cursor-pointer animate-fade-in hover:-translate-y-2"
                 style={{ animationDelay: item.delay }}
               >
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3 mb-4">
-                    <div className={`bg-gradient-to-r ${item.color} text-white rounded-xl w-10 h-10 flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`bg-gradient-to-r ${item.color} text-white rounded-xl w-10 h-10 flex items-center justify-center font-bold text-lg shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300`}>
                       {item.step}
                     </div>
-                    <div className="w-full h-1 bg-gradient-to-r from-gray-200 to-transparent rounded-full">
-                      <div className={`h-full bg-gradient-to-r ${item.color} rounded-full w-0 group-hover:w-full transition-all duration-1000`}></div>
+                    <div className="w-full h-1 bg-gradient-to-r from-gray-200 to-transparent rounded-full overflow-hidden">
+                      <div className={`h-full bg-gradient-to-r ${item.color} rounded-full w-0 group-hover:w-full transition-all duration-1000 ease-out`}></div>
                     </div>
                   </div>
                   <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
@@ -194,7 +198,7 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Footer Section */}
+        {/* Footer */}
         <footer className="border-t border-gray-100 py-12 text-center">
           <div className="space-y-4">
             <div className="flex items-center justify-center space-x-2">
