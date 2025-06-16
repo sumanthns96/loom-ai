@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -55,81 +56,8 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
           </div>
 
-          {/* Central axis lines with enhanced 3D styling - INCREASED Z-INDEX */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[60]">
-            {/* Horizontal axis line - spans most of the container width */}
-            <div className="absolute w-[75%] h-1 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
-                 style={{ 
-                   filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))',
-                   transform: 'translateZ(10px)'
-                 }}>
-              {/* Axis glow effect */}
-              <div className="absolute inset-0 bg-blue-400 rounded-full blur-sm opacity-50"></div>
-            </div>
-            
-            {/* Vertical axis line - spans most of the container height */}
-            <div className="absolute h-[75%] w-1 bg-gradient-to-b from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
-                 style={{ 
-                   filter: 'drop-shadow(4px 0 8px rgba(59, 130, 246, 0.3))',
-                   transform: 'translateZ(10px)'
-                 }}>
-              {/* Axis glow effect */}
-              <div className="absolute inset-0 bg-blue-400 rounded-full blur-sm opacity-50"></div>
-            </div>
-          </div>
-
-          {/* Axis labels positioned at the vertex - INCREASED Z-INDEX */}
-          <div className="absolute inset-0 pointer-events-none z-[70]">
-            {/* X-axis label (e.g., SOCIAL) - horizontal across X axis */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[70]">
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap">
-                {xAxis.factor}
-              </div>
-            </div>
-
-            {/* Y-axis label (e.g., TECHNOLOGICAL) - vertical across Y axis */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-90deg] z-[70]">
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap">
-                {yAxis.factor}
-              </div>
-            </div>
-          </div>
-
-          {/* Corner direction labels positioned at the ends of axes - moved further out and lower z-index */}
-          {/* Top (Y High) */}
-          <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30">
-            <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(15px)' }}>
-              {cap(yContext.high)}
-            </span>
-          </div>
-          
-          {/* Bottom (Y Low) */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
-            <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(15px)' }}>
-              {cap(yContext.low)}
-            </span>
-          </div>
-          
-          {/* Left (X Low) */}
-          <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-30">
-            <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(15px)' }}>
-              {cap(xContext.low)}
-            </span>
-          </div>
-          
-          {/* Right (X High) */}
-          <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30">
-            <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(15px)' }}>
-              {cap(xContext.high)}
-            </span>
-          </div>
-
-          {/* Enhanced 3D scenario grid */}
-          <div className="relative z-40 grid grid-cols-2 grid-rows-2 gap-6 pt-28 pb-16 px-20 transform-gpu"
+          {/* Enhanced 3D scenario grid - REDUCED Z-INDEX */}
+          <div className="relative z-10 grid grid-cols-2 grid-rows-2 gap-6 pt-28 pb-16 px-20 transform-gpu"
                style={{ transform: 'translateZ(20px)' }}>
             
             {/* Top Left - Index 1 */}
@@ -255,6 +183,81 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Central axis lines with enhanced 3D styling - HIGHEST Z-INDEX */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[100]">
+            {/* Horizontal axis line - spans most of the container width */}
+            <div className="absolute w-[75%] h-1 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
+                 style={{ 
+                   filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))',
+                   transform: 'translateZ(30px)'
+                 }}>
+              {/* Axis glow effect */}
+              <div className="absolute inset-0 bg-blue-400 rounded-full blur-sm opacity-50"></div>
+            </div>
+            
+            {/* Vertical axis line - spans most of the container height */}
+            <div className="absolute h-[75%] w-1 bg-gradient-to-b from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
+                 style={{ 
+                   filter: 'drop-shadow(4px 0 8px rgba(59, 130, 246, 0.3))',
+                   transform: 'translateZ(30px)'
+                 }}>
+              {/* Axis glow effect */}
+              <div className="absolute inset-0 bg-blue-400 rounded-full blur-sm opacity-50"></div>
+            </div>
+          </div>
+
+          {/* Axis labels positioned at the vertex - HIGHEST Z-INDEX */}
+          <div className="absolute inset-0 pointer-events-none z-[110]">
+            {/* X-axis label (e.g., SOCIAL) - horizontal across X axis */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[110]">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap"
+                   style={{ transform: 'translateZ(40px)' }}>
+                {xAxis.factor}
+              </div>
+            </div>
+
+            {/* Y-axis label (e.g., TECHNOLOGICAL) - vertical across Y axis */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-90deg] z-[110]">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap"
+                   style={{ transform: 'translateZ(40px)' }}>
+                {yAxis.factor}
+              </div>
+            </div>
+          </div>
+
+          {/* Corner direction labels positioned at the ends of axes - HIGH Z-INDEX */}
+          {/* Top (Y High) */}
+          <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-[90]">
+            <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
+                  style={{ transform: 'translateZ(35px)' }}>
+              {cap(yContext.high)}
+            </span>
+          </div>
+          
+          {/* Bottom (Y Low) */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-[90]">
+            <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
+                  style={{ transform: 'translateZ(35px)' }}>
+              {cap(yContext.low)}
+            </span>
+          </div>
+          
+          {/* Left (X Low) */}
+          <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-[90]">
+            <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
+                  style={{ transform: 'translateZ(35px)' }}>
+              {cap(xContext.low)}
+            </span>
+          </div>
+          
+          {/* Right (X High) */}
+          <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-[90]">
+            <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
+                  style={{ transform: 'translateZ(35px)' }}>
+              {cap(xContext.high)}
+            </span>
           </div>
         </div>
       </div>
