@@ -38,7 +38,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
         <div className="relative transform-gpu" style={{ 
           transformStyle: 'preserve-3d',
           transform: 'rotateX(5deg) rotateY(-2deg)',
-          minHeight: 700 
+          minHeight: 650 
         }}>
           
           {/* Enhanced background grid with 3D effect */}
@@ -100,7 +100,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
 
           {/* Corner direction labels with enhanced 3D styling - Positioned outside the card area */}
           {/* Top (Y High) - Positioned well above the cards */}
-          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-40">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.high)}
@@ -132,13 +132,13 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
           </div>
 
           {/* Enhanced 3D scenario grid - Centered with enough margin from all sides */}
-          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 py-20 px-20 transform-gpu"
+          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 pt-16 pb-28 px-24 transform-gpu"
                style={{ transform: 'translateZ(30px)' }}>
             
             {/* Top Left - Index 1 */}
             <div className="group relative">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-8 min-h-[200px] flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-8 min-h-[200px] flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 mt-4"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
