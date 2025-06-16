@@ -32,13 +32,13 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
   return (
     <div className="mt-12 animate-fade-in">
       {/* Container with enhanced 3D perspective */}
-      <div className="max-w-5xl mx-auto px-8 py-16 perspective-[1000px]">
+      <div className="max-w-6xl mx-auto px-8 py-16 perspective-[1000px]">
         
         {/* Main 3D matrix container */}
         <div className="relative transform-gpu" style={{ 
           transformStyle: 'preserve-3d',
           transform: 'rotateX(5deg) rotateY(-2deg)',
-          minHeight: 650 
+          minHeight: 700 
         }}>
           
           {/* Enhanced background grid with 3D effect */}
@@ -56,10 +56,10 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
           </div>
 
-          {/* Central axis lines with enhanced 3D styling - Extended to match quadrant height */}
+          {/* Central axis lines with enhanced 3D styling - Full height and width to reach labels */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-            {/* Horizontal axis line with shadow - Extended width */}
-            <div className="absolute w-[85%] h-1 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
+            {/* Horizontal axis line with shadow - Full width to reach side labels */}
+            <div className="absolute w-[92%] h-1 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
                  style={{ 
                    filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))',
                    transform: 'translateZ(10px)'
@@ -68,8 +68,8 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
               <div className="absolute inset-0 bg-blue-400 rounded-full blur-sm opacity-50"></div>
             </div>
             
-            {/* Vertical axis line with shadow - Extended height */}
-            <div className="absolute h-[85%] w-1 bg-gradient-to-b from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
+            {/* Vertical axis line with shadow - Full height to reach top/bottom labels */}
+            <div className="absolute h-[92%] w-1 bg-gradient-to-b from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
                  style={{ 
                    filter: 'drop-shadow(4px 0 8px rgba(59, 130, 246, 0.3))',
                    transform: 'translateZ(10px)'
@@ -98,41 +98,41 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
           </div>
 
-          {/* Corner direction labels with enhanced 3D styling - Better positioned for visibility */}
-          {/* Top (Y High) - Centered and moved up more */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40">
+          {/* Corner direction labels with enhanced 3D styling - Positioned outside the card area */}
+          {/* Top (Y High) - Positioned well above the cards */}
+          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-40">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.high)}
             </span>
           </div>
           
-          {/* Bottom (Y Low) - Moved further down to be visible */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-40">
+          {/* Bottom (Y Low) - Positioned well below the cards */}
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-40">
             <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.low)}
             </span>
           </div>
           
-          {/* Left (X Low) - Centered vertically and moved left more */}
-          <div className="absolute left-2 top-1/2 transform -translate-y-1/2 z-40">
+          {/* Left (X Low) - Positioned well to the left of the cards */}
+          <div className="absolute left-6 top-1/2 transform -translate-y-1/2 z-40">
             <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(xContext.low)}
             </span>
           </div>
           
-          {/* Right (X High) - Centered vertically and moved right more */}
-          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-40">
+          {/* Right (X High) - Positioned well to the right of the cards */}
+          <div className="absolute right-6 top-1/2 transform -translate-y-1/2 z-40">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(xContext.high)}
             </span>
           </div>
 
-          {/* Enhanced 3D scenario grid - Adjusted padding to make room for bottom labels */}
-          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 pt-16 pb-28 px-24 transform-gpu"
+          {/* Enhanced 3D scenario grid - Centered with enough margin from all sides */}
+          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 py-20 px-20 transform-gpu"
                style={{ transform: 'translateZ(30px)' }}>
             
             {/* Top Left - Index 1 */}
