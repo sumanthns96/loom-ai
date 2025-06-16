@@ -2,10 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, FileText, TrendingUp, CheckCircle } from "lucide-react";
 import PDFUploader from "@/components/PDFUploader";
-
 const Index = () => {
   const navigate = useNavigate();
-
   const handlePdfExtracted = (content: string) => {
     navigate("/strategy-wizard", {
       state: {
@@ -13,9 +11,7 @@ const Index = () => {
       }
     });
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -31,7 +27,7 @@ const Index = () => {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="font-bold text-gray-900 mb-4 text-3xl">
             A Strategic Intelligence Engine Powered by Porter's Competitive Forces and McKinsey's Growth Horizons
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Bridge case study insights to strategic execution with AI and a proven 5-step framework</p>
@@ -118,8 +114,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
