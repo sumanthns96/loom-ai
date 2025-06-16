@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,11 +83,11 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   }, [currentStep, stepData, selectedForMatrix, pdfContent]);
 
   const steps = [
-    { number: 1, title: "Analyze STEEP Factors", component: StepOne, icon: TrendingUp },
-    { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo, icon: Layers },
-    { number: 3, title: "Competitor Analysis", component: StepThree, icon: Users },
-    { number: 4, title: "DOTS", component: StepFour, icon: Compass },
-    { number: 5, title: "McKinsey's Three Horizon Model", component: StepFive, icon: Target },
+    { number: 1, title: "Analyze STEEP Factors", component: StepOne },
+    { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo },
+    { number: 3, title: "Competitor Analysis", component: StepThree },
+    { number: 4, title: "DOTS", component: StepFour },
+    { number: 5, title: "McKinsey's Three Horizon Model", component: StepFive },
   ];
 
   const updateStepData = (step: number, data: string) => {
@@ -191,63 +190,67 @@ Generated on: ${new Date().toLocaleDateString()}
           </CardHeader>
         </Card>
 
-        {/* Enhanced Step Navigation - Professional styling inspired by Remote app */}
+        {/* Clean Professional Step Navigation */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-xl border border-gray-200 p-2 shadow-sm">
-            <div className="flex space-x-1">
-              {steps.map((step) => {
-                const Icon = step.icon;
+          <div className="bg-white rounded-2xl border border-gray-100 p-1 shadow-lg shadow-gray-100/50">
+            <div className="flex">
+              {steps.map((step, index) => {
                 const isActive = currentStep === step.number;
                 const isCompleted = currentStep > step.number;
+                const isNext = currentStep < step.number;
                 
                 return (
-                  <button
-                    key={step.number}
-                    onClick={() => goToStep(step.number)}
-                    className={`
-                      relative flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ease-in-out
-                      ${isActive 
-                        ? 'bg-blue-600 text-white shadow-md' 
-                        : isCompleted 
-                          ? 'bg-green-50 text-green-700 hover:bg-green-100' 
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }
-                    `}
-                  >
-                    <div className={`
-                      flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium
-                      ${isActive 
-                        ? 'bg-white text-blue-600' 
-                        : isCompleted 
-                          ? 'bg-green-100 text-green-600' 
-                          : 'bg-gray-100 text-gray-500'
-                      }
-                    `}>
-                      {isCompleted ? (
-                        <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                      ) : (
-                        step.number
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Icon className={`
-                        h-4 w-4
+                  <div key={step.number} className="flex items-center">
+                    <button
+                      onClick={() => goToStep(step.number)}
+                      className={`
+                        relative flex items-center space-x-3 px-6 py-4 rounded-xl transition-all duration-300 ease-out font-medium text-sm
                         ${isActive 
-                          ? 'text-white' 
+                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105' 
                           : isCompleted 
-                            ? 'text-green-600' 
-                            : 'text-gray-400'
+                            ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-100' 
+                            : isNext
+                              ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                              : 'text-gray-600 hover:bg-gray-50'
                         }
-                      `} />
-                      <span className="hidden sm:block font-medium text-sm">{step.title}</span>
-                    </div>
+                      `}
+                    >
+                      <div className={`
+                        flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all duration-300
+                        ${isActive 
+                          ? 'bg-white text-blue-600' 
+                          : isCompleted 
+                            ? 'bg-green-600 text-white' 
+                            : isNext
+                              ? 'bg-gray-100 text-gray-400'
+                              : 'bg-gray-200 text-gray-600'
+                        }
+                      `}>
+                        {isCompleted ? (
+                          <div className="w-3 h-3 bg-white rounded-full"></div>
+                        ) : (
+                          step.number
+                        )}
+                      </div>
+                      
+                      <span className="hidden sm:block whitespace-nowrap">
+                        {step.title}
+                      </span>
+                      
+                      {/* Active indicator */}
+                      {isActive && (
+                        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-600 rounded-full"></div>
+                      )}
+                    </button>
                     
-                    {/* Active indicator line */}
-                    {isActive && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-2 h-2 bg-blue-600 rounded-full"></div>
+                    {/* Connector line */}
+                    {index < steps.length - 1 && (
+                      <div className={`
+                        w-8 h-0.5 mx-2 transition-all duration-300
+                        ${currentStep > step.number ? 'bg-green-300' : 'bg-gray-200'}
+                      `}></div>
                     )}
-                  </button>
+                  </div>
                 );
               })}
             </div>
