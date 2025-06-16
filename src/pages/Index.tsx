@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, FileText, TrendingUp, CheckCircle, ArrowRight, Sparkles, Upload, Zap } from "lucide-react";
@@ -48,9 +47,9 @@ const Index = () => {
               Strategic Intelligence Engine
             </div>
             
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight max-w-5xl mx-auto">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-relaxed max-w-5xl mx-auto">
               Transform Your Business Case into 
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent block mt-2">
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent block mt-4">
                 a Strategic Action Plan
               </span>
             </h2>
