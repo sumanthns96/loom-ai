@@ -19,7 +19,7 @@ const CornerLabels: FC<CornerLabelsProps> = ({ axes, axisContexts }) => {
   return (
     <div className="absolute inset-0 pointer-events-none z-40">
       {/* Top center - Y High with green plus icon - moved higher */}
-      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
         <div className="flex flex-col items-center space-y-2">
           <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
             <div className="w-6 h-1 bg-white rounded-full"></div>
@@ -32,7 +32,7 @@ const CornerLabels: FC<CornerLabelsProps> = ({ axes, axisContexts }) => {
       </div>
       
       {/* Bottom center - Y Low with red minus icon - moved lower */}
-      <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
+      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
         <div className="flex flex-col items-center space-y-2">
           <span className="text-red-700 font-bold text-sm bg-red-50 px-3 py-1 rounded-lg border border-red-200 shadow-md">
             {cap(yContext.low)}
