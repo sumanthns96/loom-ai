@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -81,18 +80,16 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
 
           {/* Axis labels positioned at the vertex */}
           <div className="absolute inset-0 pointer-events-none z-50">
-            {/* X-axis label (technological) - positioned below the center intersection */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 transform-gpu"
-                 style={{ transform: 'translateX(-50%) translateY(60px) translateZ(25px)' }}>
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 min-w-[180px] text-center">
+            {/* X-axis label (e.g., SOCIAL) - horizontal across X axis */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap">
                 {xAxis.factor}
               </div>
             </div>
-            
-            {/* Y-axis label (social) - positioned at the vertex on X-axis, horizontally */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transform-gpu"
-                 style={{ transform: 'translateX(-50%) translateY(-60px) translateZ(30px)' }}>
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 whitespace-nowrap min-w-[180px] text-center">
+
+            {/* Y-axis label (e.g., TECHNOLOGICAL) - vertical across Y axis */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-90deg] z-50">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap">
                 {yAxis.factor}
               </div>
             </div>
