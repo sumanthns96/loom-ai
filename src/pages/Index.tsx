@@ -30,7 +30,7 @@ const Index = () => {
           <h2 className="font-bold text-gray-900 mb-4 text-3xl">
             A Strategic Intelligence Engine Powered by Porter's Competitive Forces and McKinsey's Growth Horizons
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Bridge case study insights to strategic execution with AI and a proven 5-step framework</p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">Bridge case study insights to strategic execution — with AI and a proven 5-step framework</p>
           
           <div className="flex justify-center space-x-8 mb-12">
             {[{
