@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ const LoadingText = () => {
   }, []);
   
   return (
-    <span className="transition-opacity duration-500">
+    <span className="transition-opacity duration-500 text-body">
       {phase === 1 ? (
         <span className="animate-fade-in">
           Analyzing the Strategic Landscape from the Outside-In
@@ -76,17 +77,26 @@ const StepOne = ({
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            STEEP Analysis: External Factor Identification
-          </CardTitle>
-          <CardDescription className="text-xl">
-            The STEEP analysis is a tool used to map the external factors that impact an organization's strategic landscape.
-          </CardDescription>
+    <div className="space-y-8 max-w-6xl mx-auto animate-fade-in-up">
+      <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+        <CardHeader className="pb-8 pt-8">
+          <div className="space-y-4">
+            <CardTitle className="text-display bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
+              STEEP Analysis
+            </CardTitle>
+            <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
+            <CardDescription className="text-body text-gray-600 max-w-4xl leading-relaxed">
+              The STEEP framework is a strategic analysis tool designed to systematically evaluate the 
+              <span className="font-medium text-gray-800"> external macro-environmental factors</span> that 
+              influence an organization's strategic landscape. This comprehensive assessment examines 
+              <span className="font-medium text-gray-800"> Social, Technological, Economic, Environmental, 
+              and Political</span> dimensions to identify opportunities, threats, and emerging trends that 
+              could impact your strategic decisions.
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4 min-h-[800px]">
+        <CardContent className="space-y-6 pb-8 min-h-[800px]">
           <AnalysisGenerator 
             pdfContent={pdfContent} 
             isGenerating={isGenerating} 
@@ -96,15 +106,20 @@ const StepOne = ({
           />
           
           {isGenerating && (
-            <div className="h-60 flex items-center justify-center text-muted-foreground gap-2">
-              <RefreshCw className="h-5 w-5 animate-spin" />
+            <div className="h-60 content-center text-gray-600 gap-3">
+              <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
               <LoadingText />
             </div>
           )}
           
           {!isGenerating && !hasGenerated && (
-            <div className="h-60 flex items-center justify-center text-muted-foreground">
-              <span>Click "Initiate STEEP Analysis" to start</span>
+            <div className="h-60 content-center text-gray-500">
+              <div className="space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center mx-auto">
+                  <RefreshCw className="h-6 w-6 text-blue-600" />
+                </div>
+                <span className="text-body">Click "Initiate STEEP Analysis" to begin your strategic assessment</span>
+              </div>
             </div>
           )}
           
@@ -125,10 +140,10 @@ const StepOne = ({
           ))}
           
           {!isGenerating && hasGenerated && (
-            <div className="flex justify-end mt-8">
+            <div className="flex justify-end mt-12 pt-6 border-t border-gray-100">
               <Button 
                 onClick={handleContinue}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 Continue to Factor Selection
               </Button>
