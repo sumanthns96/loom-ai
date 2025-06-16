@@ -2,8 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, FileText, TrendingUp, CheckCircle, ArrowRight, Sparkles, Upload, Zap } from "lucide-react";
 import PDFUploader from "@/components/PDFUploader";
+
 const Index = () => {
   const navigate = useNavigate();
+
   const handlePdfExtracted = (content: string) => {
     navigate("/strategy-wizard", {
       state: {
@@ -11,7 +13,9 @@ const Index = () => {
       }
     });
   };
-  return <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       {/* Modern Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -47,9 +51,9 @@ const Index = () => {
               Strategic Intelligence Engine
             </div>
             
-            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-relaxed max-w-5xl mx-auto">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-[1.15] max-w-5xl mx-auto pb-4">
               Transform Your Business Case into 
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent block mt-4">
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent block mt-6 pb-2">
                 a Strategic Action Plan
               </span>
             </h2>
@@ -207,6 +211,8 @@ const Index = () => {
           </div>
         </footer>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
