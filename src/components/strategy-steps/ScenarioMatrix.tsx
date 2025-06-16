@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -80,27 +79,27 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
           </div>
 
           {/* Axis labels positioned clearly at the center intersection */}
-          <div className="absolute inset-0 pointer-events-none z-30">
+          <div className="absolute inset-0 pointer-events-none z-50">
             {/* X-axis label - positioned clearly below the center intersection */}
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 transform-gpu"
-                 style={{ transform: 'translateX(-50%) translateY(50px) translateZ(20px)' }}>
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-6 py-2 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 min-w-[140px] text-center">
+                 style={{ transform: 'translateX(-50%) translateY(60px) translateZ(25px)' }}>
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 min-w-[180px] text-center">
                 {xAxis.factor}
               </div>
             </div>
             
-            {/* Y-axis label - positioned clearly to the left of the center intersection */}
+            {/* Y-axis label - positioned at vertex, overlapping technological label vertically */}
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transform-gpu"
-                 style={{ transform: 'translateX(-90px) translateY(-50%) translateZ(20px)' }}>
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-6 py-2 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 whitespace-nowrap min-w-[140px] text-center">
+                 style={{ transform: 'translateX(-90px) translateY(-30px) translateZ(30px) rotate(-90deg)' }}>
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-8 py-3 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 whitespace-nowrap min-w-[180px] text-center">
                 {yAxis.factor}
               </div>
             </div>
           </div>
 
-          {/* Corner direction labels positioned at the ends of axes - moved further out */}
+          {/* Corner direction labels positioned at the ends of axes - moved further out and lower z-index */}
           {/* Top (Y High) */}
-          <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-40">
+          <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.high)}
@@ -108,7 +107,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
           </div>
           
           {/* Bottom (Y Low) */}
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-40">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
             <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.low)}
@@ -116,24 +115,24 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
           </div>
           
           {/* Left (X Low) */}
-          <div className="absolute left-6 top-1/2 transform -translate-y-1/2 z-40">
+          <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-30">
             <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(xContext.low)}
             </span>
           </div>
           
-          {/* Right (X High) - moved further right to prevent overlap */}
-          <div className="absolute right-6 top-1/2 transform -translate-y-1/2 z-40">
+          {/* Right (X High) */}
+          <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(xContext.high)}
             </span>
           </div>
 
-          {/* Enhanced 3D scenario grid - More space from edges */}
-          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 pt-20 pb-20 px-20 transform-gpu"
-               style={{ transform: 'translateZ(30px)' }}>
+          {/* Enhanced 3D scenario grid - More space from edges and top to avoid overlap */}
+          <div className="relative z-40 grid grid-cols-2 grid-rows-2 gap-8 pt-28 pb-20 px-24 transform-gpu"
+               style={{ transform: 'translateZ(20px)' }}>
             
             {/* Top Left - Index 1 */}
             <div className="group relative">
