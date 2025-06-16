@@ -14,13 +14,9 @@ interface ScenarioCardProps {
 
 const ScenarioCard: FC<ScenarioCardProps> = ({ scenario, colorScheme }) => {
   return (
-    <div className="group relative">
+    <div className="group relative w-full h-full">
       <div className={`absolute inset-0 ${colorScheme.glow} rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
-      <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
-           style={{ 
-             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
-             transform: 'translateZ(0px)'
-           }}>
+      <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full hover:scale-105 hover:shadow-3xl transition-all duration-300">
         {scenario?.summary && (
           <div className={`text-xs font-semibold ${colorScheme.primary} uppercase tracking-wider mb-2 ${colorScheme.background} px-2 py-1 rounded-lg inline-block`}>
             {scenario.summary}

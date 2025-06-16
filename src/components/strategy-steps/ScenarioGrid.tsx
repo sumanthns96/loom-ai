@@ -36,33 +36,38 @@ const colorSchemes = [
 
 const ScenarioGrid: FC<ScenarioGridProps> = ({ scenarios }) => {
   return (
-    /* Enhanced 3D scenario grid - LOWEST Z-INDEX FOR CARDS */
-    <div className="relative z-[5] grid grid-cols-2 grid-rows-2 gap-6 pt-28 pb-16 px-20 transform-gpu"
-         style={{ transform: 'translateZ(10px)' }}>
+    <div className="absolute inset-0 z-20">
+      {/* Top Left Quadrant */}
+      <div className="absolute top-8 left-8 w-[calc(50%-24px)] h-[calc(50%-24px)]">
+        <ScenarioCard 
+          scenario={scenarios[1]} 
+          colorScheme={colorSchemes[1]} 
+        />
+      </div>
       
-      {/* Top Left - Index 1 */}
-      <ScenarioCard 
-        scenario={scenarios[1]} 
-        colorScheme={colorSchemes[1]} 
-      />
+      {/* Top Right Quadrant */}
+      <div className="absolute top-8 right-8 w-[calc(50%-24px)] h-[calc(50%-24px)]">
+        <ScenarioCard 
+          scenario={scenarios[0]} 
+          colorScheme={colorSchemes[0]} 
+        />
+      </div>
       
-      {/* Top Right - Index 0 */}
-      <ScenarioCard 
-        scenario={scenarios[0]} 
-        colorScheme={colorSchemes[0]} 
-      />
+      {/* Bottom Left Quadrant */}
+      <div className="absolute bottom-8 left-8 w-[calc(50%-24px)] h-[calc(50%-24px)]">
+        <ScenarioCard 
+          scenario={scenarios[2]} 
+          colorScheme={colorSchemes[2]} 
+        />
+      </div>
       
-      {/* Bottom Left - Index 2 */}
-      <ScenarioCard 
-        scenario={scenarios[2]} 
-        colorScheme={colorSchemes[2]} 
-      />
-      
-      {/* Bottom Right - Index 3 */}
-      <ScenarioCard 
-        scenario={scenarios[3]} 
-        colorScheme={colorSchemes[3]} 
-      />
+      {/* Bottom Right Quadrant */}
+      <div className="absolute bottom-8 right-8 w-[calc(50%-24px)] h-[calc(50%-24px)]">
+        <ScenarioCard 
+          scenario={scenarios[3]} 
+          colorScheme={colorSchemes[3]} 
+        />
+      </div>
     </div>
   );
 };
