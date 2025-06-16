@@ -1,10 +1,6 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import modern font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
@@ -41,12 +37,19 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
+
     --sidebar-foreground: 240 5.3% 26.1%;
+
     --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
+
     --sidebar-accent: 240 4.8% 95.9%;
+
     --sidebar-accent-foreground: 240 5.9% 10%;
+
     --sidebar-border: 220 13% 91%;
+
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -96,140 +99,5 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    letter-spacing: -0.01em;
   }
-
-  /* Modern typography utilities */
-  .text-display {
-    @apply text-4xl font-bold tracking-tight;
-    letter-spacing: -0.02em;
-  }
-
-  .text-headline {
-    @apply text-2xl font-semibold tracking-tight;
-    letter-spacing: -0.015em;
-  }
-
-  .text-title {
-    @apply text-xl font-medium tracking-tight;
-    letter-spacing: -0.01em;
-  }
-
-  .text-body {
-    @apply text-base leading-relaxed;
-    letter-spacing: -0.005em;
-  }
-
-  .text-caption {
-    @apply text-sm text-muted-foreground;
-    letter-spacing: -0.003em;
-  }
-
-  /* Improved readability */
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    line-height: 1.2;
-  }
-
-  p {
-    line-height: 1.6;
-    letter-spacing: -0.005em;
-  }
-
-  /* Better alignment utilities */
-  .content-center {
-    @apply flex flex-col items-center justify-center text-center;
-  }
-
-  .content-left {
-    @apply flex flex-col items-start justify-start text-left;
-  }
-}
-
-/* 3D Transform utilities */
-@layer utilities {
-  .perspective-none {
-    perspective: none;
-  }
-  
-  .perspective-500 {
-    perspective: 500px;
-  }
-  
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-  
-  .perspective-1500 {
-    perspective: 1500px;
-  }
-  
-  .transform-gpu {
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-  }
-  
-  .preserve-3d {
-    transform-style: preserve-3d;
-  }
-  
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
-  
-  .shadow-3xl {
-    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
-  }
-  
-  .shadow-4xl {
-    box-shadow: 0 45px 100px -12px rgba(0, 0, 0, 0.25);
-  }
-}
-
-/* Animation enhancements */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes float-3d {
-  0%, 100% {
-    transform: translateY(0px) rotateX(5deg) rotateY(-2deg);
-  }
-  50% {
-    transform: translateY(-10px) rotateX(5deg) rotateY(-2deg);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.5s ease-out forwards;
-}
-
-.animate-float-3d {
-  animation: float-3d 6s ease-in-out infinite;
 }
