@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { SelectedPoint } from "./types";
@@ -410,6 +410,20 @@ const StepTwo = ({ pdfContent, data, onDataChange, selectedPoints, onNext }: Ste
           )}
         </CardContent>
       </Card>
+
+      {/* Next Button - Only show after scenarios are generated */}
+      {scenarios.length > 0 && onNext && (
+        <div className="flex justify-center pt-8 pb-4">
+          <Button
+            onClick={onNext}
+            className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
+            size="lg"
+          >
+            Next: Competitor Analysis
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

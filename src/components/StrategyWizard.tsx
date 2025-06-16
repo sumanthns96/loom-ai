@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Download, RefreshCw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, RefreshCw, TrendingUp, Users, Target, Compass, Layers } from "lucide-react";
 import StepOne, { SelectedPoint } from "@/components/strategy-steps/StepOne";
 import StepTwo from "@/components/strategy-steps/StepTwo";
 import StepThree from "@/components/strategy-steps/StepThree";
@@ -83,11 +84,11 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   }, [currentStep, stepData, selectedForMatrix, pdfContent]);
 
   const steps = [
-    { number: 1, title: "Analyze STEEP Factors", component: StepOne },
-    { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo },
-    { number: 3, title: "Competitor Analysis", component: StepThree },
-    { number: 4, title: "DOTS", component: StepFour },
-    { number: 5, title: "McKinsey's Three Horizon Model", component: StepFive },
+    { number: 1, title: "Analyze STEEP Factors", component: StepOne, icon: TrendingUp },
+    { number: 2, title: "Key Uncertainty Scenario Matrix", component: StepTwo, icon: Layers },
+    { number: 3, title: "Competitor Analysis", component: StepThree, icon: Users },
+    { number: 4, title: "DOTS", component: StepFour, icon: Compass },
+    { number: 5, title: "McKinsey's Three Horizon Model", component: StepFive, icon: Target },
   ];
 
   const updateStepData = (step: number, data: string) => {
@@ -190,25 +191,66 @@ Generated on: ${new Date().toLocaleDateString()}
           </CardHeader>
         </Card>
 
-        {/* Step Navigation */}
+        {/* Enhanced Step Navigation - Professional styling inspired by Remote app */}
         <div className="flex justify-center mb-8">
-          <div className="flex space-x-4">
-            {steps.map((step) => (
-              <button
-                key={step.number}
-                onClick={() => goToStep(step.number)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors
-                  ${currentStep === step.number 
-                    ? 'bg-blue-600 text-white' 
-                    : currentStep > step.number 
-                      ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-              >
-                <span className="font-medium">{step.number}</span>
-                <span className="hidden sm:block">{step.title}</span>
-              </button>
-            ))}
+          <div className="bg-white rounded-xl border border-gray-200 p-2 shadow-sm">
+            <div className="flex space-x-1">
+              {steps.map((step) => {
+                const Icon = step.icon;
+                const isActive = currentStep === step.number;
+                const isCompleted = currentStep > step.number;
+                
+                return (
+                  <button
+                    key={step.number}
+                    onClick={() => goToStep(step.number)}
+                    className={`
+                      relative flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ease-in-out
+                      ${isActive 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : isCompleted 
+                          ? 'bg-green-50 text-green-700 hover:bg-green-100' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }
+                    `}
+                  >
+                    <div className={`
+                      flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium
+                      ${isActive 
+                        ? 'bg-white text-blue-600' 
+                        : isCompleted 
+                          ? 'bg-green-100 text-green-600' 
+                          : 'bg-gray-100 text-gray-500'
+                      }
+                    `}>
+                      {isCompleted ? (
+                        <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                      ) : (
+                        step.number
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Icon className={`
+                        h-4 w-4
+                        ${isActive 
+                          ? 'text-white' 
+                          : isCompleted 
+                            ? 'text-green-600' 
+                            : 'text-gray-400'
+                        }
+                      `} />
+                      <span className="hidden sm:block font-medium text-sm">{step.title}</span>
+                    </div>
+                    
+                    {/* Active indicator line */}
+                    {isActive && (
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-2 h-2 bg-blue-600 rounded-full"></div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
