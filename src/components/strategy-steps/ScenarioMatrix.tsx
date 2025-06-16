@@ -38,7 +38,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
         <div className="relative transform-gpu" style={{ 
           transformStyle: 'preserve-3d',
           transform: 'rotateX(5deg) rotateY(-2deg)',
-          minHeight: 600 
+          minHeight: 650 
         }}>
           
           {/* Enhanced background grid with 3D effect */}
@@ -100,15 +100,15 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
 
           {/* Corner direction labels with enhanced 3D styling - Better positioned for visibility */}
           {/* Top (Y High) - Centered and moved up more */}
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-40">
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.high)}
             </span>
           </div>
           
-          {/* Bottom (Y Low) - Centered and moved down more */}
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-40">
+          {/* Bottom (Y Low) - Moved further down to be visible */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-40">
             <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.low)}
@@ -131,8 +131,8 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </span>
           </div>
 
-          {/* Enhanced 3D scenario grid - Increased padding to provide more space for axis labels */}
-          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 p-24 transform-gpu"
+          {/* Enhanced 3D scenario grid - Adjusted padding to make room for bottom labels */}
+          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 pt-16 pb-28 px-24 transform-gpu"
                style={{ transform: 'translateZ(30px)' }}>
             
             {/* Top Left - Index 1 */}
