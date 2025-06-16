@@ -1,5 +1,8 @@
 
 import { FC } from "react";
+import AxisLines from "./AxisLines";
+import CornerLabels from "./CornerLabels";
+import ScenarioGrid from "./ScenarioGrid";
 import type { SelectedPoint } from "./types";
 
 export interface MatrixScenario {
@@ -15,19 +18,8 @@ interface ScenarioMatrixProps {
   axisContexts?: { low: string; high: string }[];
 }
 
-const endLabelColors = ["text-red-600 font-bold", "text-green-600 font-bold"];
-
-// Utility: capitalize first
-const cap = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-
 const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts }) => {
   if (!scenarios.length || axes.length !== 2) return null;
-
-  const [yAxis, xAxis] = axes;
-
-  // fallback directions if context is missing
-  const fallback = [{ low: "Low", high: "High" }, { low: "Low", high: "High" }];
-  const [yContext, xContext] = axisContexts && axisContexts.length === 2 ? axisContexts : fallback;
 
   return (
     <div className="mt-12 animate-fade-in">
@@ -56,212 +48,11 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
           </div>
 
-          {/* Enhanced 3D scenario grid - LOWEST Z-INDEX FOR CARDS */}
-          <div className="relative z-[5] grid grid-cols-2 grid-rows-2 gap-6 pt-28 pb-16 px-20 transform-gpu"
-               style={{ transform: 'translateZ(10px)' }}>
-            
-            {/* Top Left - Index 1 */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
-                   style={{ 
-                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
-                     transform: 'translateZ(0px)'
-                   }}>
-                {scenarios[1]?.summary && (
-                  <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 bg-blue-50 px-2 py-1 rounded-lg inline-block">
-                    {scenarios[1].summary}
-                  </div>
-                )}
-                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
-                  {scenarios[1]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
-                </div>
-                {Array.isArray(scenarios[1]?.bullets) && scenarios[1]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-xs">
-                    {scenarios[1].bullets.map((pt, i) => (
-                      <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                        <span className="leading-relaxed">{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-                )}
-              </div>
-            </div>
-            
-            {/* Top Right - Index 0 */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
-                   style={{ 
-                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
-                     transform: 'translateZ(0px)'
-                   }}>
-                {scenarios[0]?.summary && (
-                  <div className="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2 bg-green-50 px-2 py-1 rounded-lg inline-block">
-                    {scenarios[0].summary}
-                  </div>
-                )}
-                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
-                  {scenarios[0]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
-                </div>
-                {Array.isArray(scenarios[0]?.bullets) && scenarios[0]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-xs">
-                    {scenarios[0].bullets.map((pt, i) => (
-                      <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1 h-1 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                        <span className="leading-relaxed">{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-                )}
-              </div>
-            </div>
-            
-            {/* Bottom Left - Index 2 */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
-                   style={{ 
-                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
-                     transform: 'translateZ(0px)'
-                   }}>
-                {scenarios[2]?.summary && (
-                  <div className="text-xs font-semibold text-orange-600 uppercase tracking-wider mb-2 bg-orange-50 px-2 py-1 rounded-lg inline-block">
-                    {scenarios[2].summary}
-                  </div>
-                )}
-                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
-                  {scenarios[2]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
-                </div>
-                {Array.isArray(scenarios[2]?.bullets) && scenarios[2]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-xs">
-                    {scenarios[2].bullets.map((pt, i) => (
-                      <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1 h-1 bg-orange-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                        <span className="leading-relaxed">{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-                )}
-              </div>
-            </div>
-            
-            {/* Bottom Right - Index 3 */}
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 h-full transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
-                   style={{ 
-                     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
-                     transform: 'translateZ(0px)'
-                   }}>
-                {scenarios[3]?.summary && (
-                  <div className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2 bg-purple-50 px-2 py-1 rounded-lg inline-block">
-                    {scenarios[3].summary}
-                  </div>
-                )}
-                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
-                  {scenarios[3]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
-                </div>
-                {Array.isArray(scenarios[3]?.bullets) && scenarios[3]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-xs">
-                    {scenarios[3].bullets.map((pt, i) => (
-                      <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1 h-1 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"></div>
-                        <span className="leading-relaxed">{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Central axis lines - POSITIONED AFTER CARDS TO APPEAR ON TOP */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[50]">
-            {/* Horizontal axis line - spans most of the container width */}
-            <div className="absolute w-[75%] h-1 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
-                 style={{ 
-                   filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))',
-                   transform: 'translateZ(40px)'
-                 }}>
-              {/* Axis glow effect */}
-              <div className="absolute inset-0 bg-blue-400 rounded-full blur-sm opacity-50"></div>
-            </div>
-            
-            {/* Vertical axis line - spans most of the container height */}
-            <div className="absolute h-[75%] w-1 bg-gradient-to-b from-blue-600 via-blue-700 to-blue-600 rounded-full shadow-lg transform-gpu"
-                 style={{ 
-                   filter: 'drop-shadow(4px 0 8px rgba(59, 130, 246, 0.3))',
-                   transform: 'translateZ(40px)'
-                 }}>
-              {/* Axis glow effect */}
-              <div className="absolute inset-0 bg-blue-400 rounded-full blur-sm opacity-50"></div>
-            </div>
-          </div>
-
-          {/* Axis labels positioned at the vertex - HIGHEST LAYER */}
-          <div className="absolute inset-0 pointer-events-none z-[60]">
-            {/* X-axis label (e.g., SOCIAL) - horizontal across X axis */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap"
-                   style={{ transform: 'translateZ(50px)' }}>
-                {xAxis.factor}
-              </div>
-            </div>
-
-            {/* Y-axis label (e.g., TECHNOLOGICAL) - vertical across Y axis */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-90deg]">
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap"
-                   style={{ transform: 'translateZ(50px)' }}>
-                {yAxis.factor}
-              </div>
-            </div>
-          </div>
+          <ScenarioGrid scenarios={scenarios} />
+          <AxisLines axes={axes} />
         </div>
 
-        {/* Corner direction labels - COMPLETELY SEPARATE CONTAINER WITH HIGHEST Z-INDEX */}
-        <div className="absolute inset-0 pointer-events-none z-[100]" style={{ transform: 'translateZ(60px)' }}>
-          {/* Top (Y High) */}
-          <div className="absolute top-[140px] left-1/2 transform -translate-x-1/2">
-            <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(70px)' }}>
-              {cap(yContext.high)}
-            </span>
-          </div>
-          
-          {/* Bottom (Y Low) */}
-          <div className="absolute bottom-[140px] left-1/2 transform -translate-x-1/2">
-            <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(70px)' }}>
-              {cap(yContext.low)}
-            </span>
-          </div>
-          
-          {/* Left (X Low) */}
-          <div className="absolute left-[140px] top-1/2 transform -translate-y-1/2">
-            <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(70px)' }}>
-              {cap(xContext.low)}
-            </span>
-          </div>
-          
-          {/* Right (X High) */}
-          <div className="absolute right-[140px] top-1/2 transform -translate-y-1/2">
-            <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
-                  style={{ transform: 'translateZ(70px)' }}>
-              {cap(xContext.high)}
-            </span>
-          </div>
-        </div>
+        <CornerLabels axes={axes} axisContexts={axisContexts} />
       </div>
     </div>
   );
