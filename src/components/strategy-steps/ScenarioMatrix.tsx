@@ -98,41 +98,41 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </div>
           </div>
 
-          {/* Corner direction labels with enhanced 3D styling - Repositioned to avoid overlap */}
-          {/* Top (Y High) - Moved further up */}
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-40">
+          {/* Corner direction labels with enhanced 3D styling - Better positioned for visibility */}
+          {/* Top (Y High) - Centered and moved up more */}
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-40">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.high)}
             </span>
           </div>
           
-          {/* Bottom (Y Low) - Moved further down */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-40">
+          {/* Bottom (Y Low) - Centered and moved down more */}
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-40">
             <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(yContext.low)}
             </span>
           </div>
           
-          {/* Left (X Low) - Moved further left */}
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40">
+          {/* Left (X Low) - Centered vertically and moved left more */}
+          <div className="absolute left-2 top-1/2 transform -translate-y-1/2 z-40">
             <span className="text-red-700 font-bold text-sm bg-gradient-to-r from-red-50 to-rose-50 px-3 py-2 rounded-xl border-2 border-red-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(xContext.low)}
             </span>
           </div>
           
-          {/* Right (X High) - Moved further right */}
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40">
+          {/* Right (X High) - Centered vertically and moved right more */}
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-40">
             <span className="text-green-700 font-bold text-sm bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 rounded-xl border-2 border-green-200 shadow-lg transform-gpu hover:scale-105 transition-transform duration-200"
                   style={{ transform: 'translateZ(15px)' }}>
               {cap(xContext.high)}
             </span>
           </div>
 
-          {/* Enhanced 3D scenario grid - Adjusted padding to give more space for axis labels */}
-          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 p-20 transform-gpu"
+          {/* Enhanced 3D scenario grid - Increased padding to provide more space for axis labels */}
+          <div className="relative z-50 grid grid-cols-2 grid-rows-2 gap-8 p-24 transform-gpu"
                style={{ transform: 'translateZ(30px)' }}>
             
             {/* Top Left - Index 1 */}
