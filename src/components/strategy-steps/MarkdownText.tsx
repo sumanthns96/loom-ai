@@ -7,7 +7,8 @@ interface MarkdownTextProps {
 }
 
 const MarkdownText = ({ text, className = "" }: MarkdownTextProps) => {
-  if (!text) return null;
+  // Return null if text is empty, undefined, or just whitespace
+  if (!text || !text.trim()) return null;
 
   // Convert markdown to HTML
   const formatText = (input: string): string => {
@@ -17,7 +18,10 @@ const MarkdownText = ({ text, className = "" }: MarkdownTextProps) => {
       .replace(/\n/g, '<br />');                         // line breaks
   };
 
-  const formattedText = formatText(text);
+  const formattedText = formatText(text.trim());
+
+  // Don't render if the formatted text is empty after processing
+  if (!formattedText) return null;
 
   return (
     <div 
