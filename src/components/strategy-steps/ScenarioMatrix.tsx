@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -80,10 +81,17 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
 
           {/* Axis labels positioned at the vertex */}
           <div className="absolute inset-0 pointer-events-none z-50">
-            {/* X-axis label (e.g., SOCIAL) - horizontal across X axis */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-4 py-1 text-sm font-bold uppercase tracking-wider rounded-lg shadow-xl border border-blue-600 text-center whitespace-nowrap">
-                {xAxis.factor}
+            {/* Left part of SOCIAL – "SOC" */}
+            <div className="absolute top-1/2 left-[calc(50%-60px)] transform -translate-y-1/2 z-50">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-2 py-1 text-sm font-bold uppercase tracking-wider rounded-l-md shadow-xl border border-blue-600">
+                SOC
+              </div>
+            </div>
+
+            {/* Right part of SOCIAL – "IAL" */}
+            <div className="absolute top-1/2 left-[calc(50%+10px)] transform -translate-y-1/2 z-50">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-800 text-white px-2 py-1 text-sm font-bold uppercase tracking-wider rounded-r-md shadow-xl border border-blue-600">
+                IAL
               </div>
             </div>
 
