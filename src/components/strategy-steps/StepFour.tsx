@@ -170,7 +170,7 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Generate DOTS Strategy
+                  Generate DOTS
                 </>
               )}
             </Button>
