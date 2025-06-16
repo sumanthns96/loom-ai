@@ -41,6 +41,7 @@ const StepFour = ({
     .replace(/\*(.*?)\*/g, '$1') // Remove *italic* formatting
     .replace(/^\s*[\*\-\+]\s+/gm, '') // Remove bullet points at start of lines
     .replace(/^\s*\d+\.\s+/gm, '') // Remove numbered lists
+    .replace(/\*/g, '') // Remove any remaining standalone asterisks
     .trim();
   };
   const parseDotsText = (text: string): DotsData | null => {
