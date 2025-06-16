@@ -1,4 +1,5 @@
 
+
 import { FC } from "react";
 import type { SelectedPoint } from "./types";
 
@@ -38,7 +39,7 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
         <div className="relative transform-gpu" style={{ 
           transformStyle: 'preserve-3d',
           transform: 'rotateX(5deg) rotateY(-2deg)',
-          minHeight: 700 
+          minHeight: 600 
         }}>
           
           {/* Enhanced background grid with 3D effect */}
@@ -136,14 +137,14 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
             </span>
           </div>
 
-          {/* Enhanced 3D scenario grid - More space from edges and top to avoid overlap */}
-          <div className="relative z-40 grid grid-cols-2 grid-rows-2 gap-8 pt-32 pb-20 px-24 transform-gpu"
+          {/* Enhanced 3D scenario grid - Dynamic sizing with flex layout */}
+          <div className="relative z-40 grid grid-cols-2 grid-rows-2 gap-6 pt-28 pb-16 px-20 transform-gpu"
                style={{ transform: 'translateZ(20px)' }}>
             
             {/* Top Left - Index 1 */}
-            <div className="group relative">
+            <div className="group relative flex">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-8 min-h-[200px] flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -153,28 +154,28 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                     {scenarios[1].summary}
                   </div>
                 )}
-                <div className="font-bold text-gray-900 text-base mb-3 leading-tight">
+                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
                   {scenarios[1]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[1]?.bullets) && scenarios[1]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-sm flex-1">
+                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
                     {scenarios[1].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-1 h-1 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></div>
                         <span className="leading-relaxed">{pt}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <div className="text-gray-500 text-sm italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
                 )}
               </div>
             </div>
             
             {/* Top Right - Index 0 */}
-            <div className="group relative">
+            <div className="group relative flex">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-8 min-h-[200px] flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -184,28 +185,28 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                     {scenarios[0].summary}
                   </div>
                 )}
-                <div className="font-bold text-gray-900 text-base mb-3 leading-tight">
+                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
                   {scenarios[0]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[0]?.bullets) && scenarios[0]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-sm flex-1">
+                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
                     {scenarios[0].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-1 h-1 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                         <span className="leading-relaxed">{pt}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <div className="text-gray-500 text-sm italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
                 )}
               </div>
             </div>
             
             {/* Bottom Left - Index 2 */}
-            <div className="group relative">
+            <div className="group relative flex">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-8 min-h-[200px] flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -215,28 +216,28 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                     {scenarios[2].summary}
                   </div>
                 )}
-                <div className="font-bold text-gray-900 text-base mb-3 leading-tight">
+                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
                   {scenarios[2]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[2]?.bullets) && scenarios[2]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-sm flex-1">
+                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
                     {scenarios[2].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-1 h-1 bg-orange-500 rounded-full mt-1.5 flex-shrink-0"></div>
                         <span className="leading-relaxed">{pt}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <div className="text-gray-500 text-sm italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
                 )}
               </div>
             </div>
             
             {/* Bottom Right - Index 3 */}
-            <div className="group relative">
+            <div className="group relative flex">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-8 min-h-[200px] flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300"
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200/80 shadow-2xl p-6 flex flex-col transform-gpu hover:scale-105 hover:shadow-3xl transition-all duration-300 w-full"
                    style={{ 
                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
                      transform: 'translateZ(0px)'
@@ -246,20 +247,20 @@ const ScenarioMatrix: FC<ScenarioMatrixProps> = ({ scenarios, axes, axisContexts
                     {scenarios[3].summary}
                   </div>
                 )}
-                <div className="font-bold text-gray-900 text-base mb-3 leading-tight">
+                <div className="font-bold text-gray-900 text-sm mb-3 leading-tight">
                   {scenarios[3]?.header || <span className="text-gray-400 font-normal italic">Scenario could not be generated</span>}
                 </div>
                 {Array.isArray(scenarios[3]?.bullets) && scenarios[3]?.bullets.length > 0 ? (
-                  <ul className="space-y-2 text-gray-700 text-sm flex-1">
+                  <ul className="space-y-1.5 text-gray-700 text-xs flex-1">
                     {scenarios[3].bullets.map((pt, i) => (
                       <li key={i} className="flex items-start space-x-2">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="w-1 h-1 bg-purple-500 rounded-full mt-1.5 flex-shrink-0"></div>
                         <span className="leading-relaxed">{pt}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <div className="text-gray-500 text-sm italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
+                  <div className="text-gray-500 text-xs italic">[Scenario could not be generated; please retry or adjust your axis selection.]</div>
                 )}
               </div>
             </div>
