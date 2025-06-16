@@ -41,7 +41,7 @@ const Index = () => {
           </div>
         </div>
       </header>
-
+      
       <div className="max-w-7xl mx-auto px-6">
         {/* Hero Section */}
         <div className="text-center py-20 space-y-8">
@@ -59,8 +59,7 @@ const Index = () => {
             </h2>
             
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Bridge theoretical insights to practical execution with our AI-powered framework 
-              combining Porter's Competitive Forces and McKinsey's Growth Horizons
+              Bridge real-world business cases to proven strategy with Porter's Competitive Forces and McKinsey's Growth Horizons
             </p>
           </div>
           
