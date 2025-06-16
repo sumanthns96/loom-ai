@@ -190,9 +190,9 @@ Generated on: ${new Date().toLocaleDateString()}
           </CardHeader>
         </Card>
 
-        {/* Clean Professional Step Navigation */}
+        {/* Clean Professional Step Navigation - Reduced Width */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-2xl border border-gray-100 p-1 shadow-lg shadow-gray-100/50">
+          <div className="bg-white rounded-2xl border border-gray-100 p-1 shadow-lg shadow-gray-100/50 max-w-4xl">
             <div className="flex">
               {steps.map((step, index) => {
                 const isActive = currentStep === step.number;
@@ -204,7 +204,7 @@ Generated on: ${new Date().toLocaleDateString()}
                     <button
                       onClick={() => goToStep(step.number)}
                       className={`
-                        relative flex items-center space-x-3 px-6 py-4 rounded-xl transition-all duration-300 ease-out font-medium text-sm
+                        relative flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ease-out font-medium text-sm
                         ${isActive 
                           ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105' 
                           : isCompleted 
@@ -216,7 +216,7 @@ Generated on: ${new Date().toLocaleDateString()}
                       `}
                     >
                       <div className={`
-                        flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all duration-300
+                        flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold transition-all duration-300
                         ${isActive 
                           ? 'bg-white text-blue-600' 
                           : isCompleted 
@@ -227,13 +227,13 @@ Generated on: ${new Date().toLocaleDateString()}
                         }
                       `}>
                         {isCompleted ? (
-                          <div className="w-3 h-3 bg-white rounded-full"></div>
+                          <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                         ) : (
                           step.number
                         )}
                       </div>
                       
-                      <span className="hidden sm:block whitespace-nowrap">
+                      <span className="hidden sm:block whitespace-nowrap text-xs">
                         {step.title}
                       </span>
                       
@@ -246,7 +246,7 @@ Generated on: ${new Date().toLocaleDateString()}
                     {/* Connector line */}
                     {index < steps.length - 1 && (
                       <div className={`
-                        w-8 h-0.5 mx-2 transition-all duration-300
+                        w-6 h-0.5 mx-1 transition-all duration-300
                         ${currentStep > step.number ? 'bg-green-300' : 'bg-gray-200'}
                       `}></div>
                     )}
