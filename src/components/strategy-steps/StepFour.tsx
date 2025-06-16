@@ -44,6 +44,8 @@ const StepFour = ({ pdfContent, data, onDataChange }: StepFourProps) => {
       .replace(/\*(.*?)\*/g, '$1')     // Remove *italic* formatting
       .replace(/^\s*[\*\-\+]\s+/gm, '') // Remove bullet points at start of lines
       .replace(/^\s*\d+\.\s+/gm, '')   // Remove numbered lists
+      .replace(/^\*+$/, '')            // Remove standalone asterisks
+      .replace(/^\*+\s*$/, '')         // Remove asterisks with whitespace
       .trim();
   };
 

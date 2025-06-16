@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,8 +119,11 @@ const StrategyWizard = ({ pdfContent, onReset }: StrategyWizardProps) => {
   };
 
   const goToStep = (stepNumber: number) => {
-    setCurrentStepState(stepNumber);
-    scrollToTop();
+    // Only allow navigation to current step or previous steps
+    if (stepNumber <= currentStep) {
+      setCurrentStepState(stepNumber);
+      scrollToTop();
+    }
   };
 
   const exportStrategy = () => {
@@ -199,21 +201,24 @@ Generated on: ${new Date().toLocaleDateString()}
                 const isActive = currentStep === step.number;
                 const isCompleted = currentStep > step.number;
                 const isNext = currentStep < step.number;
+                const isClickable = step.number <= currentStep;
                 
                 return (
                   <div key={step.number} className="flex items-center flex-1">
                     <button
                       onClick={() => goToStep(step.number)}
+                      disabled={!isClickable}
                       className={`
                         relative flex items-center space-x-2 px-2 py-3 rounded-xl transition-all duration-300 ease-out font-medium text-xs w-full justify-center
                         ${isActive 
                           ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 scale-105' 
                           : isCompleted 
-                            ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-100' 
+                            ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-100 cursor-pointer' 
                             : isNext
-                              ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-                              : 'text-gray-600 hover:bg-gray-50'
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-gray-600 hover:bg-gray-50 cursor-pointer'
                         }
+                        ${!isClickable ? 'opacity-50 cursor-not-allowed' : ''}
                       `}
                     >
                       <div className={`
